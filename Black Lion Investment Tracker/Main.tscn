@@ -1,0 +1,59 @@
+[gd_scene load_steps=7 format=3 uid="uid://bk56luqpcapp2"]
+
+[ext_resource type="Script" path="res://Main.cs" id="1_jgrri"]
+[ext_resource type="Script" path="res://MainTabs.cs" id="2_de7lj"]
+[ext_resource type="Script" path="res://Investments.cs" id="2_tpb8k"]
+[ext_resource type="Script" path="res://Listings.cs" id="3_yjd3c"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_doj7t"]
+bg_color = Color(0.25098, 0.25098, 0.25098, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_400td"]
+bg_color = Color(0.188235, 0.188235, 0.188235, 1)
+
+[node name="Main" type="Panel" node_paths=PackedStringArray("itemHolder")]
+offset_right = 600.0
+offset_bottom = 900.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_doj7t")
+script = ExtResource("1_jgrri")
+itemHolder = NodePath("TabContainer/Listings/VBoxContainer")
+
+[node name="TabsBackground" type="Panel" parent="."]
+layout_mode = 0
+offset_right = 600.0
+offset_bottom = 31.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_400td")
+
+[node name="TabContainer" type="TabContainer" parent="." node_paths=PackedStringArray("Investments", "Listings")]
+layout_mode = 0
+offset_right = 600.0
+offset_bottom = 900.0
+tab_alignment = 1
+script = ExtResource("2_de7lj")
+Investments = NodePath("Investments")
+Listings = NodePath("Listings")
+
+[node name="Investments" type="ScrollContainer" parent="TabContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+script = ExtResource("2_tpb8k")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="TabContainer/Investments"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Listings" type="ScrollContainer" parent="TabContainer"]
+visible = false
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+script = ExtResource("3_yjd3c")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="TabContainer/Listings"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[connection signal="tab_selected" from="TabContainer" to="TabContainer" method="OnSelectTab"]
