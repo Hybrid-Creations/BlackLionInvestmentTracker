@@ -64,59 +64,7 @@ public partial class Investments : ScrollContainer
                 List<CommerceTransactionHistory> buys = new();
                 List<CommerceTransactionHistory> sells = new();
 
-                // loop through all pages to get all the transactions then continue
-                int i = 0;
-                while (true)
-                {
-                    bool @continue = false;
-
-                    var pageBuys = Main.MyClient.WebApi.V2.Commerce.Transactions.History.Buys.PageAsync(i);
-                    while (true)
-                    {
-                        await Task.Delay(250);
-                        if (pageBuys.Status == TaskStatus.RanToCompletion)
-                        {
-                            buys.AddRange(pageBuys.Result);
-
-                            // Break out of inner loop When we have the items we need
-                            // And continue
-                            @continue = true;
-                            break;
-                        }
-
-                        // Break out of inner loop if it fails
-                        // And don't continue
-                        if (pageBuys.Status == TaskStatus.Faulted)
-                            break;
-                    }
-
-                    var pageSells = Main.MyClient.WebApi.V2.Commerce.Transactions.History.Sells.PageAsync(i);
-                    while (true)
-                    {
-                        await Task.Delay(250);
-                        if (pageSells.Status == TaskStatus.RanToCompletion)
-                        {
-                            sells.AddRange(pageSells.Result);
-
-                            // Break out of inner loop When we have the items we need
-                            // And continue
-                            @continue = true;
-                            break;
-                        }
-
-                        // Break out of inner loop if it fails
-                        // And don't continue
-                        if (pageSells.Status == TaskStatus.Faulted)
-                            break;
-                    }
-
-                    // Break out if we did not get any new elements
-                    if (@continue == false)
-                        break;
-
-                    //Increment Loop
-                    i++;
-                }
+                await GetBuyAndSellHistory(buys, sells);
 
                 var sBuys = buys.OrderBy(b => b.Purchased);
                 var sSells = sells.OrderBy(s => s.Purchased);
@@ -211,6 +159,10 @@ public partial class Investments : ScrollContainer
                         var item = Main.MyClient.WebApi.V2.Items.GetAsync(buy.ItemId).Result;
                         GD.Print($"New Investment -> {item.Name}, Bought {investment.Quantity} for {investment.Price * investment.Quantity}, Sold {investment.SellDatas.Sum(s => s.Quantity)} for {investment.SellDatas.Sum(s => s.Price * s.Quantity)}, for a Profit of {investment.Profit}");
                         Main.Database.Investments.Add(investment);
+
+                        var instance = itemScene.Instantiate<Item>();
+                        instance.Init($"{item.Name}", investment.Price * investment.Quantity);
+                        listingsContainer.AddChild(instance);
                     }
                 }
 
@@ -220,6 +172,66 @@ public partial class Investments : ScrollContainer
             catch (Exception e)
             {
                 GD.PrintErr(e);
+            }
+        });
+    }
+
+    Task GetBuyAndSellHistory(List<CommerceTransactionHistory> buys, List<CommerceTransactionHistory> sells)
+    {
+        return Task.Run(async () =>
+        {
+            // loop through all pages to get all the transactions then continue
+            int i = 0;
+            while (true)
+            {
+                bool @continue = false;
+
+                var pageBuys = Main.MyClient.WebApi.V2.Commerce.Transactions.History.Buys.PageAsync(i);
+                while (true)
+                {
+                    await Task.Delay(250);
+                    if (pageBuys.Status == TaskStatus.RanToCompletion)
+                    {
+                        buys.AddRange(pageBuys.Result);
+
+                        // Break out of inner loop When we have the items we need
+                        // And continue
+                        @continue = true;
+                        break;
+                    }
+
+                    // Break out of inner loop if it fails
+                    // And don't continue
+                    if (pageBuys.Status == TaskStatus.Faulted)
+                        break;
+                }
+
+                var pageSells = Main.MyClient.WebApi.V2.Commerce.Transactions.History.Sells.PageAsync(i);
+                while (true)
+                {
+                    await Task.Delay(250);
+                    if (pageSells.Status == TaskStatus.RanToCompletion)
+                    {
+                        sells.AddRange(pageSells.Result);
+
+                        // Break out of inner loop When we have the items we need
+                        // And continue
+                        @continue = true;
+                        break;
+                    }
+
+                    // Break out of inner loop if it fails
+                    // And don't continue
+                    if (pageSells.Status == TaskStatus.Faulted)
+                        break;
+                }
+
+                // Break out if we did not get any new elements
+                if (@continue == false)
+                    break;
+
+                //Increment Loop
+                i++;
             }
         });
     }
