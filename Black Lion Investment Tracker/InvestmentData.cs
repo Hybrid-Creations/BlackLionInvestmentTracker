@@ -14,8 +14,13 @@ public class InvestmentData
     public int Price;
     public int Quantity;
 
+    public int TotalBuyPrice => Price * Quantity;
+    public int TotalSellPrice => SellDatas.Sum(s => s.Price * s.Quantity);
+    public int SellQuantity => SellDatas.Sum(s => s.Quantity);
+    public DateTimeOffset LatestSellDate => SellDatas.OrderBy(d => d.SellDate).First().SellDate;
+
     // The Total We Sold For Reduced By The 15% BLTP Tax Minus The Total We Bought The Items For
-    public int Profit => Mathf.FloorToInt(SellDatas.Sum(s => (s.Price * s.Quantity) * .85f) - (Price * Quantity));
+    public int Profit => Mathf.FloorToInt((TotalSellPrice * .85f) - (Price * Quantity));
 
     public List<SellData> SellDatas;
 

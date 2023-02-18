@@ -1,0 +1,124 @@
+[gd_scene load_steps=4 format=3 uid="uid://dxrp1lsdbc4r8"]
+
+[ext_resource type="Script" path="res://TransactionItem.cs" id="1_wnh1n"]
+[ext_resource type="Texture2D" uid="uid://dlbpcw8rui0ri" path="res://test.png" id="2_nq3fi"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_bwiln"]
+outline_size = 3
+outline_color = Color(0, 0, 0, 1)
+shadow_size = 2
+shadow_color = Color(0, 0, 0, 1)
+
+[node name="TransactionItem" type="VBoxContainer"]
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 73.0
+grow_horizontal = 2
+script = ExtResource("1_wnh1n")
+
+[node name="SpacerT" type="Control" parent="."]
+layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 0.05
+
+[node name="ItemProperties" type="HBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="SpacerL" type="Control" parent="ItemProperties"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.1
+
+[node name="Icon" type="TextureRect" parent="ItemProperties"]
+custom_minimum_size = Vector2(64, 64)
+layout_mode = 2
+texture = ExtResource("2_nq3fi")
+
+[node name="Quantity" type="Label" parent="ItemProperties/Icon"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = -2.0
+offset_bottom = -2.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "250"
+label_settings = SubResource("LabelSettings_bwiln")
+horizontal_alignment = 2
+vertical_alignment = 2
+
+[node name="Name" type="Label" parent="ItemProperties"]
+custom_minimum_size = Vector2(233, 0)
+layout_mode = 2
+text = "Shaman's Incricate Gossamer Insignia"
+vertical_alignment = 1
+clip_text = true
+text_overrun_behavior = 3
+visible_characters = 26
+visible_ratio = 0.722222
+
+[node name="BuyPrice" type="RichTextLabel" parent="ItemProperties"]
+custom_minimum_size = Vector2(95, 0)
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 4
+bbcode_enabled = true
+text = "[right]99[color=gold]g[/color] 99[color=silver]s[/color] 99[color=orange]c[/color][/right]"
+fit_content = true
+scroll_active = false
+autowrap_mode = 0
+shortcut_keys_enabled = false
+
+[node name="SellPrice" type="RichTextLabel" parent="ItemProperties"]
+custom_minimum_size = Vector2(95, 0)
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 4
+bbcode_enabled = true
+text = "[right]99[color=gold]g[/color] 99[color=silver]s[/color] 99[color=orange]c[/color][/right]"
+fit_content = true
+scroll_active = false
+autowrap_mode = 0
+shortcut_keys_enabled = false
+
+[node name="Profit" type="RichTextLabel" parent="ItemProperties"]
+custom_minimum_size = Vector2(95, 0)
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 4
+bbcode_enabled = true
+text = "[right]99[color=gold]g[/color] 99[color=silver]s[/color] 99[color=orange]c[/color][/right]"
+fit_content = true
+scroll_active = false
+autowrap_mode = 0
+shortcut_keys_enabled = false
+
+[node name="InvestDate" type="Label" parent="ItemProperties"]
+custom_minimum_size = Vector2(125, 0)
+layout_mode = 2
+text = "29 months ago"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="SellDate" type="Label" parent="ItemProperties"]
+custom_minimum_size = Vector2(125, 0)
+layout_mode = 2
+text = "59 minutes ago"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="SpacerR" type="Control" parent="ItemProperties"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.1
+
+[node name="SpacerB" type="Control" parent="."]
+layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 0.05
+
+[node name="TitlesBorder" type="ColorRect" parent="."]
+custom_minimum_size = Vector2(0, 1)
+layout_mode = 2
+color = Color(0.377919, 0.377919, 0.377919, 1)

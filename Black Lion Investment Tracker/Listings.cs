@@ -60,12 +60,12 @@ public partial class Listings : ScrollContainer
             foreach (var child in listingsContainer.GetChildren())
                 child.QueueFree();
 
-            foreach (var (buyOrder, item) in list)
-            {
-                var instance = itemScene.Instantiate<Item>();
-                instance.Init($"{item.Name}", buyOrder.Price * buyOrder.Quantity);
-                listingsContainer.AddChild(instance);
-            }
+            // foreach (var (buyOrder, item) in list)
+            // {
+            //     var instance = itemScene.Instantiate<Item>();
+            //     instance.Init($"{item.Name}", null);
+            //     listingsContainer.AddChild(instance);
+            // }
         });
     }
 }
