@@ -1,0 +1,257 @@
+[gd_scene load_steps=5 format=3 uid="uid://cvpjpr3o6ea3j"]
+
+[ext_resource type="Script" path="res://CollapsedTransactionItem.cs" id="1_40a67"]
+[ext_resource type="Texture2D" uid="uid://dlbpcw8rui0ri" path="res://test.png" id="2_capki"]
+[ext_resource type="Texture2D" uid="uid://lm5hp18ipnd" path="res://arrow.png" id="2_gmeqv"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_bwiln"]
+outline_size = 3
+outline_color = Color(0, 0, 0, 1)
+shadow_size = 2
+shadow_color = Color(0, 0, 0, 1)
+
+[node name="CollapsedTransactionItem" type="VBoxContainer" node_paths=PackedStringArray("subInvestmentHolder")]
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 123.0
+grow_horizontal = 2
+script = ExtResource("1_40a67")
+subInvestmentHolder = NodePath("SubInvestmentHolder")
+
+[node name="ToggleTreeButton" type="Button" parent="."]
+layout_mode = 2
+toggle_mode = true
+icon = ExtResource("2_gmeqv")
+flat = true
+clip_text = true
+icon_alignment = 1
+expand_icon = true
+
+[node name="CollapsedItem" type="VBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="SpacerT" type="Control" parent="CollapsedItem"]
+layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 0.05
+
+[node name="ItemProperties" type="HBoxContainer" parent="CollapsedItem"]
+layout_mode = 2
+
+[node name="SpacerL" type="Control" parent="CollapsedItem/ItemProperties"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.1
+
+[node name="Icon" type="TextureRect" parent="CollapsedItem/ItemProperties"]
+custom_minimum_size = Vector2(64, 64)
+layout_mode = 2
+texture = ExtResource("2_capki")
+
+[node name="Quantity" type="Label" parent="CollapsedItem/ItemProperties/Icon"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = -2.0
+offset_bottom = -2.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "250"
+label_settings = SubResource("LabelSettings_bwiln")
+horizontal_alignment = 2
+vertical_alignment = 2
+
+[node name="Name" type="Label" parent="CollapsedItem/ItemProperties"]
+custom_minimum_size = Vector2(300, 0)
+layout_mode = 2
+text = "Shaman's Incricate Gossamer Insignia"
+vertical_alignment = 1
+clip_text = true
+visible_characters = 36
+visible_characters_behavior = 1
+
+[node name="BuyPrice" type="RichTextLabel" parent="CollapsedItem/ItemProperties"]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 4
+bbcode_enabled = true
+text = "[right]99[color=gold]g[/color] 99[color=silver]s[/color] 99[color=orange]c[/color][/right]"
+fit_content = true
+scroll_active = false
+autowrap_mode = 0
+shortcut_keys_enabled = false
+
+[node name="19065" type="VScrollBar" parent="CollapsedItem/ItemProperties/BuyPrice"]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+step = 1.0
+
+[node name="17385" type="VScrollBar" parent="CollapsedItem/ItemProperties/BuyPrice"]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+max_value = 23.0
+step = 1.0
+page = 23.0
+
+[node name="SellPrice" type="RichTextLabel" parent="CollapsedItem/ItemProperties"]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 4
+bbcode_enabled = true
+text = "[right]99[color=gold]g[/color] 99[color=silver]s[/color] 99[color=orange]c[/color][/right]"
+fit_content = true
+scroll_active = false
+autowrap_mode = 0
+shortcut_keys_enabled = false
+
+[node name="19066" type="VScrollBar" parent="CollapsedItem/ItemProperties/SellPrice"]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+step = 1.0
+
+[node name="17386" type="VScrollBar" parent="CollapsedItem/ItemProperties/SellPrice"]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+max_value = 23.0
+step = 1.0
+page = 23.0
+
+[node name="Profit" type="RichTextLabel" parent="CollapsedItem/ItemProperties"]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 4
+bbcode_enabled = true
+text = "[right]99[color=gold]g[/color] 99[color=silver]s[/color] 99[color=orange]c[/color][/right]"
+fit_content = true
+scroll_active = false
+autowrap_mode = 0
+shortcut_keys_enabled = false
+
+[node name="19067" type="VScrollBar" parent="CollapsedItem/ItemProperties/Profit"]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+step = 1.0
+
+[node name="17387" type="VScrollBar" parent="CollapsedItem/ItemProperties/Profit"]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+max_value = 23.0
+step = 1.0
+page = 23.0
+
+[node name="InvestDate" type="Label" parent="CollapsedItem/ItemProperties"]
+visible = false
+custom_minimum_size = Vector2(125, 0)
+layout_mode = 2
+text = "29 months ago"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="SellDate" type="Label" parent="CollapsedItem/ItemProperties"]
+custom_minimum_size = Vector2(130, 0)
+layout_mode = 2
+text = "59 minutes ago"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="SpacerR" type="Control" parent="CollapsedItem/ItemProperties"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.1
+
+[node name="SpacerB" type="Control" parent="CollapsedItem"]
+layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 0.05
+
+[node name="TitlesBorder" type="ColorRect" parent="CollapsedItem"]
+custom_minimum_size = Vector2(0, 1)
+layout_mode = 2
+color = Color(0.377919, 0.377919, 0.377919, 1)
+
+[node name="SubItemTitles" type="HBoxContainer" parent="."]
+custom_minimum_size = Vector2(0, 25)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/separation = 5
+
+[node name="SpacerL" type="Control" parent="SubItemTitles"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.1
+
+[node name="Item" type="Label" parent="SubItemTitles"]
+custom_minimum_size = Vector2(64, 0)
+layout_mode = 2
+size_flags_stretch_ratio = 20.0
+text = "Item"
+horizontal_alignment = 1
+vertical_alignment = 2
+
+[node name="Name" type="Label" parent="SubItemTitles"]
+custom_minimum_size = Vector2(233, 0)
+layout_mode = 2
+size_flags_stretch_ratio = 20.0
+text = "Name"
+horizontal_alignment = 1
+vertical_alignment = 2
+
+[node name="BuyPrice" type="Label" parent="SubItemTitles"]
+custom_minimum_size = Vector2(95, 0)
+layout_mode = 2
+text = "Buy Price"
+horizontal_alignment = 1
+vertical_alignment = 2
+
+[node name="SellPrice" type="Label" parent="SubItemTitles"]
+custom_minimum_size = Vector2(95, 0)
+layout_mode = 2
+text = "Sell Price"
+horizontal_alignment = 1
+vertical_alignment = 2
+
+[node name="Profit" type="Label" parent="SubItemTitles"]
+custom_minimum_size = Vector2(95, 0)
+layout_mode = 2
+text = "Profit"
+horizontal_alignment = 1
+vertical_alignment = 2
+
+[node name="InvestDate" type="Label" parent="SubItemTitles"]
+custom_minimum_size = Vector2(125, 0)
+layout_mode = 2
+text = "Date Bought"
+horizontal_alignment = 1
+vertical_alignment = 2
+
+[node name="SellDate" type="Label" parent="SubItemTitles"]
+custom_minimum_size = Vector2(125, 0)
+layout_mode = 2
+text = "Date Sold"
+horizontal_alignment = 1
+vertical_alignment = 2
+
+[node name="SpacerR" type="Control" parent="SubItemTitles"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.1
+
+[node name="SubInvestmentHolder" type="VBoxContainer" parent="."]
+layout_mode = 2

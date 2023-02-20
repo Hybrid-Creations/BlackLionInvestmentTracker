@@ -1,10 +1,10 @@
-[gd_scene load_steps=8 format=3 uid="uid://ptchiki1oymx"]
+[gd_scene load_steps=8 format=3 uid="uid://c3bj8k322k2p"]
 
 [ext_resource type="Script" path="res://Main.cs" id="1_jgrri"]
 [ext_resource type="Script" path="res://MainTabs.cs" id="2_de7lj"]
 [ext_resource type="Script" path="res://Investments.cs" id="2_tpb8k"]
 [ext_resource type="Script" path="res://Listings.cs" id="3_yjd3c"]
-[ext_resource type="PackedScene" uid="uid://dxrp1lsdbc4r8" path="res://TransactionItem.tscn" id="5_s8r11"]
+[ext_resource type="PackedScene" uid="uid://cvpjpr3o6ea3j" path="res://CollapsedTransactionItem.tscn" id="4_250gb"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_p5u6s"]
 bg_color = Color(0.25098, 0.25098, 0.25098, 1)
@@ -42,31 +42,35 @@ script = ExtResource("2_de7lj")
 Investments = NodePath("Investments")
 Listings = NodePath("Listings")
 
-[node name="Investments" type="ScrollContainer" parent="TabContainer"]
+[node name="Investments" type="ScrollContainer" parent="TabContainer" node_paths=PackedStringArray("investmentHolder")]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 horizontal_scroll_mode = 0
 script = ExtResource("2_tpb8k")
-itemScene = ExtResource("5_s8r11")
+itemScene = ExtResource("4_250gb")
+investmentHolder = NodePath("VBoxContainer/InvsetmentHolder")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="TabContainer/Investments"]
 layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="TabContainer/Investments/VBoxContainer"]
+layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="ColumnTitles" type="HBoxContainer" parent="TabContainer/Investments/VBoxContainer"]
+[node name="ColumnTitles" type="HBoxContainer" parent="TabContainer/Investments/VBoxContainer/VBoxContainer"]
 custom_minimum_size = Vector2(0, 25)
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 theme_override_constants/separation = 5
 
-[node name="SpacerL" type="Control" parent="TabContainer/Investments/VBoxContainer/ColumnTitles"]
+[node name="SpacerL" type="Control" parent="TabContainer/Investments/VBoxContainer/VBoxContainer/ColumnTitles"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_stretch_ratio = 0.1
 
-[node name="Item" type="Label" parent="TabContainer/Investments/VBoxContainer/ColumnTitles"]
+[node name="Item" type="Label" parent="TabContainer/Investments/VBoxContainer/VBoxContainer/ColumnTitles"]
 custom_minimum_size = Vector2(64, 0)
 layout_mode = 2
 size_flags_stretch_ratio = 20.0
@@ -74,63 +78,67 @@ text = "Item"
 horizontal_alignment = 1
 vertical_alignment = 2
 
-[node name="Name" type="Label" parent="TabContainer/Investments/VBoxContainer/ColumnTitles"]
-custom_minimum_size = Vector2(233, 0)
+[node name="Name" type="Label" parent="TabContainer/Investments/VBoxContainer/VBoxContainer/ColumnTitles"]
+custom_minimum_size = Vector2(300, 0)
 layout_mode = 2
 size_flags_stretch_ratio = 20.0
 text = "Name"
 horizontal_alignment = 1
 vertical_alignment = 2
 
-[node name="BuyPrice" type="Label" parent="TabContainer/Investments/VBoxContainer/ColumnTitles"]
-custom_minimum_size = Vector2(95, 0)
+[node name="BuyPrice" type="Label" parent="TabContainer/Investments/VBoxContainer/VBoxContainer/ColumnTitles"]
+custom_minimum_size = Vector2(100, 0)
 layout_mode = 2
 text = "Buy Price"
 horizontal_alignment = 1
 vertical_alignment = 2
 
-[node name="SellPrice" type="Label" parent="TabContainer/Investments/VBoxContainer/ColumnTitles"]
-custom_minimum_size = Vector2(95, 0)
+[node name="SellPrice" type="Label" parent="TabContainer/Investments/VBoxContainer/VBoxContainer/ColumnTitles"]
+custom_minimum_size = Vector2(100, 0)
 layout_mode = 2
 text = "Sell Price"
 horizontal_alignment = 1
 vertical_alignment = 2
 
-[node name="Profit" type="Label" parent="TabContainer/Investments/VBoxContainer/ColumnTitles"]
-custom_minimum_size = Vector2(95, 0)
+[node name="Profit" type="Label" parent="TabContainer/Investments/VBoxContainer/VBoxContainer/ColumnTitles"]
+custom_minimum_size = Vector2(100, 0)
 layout_mode = 2
 text = "Profit"
 horizontal_alignment = 1
 vertical_alignment = 2
 
-[node name="InvestDate" type="Label" parent="TabContainer/Investments/VBoxContainer/ColumnTitles"]
+[node name="InvestDate" type="Label" parent="TabContainer/Investments/VBoxContainer/VBoxContainer/ColumnTitles"]
+visible = false
 custom_minimum_size = Vector2(125, 0)
 layout_mode = 2
 text = "Date Bought"
 horizontal_alignment = 1
 vertical_alignment = 2
 
-[node name="SellDate" type="Label" parent="TabContainer/Investments/VBoxContainer/ColumnTitles"]
-custom_minimum_size = Vector2(125, 0)
+[node name="SellDate" type="Label" parent="TabContainer/Investments/VBoxContainer/VBoxContainer/ColumnTitles"]
+custom_minimum_size = Vector2(130, 0)
 layout_mode = 2
 text = "Date Sold"
 horizontal_alignment = 1
 vertical_alignment = 2
 
-[node name="SpacerR" type="Control" parent="TabContainer/Investments/VBoxContainer/ColumnTitles"]
+[node name="SpacerR" type="Control" parent="TabContainer/Investments/VBoxContainer/VBoxContainer/ColumnTitles"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_stretch_ratio = 0.1
 
-[node name="TitlesBorder" type="ColorRect" parent="TabContainer/Investments/VBoxContainer"]
+[node name="TitlesBorder" type="ColorRect" parent="TabContainer/Investments/VBoxContainer/VBoxContainer"]
 custom_minimum_size = Vector2(0, 2)
 layout_mode = 2
 color = Color(0.501961, 0.501961, 0.501961, 1)
 
-[node name="Label" type="Label" parent="TabContainer/Investments/VBoxContainer"]
+[node name="Label" type="Label" parent="TabContainer/Investments/VBoxContainer/VBoxContainer"]
 layout_mode = 2
 text = "Loading Investments..."
 horizontal_alignment = 1
+
+[node name="InvsetmentHolder" type="VBoxContainer" parent="TabContainer/Investments/VBoxContainer"]
+layout_mode = 2
 
 [node name="Listings" type="ScrollContainer" parent="TabContainer"]
 visible = false

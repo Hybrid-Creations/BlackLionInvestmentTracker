@@ -10,6 +10,8 @@ public class SellData
     public int Price;
     public int Quantity;
 
+    public int TotalSellPrice => Price * Quantity;
+
     public SellData(CommerceTransactionHistory sellTransaction)
     {
         TransactionId = sellTransaction.Id;

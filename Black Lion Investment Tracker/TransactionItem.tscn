@@ -54,9 +54,9 @@ layout_mode = 2
 text = "Shaman's Incricate Gossamer Insignia"
 vertical_alignment = 1
 clip_text = true
-text_overrun_behavior = 3
-visible_characters = 26
-visible_ratio = 0.722222
+visible_characters = 28
+visible_characters_behavior = 1
+visible_ratio = 0.777778
 
 [node name="BuyPrice" type="RichTextLabel" parent="ItemProperties"]
 custom_minimum_size = Vector2(95, 0)
