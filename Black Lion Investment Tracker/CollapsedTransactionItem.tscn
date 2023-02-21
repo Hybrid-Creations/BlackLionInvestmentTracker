@@ -1,8 +1,10 @@
-[gd_scene load_steps=5 format=3 uid="uid://cvpjpr3o6ea3j"]
+[gd_scene load_steps=7 format=3 uid="uid://cslg0jd6iwx01"]
 
 [ext_resource type="Script" path="res://CollapsedTransactionItem.cs" id="1_40a67"]
+[ext_resource type="PackedScene" uid="uid://dxrp1lsdbc4r8" path="res://TransactionItem.tscn" id="2_7mhta"]
 [ext_resource type="Texture2D" uid="uid://dlbpcw8rui0ri" path="res://test.png" id="2_capki"]
-[ext_resource type="Texture2D" uid="uid://lm5hp18ipnd" path="res://arrow.png" id="2_gmeqv"]
+[ext_resource type="Texture2D" uid="uid://lm5hp18ipnd" path="res://arrow_right.png" id="3_00koi"]
+[ext_resource type="Texture2D" uid="uid://q0n8du351q8k" path="res://arrow_down.png" id="4_sm6eu"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_bwiln"]
 outline_size = 3
@@ -10,45 +12,56 @@ outline_color = Color(0, 0, 0, 1)
 shadow_size = 2
 shadow_color = Color(0, 0, 0, 1)
 
-[node name="CollapsedTransactionItem" type="VBoxContainer" node_paths=PackedStringArray("subInvestmentHolder")]
+[node name="CollapsedTransactionItem" type="VBoxContainer" node_paths=PackedStringArray("collapsedItem", "subInvestmentHolder", "subInvestmentTitles", "toggleTreeButton")]
 anchors_preset = 10
 anchor_right = 1.0
-offset_bottom = 123.0
+offset_bottom = 111.0
 grow_horizontal = 2
 script = ExtResource("1_40a67")
+collapsedItem = NodePath("HBoxContainer/CollapsedItem")
+investmentItemScene = ExtResource("2_7mhta")
 subInvestmentHolder = NodePath("SubInvestmentHolder")
+subInvestmentTitles = NodePath("SubItemTitles")
+toggleTreeButton = NodePath("HBoxContainer/ToggleTreeButton")
+arrowRight = ExtResource("3_00koi")
+arrowDown = ExtResource("4_sm6eu")
 
-[node name="ToggleTreeButton" type="Button" parent="."]
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+layout_mode = 2
+theme_override_constants/separation = 5
+
+[node name="ToggleTreeButton" type="Button" parent="HBoxContainer"]
+custom_minimum_size = Vector2(32, 0)
 layout_mode = 2
 toggle_mode = true
-icon = ExtResource("2_gmeqv")
+icon = ExtResource("3_00koi")
 flat = true
 clip_text = true
 icon_alignment = 1
 expand_icon = true
 
-[node name="CollapsedItem" type="VBoxContainer" parent="."]
+[node name="CollapsedItem" type="VBoxContainer" parent="HBoxContainer"]
 layout_mode = 2
 
-[node name="SpacerT" type="Control" parent="CollapsedItem"]
+[node name="SpacerT" type="Control" parent="HBoxContainer/CollapsedItem"]
 layout_mode = 2
 size_flags_vertical = 3
 size_flags_stretch_ratio = 0.05
 
-[node name="ItemProperties" type="HBoxContainer" parent="CollapsedItem"]
+[node name="ItemProperties" type="HBoxContainer" parent="HBoxContainer/CollapsedItem"]
 layout_mode = 2
 
-[node name="SpacerL" type="Control" parent="CollapsedItem/ItemProperties"]
+[node name="SpacerL" type="Control" parent="HBoxContainer/CollapsedItem/ItemProperties"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_stretch_ratio = 0.1
 
-[node name="Icon" type="TextureRect" parent="CollapsedItem/ItemProperties"]
+[node name="Icon" type="TextureRect" parent="HBoxContainer/CollapsedItem/ItemProperties"]
 custom_minimum_size = Vector2(64, 64)
 layout_mode = 2
 texture = ExtResource("2_capki")
 
-[node name="Quantity" type="Label" parent="CollapsedItem/ItemProperties/Icon"]
+[node name="Quantity" type="Label" parent="HBoxContainer/CollapsedItem/ItemProperties/Icon"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -62,7 +75,7 @@ label_settings = SubResource("LabelSettings_bwiln")
 horizontal_alignment = 2
 vertical_alignment = 2
 
-[node name="Name" type="Label" parent="CollapsedItem/ItemProperties"]
+[node name="Name" type="Label" parent="HBoxContainer/CollapsedItem/ItemProperties"]
 custom_minimum_size = Vector2(300, 0)
 layout_mode = 2
 text = "Shaman's Incricate Gossamer Insignia"
@@ -71,7 +84,7 @@ clip_text = true
 visible_characters = 36
 visible_characters_behavior = 1
 
-[node name="BuyPrice" type="RichTextLabel" parent="CollapsedItem/ItemProperties"]
+[node name="BuyPrice" type="RichTextLabel" parent="HBoxContainer/CollapsedItem/ItemProperties"]
 custom_minimum_size = Vector2(100, 0)
 layout_mode = 2
 size_flags_horizontal = 8
@@ -83,14 +96,14 @@ scroll_active = false
 autowrap_mode = 0
 shortcut_keys_enabled = false
 
-[node name="19065" type="VScrollBar" parent="CollapsedItem/ItemProperties/BuyPrice"]
+[node name="19065" type="VScrollBar" parent="HBoxContainer/CollapsedItem/ItemProperties/BuyPrice"]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
 step = 1.0
 
-[node name="17385" type="VScrollBar" parent="CollapsedItem/ItemProperties/BuyPrice"]
+[node name="17385" type="VScrollBar" parent="HBoxContainer/CollapsedItem/ItemProperties/BuyPrice"]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -99,7 +112,7 @@ max_value = 23.0
 step = 1.0
 page = 23.0
 
-[node name="SellPrice" type="RichTextLabel" parent="CollapsedItem/ItemProperties"]
+[node name="SellPrice" type="RichTextLabel" parent="HBoxContainer/CollapsedItem/ItemProperties"]
 custom_minimum_size = Vector2(100, 0)
 layout_mode = 2
 size_flags_horizontal = 8
@@ -111,14 +124,14 @@ scroll_active = false
 autowrap_mode = 0
 shortcut_keys_enabled = false
 
-[node name="19066" type="VScrollBar" parent="CollapsedItem/ItemProperties/SellPrice"]
+[node name="19066" type="VScrollBar" parent="HBoxContainer/CollapsedItem/ItemProperties/SellPrice"]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
 step = 1.0
 
-[node name="17386" type="VScrollBar" parent="CollapsedItem/ItemProperties/SellPrice"]
+[node name="17386" type="VScrollBar" parent="HBoxContainer/CollapsedItem/ItemProperties/SellPrice"]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -127,7 +140,7 @@ max_value = 23.0
 step = 1.0
 page = 23.0
 
-[node name="Profit" type="RichTextLabel" parent="CollapsedItem/ItemProperties"]
+[node name="Profit" type="RichTextLabel" parent="HBoxContainer/CollapsedItem/ItemProperties"]
 custom_minimum_size = Vector2(100, 0)
 layout_mode = 2
 size_flags_horizontal = 8
@@ -139,14 +152,14 @@ scroll_active = false
 autowrap_mode = 0
 shortcut_keys_enabled = false
 
-[node name="19067" type="VScrollBar" parent="CollapsedItem/ItemProperties/Profit"]
+[node name="19067" type="VScrollBar" parent="HBoxContainer/CollapsedItem/ItemProperties/Profit"]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
 step = 1.0
 
-[node name="17387" type="VScrollBar" parent="CollapsedItem/ItemProperties/Profit"]
+[node name="17387" type="VScrollBar" parent="HBoxContainer/CollapsedItem/ItemProperties/Profit"]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -155,32 +168,32 @@ max_value = 23.0
 step = 1.0
 page = 23.0
 
-[node name="InvestDate" type="Label" parent="CollapsedItem/ItemProperties"]
-visible = false
+[node name="InvestDate" type="Label" parent="HBoxContainer/CollapsedItem/ItemProperties"]
 custom_minimum_size = Vector2(125, 0)
 layout_mode = 2
 text = "29 months ago"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="SellDate" type="Label" parent="CollapsedItem/ItemProperties"]
+[node name="SellDate" type="Label" parent="HBoxContainer/CollapsedItem/ItemProperties"]
+visible = false
 custom_minimum_size = Vector2(130, 0)
 layout_mode = 2
 text = "59 minutes ago"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="SpacerR" type="Control" parent="CollapsedItem/ItemProperties"]
+[node name="SpacerR" type="Control" parent="HBoxContainer/CollapsedItem/ItemProperties"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_stretch_ratio = 0.1
 
-[node name="SpacerB" type="Control" parent="CollapsedItem"]
+[node name="SpacerB" type="Control" parent="HBoxContainer/CollapsedItem"]
 layout_mode = 2
 size_flags_vertical = 3
 size_flags_stretch_ratio = 0.05
 
-[node name="TitlesBorder" type="ColorRect" parent="CollapsedItem"]
+[node name="TitlesBorder" type="ColorRect" parent="."]
 custom_minimum_size = Vector2(0, 1)
 layout_mode = 2
 color = Color(0.377919, 0.377919, 0.377919, 1)
@@ -188,8 +201,6 @@ color = Color(0.377919, 0.377919, 0.377919, 1)
 [node name="SubItemTitles" type="HBoxContainer" parent="."]
 custom_minimum_size = Vector2(0, 25)
 layout_mode = 2
-size_flags_horizontal = 3
-size_flags_vertical = 3
 theme_override_constants/separation = 5
 
 [node name="SpacerL" type="Control" parent="SubItemTitles"]
@@ -255,3 +266,5 @@ size_flags_stretch_ratio = 0.1
 
 [node name="SubInvestmentHolder" type="VBoxContainer" parent="."]
 layout_mode = 2
+
+[connection signal="toggled" from="HBoxContainer/ToggleTreeButton" to="." method="TreeButtonToggled"]

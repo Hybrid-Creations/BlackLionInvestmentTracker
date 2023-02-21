@@ -1,6 +1,5 @@
 using System;
 using System.Text;
-using System.Threading;
 using Godot;
 
 namespace BLIT.Extensions;
@@ -86,7 +85,7 @@ public static partial class StringExtensions
         }
 
         // Always show coppper, remove pre 0
-        if (gold == "00" && silver == "00")
+        if (gold == "00" && silver == "00" && copper[0] == '0')
             sb.Append($"{copper[1]}{copperSuffix}");
         else
             sb.Append($"{copper}{copperSuffix}");

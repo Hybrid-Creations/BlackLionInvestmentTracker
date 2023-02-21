@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using blit.Extensions;
 using BLIT.Extensions;
 using Godot;
 using Gw2Sharp.WebApi.V2.Models;
@@ -16,6 +17,8 @@ public partial class Investments : ScrollContainer
     PackedScene itemScene;
     [Export]
     VBoxContainer investmentHolder;
+    [Export]
+    HBoxContainer totals;
 
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
@@ -46,10 +49,17 @@ public partial class Investments : ScrollContainer
 
         }, token);
     }
+
     public void Pause()
     {
         cancellationTokenSource.Cancel();
         cancellationTokenSource = new CancellationTokenSource();
+    }
+
+    public void Refresh()
+    {
+        Pause();
+        Continue();
     }
 
     // Do Calcumations On History For Investments
@@ -60,6 +70,10 @@ public partial class Investments : ScrollContainer
             try
             {
                 GD.Print("Starting Investments");
+                totals.GetNode<RichTextLabel>("Invested").Text = $"Invested:   0";
+                totals.GetNode<RichTextLabel>("Return").Text = $"Return:   0";
+                totals.GetNode<RichTextLabel>("Profit").Text = $"Profit:   0";
+                totals.GetNode<Label>("ROI").Text = $"ROI:   0%";
 
                 // Get All Transactions
                 List<CommerceTransactionHistory> buys = new();
@@ -76,23 +90,15 @@ public partial class Investments : ScrollContainer
                 GetNode<Label>("VBoxContainer/VBoxContainer/Label").Hide();
 
                 // Remove Old Investment Items From UI
-                foreach (var child in investmentHolder.GetChildren())
-                    child.QueueFree();
+                investmentHolder.ClearChildrenSafe();
 
                 // Add New Investment Items To UI
-                foreach (var investment in Main.Database.CollapsedInvestments)
+                foreach (var investment in Main.Database.CollapsedInvestments.OrderBy(ci => ci.OldestPurchaseDate))
                 {
                     try
                     {
-                        var item = Main.MyClient.WebApi.V2.Items.GetAsync(investment.ItemId).Result;
-                        var iconBytes = Main.MyClient.WebApi.Render.DownloadToByteArrayAsync(item.Icon.Url).Result;
-
-                        var image = new Image();
-                        image.LoadPngFromBuffer(iconBytes);
-                        var icon = ImageTexture.CreateFromImage(image);
-
                         var instance = itemScene.Instantiate<CollapsedTransactionItem>();
-                        instance.Init(item.Name, icon, investment);
+                        instance.Init(ItemIconDatabase.GetItem(investment.ItemId).Name, ItemIconDatabase.GetIcon(investment.ItemId), investment);
                         investmentHolder.AddChildSafe(instance, 0);
                     }
                     catch (Exception e)
@@ -104,10 +110,15 @@ public partial class Investments : ScrollContainer
                 GD.Print($"Buy Listings:{buys.Count}, Sell Listings:{sells.Count}, Similar Items:{buys.Select(b => b.ItemId).Where(i => sells.Select(s => s.ItemId).Contains(i)).Count()}");
 
                 // Calculate Profit
-                string totalInvested = Main.Database.TotalInvested.ToCurrencyString(false);
-                string totalReturn = Main.Database.TotalReturn.ToCurrencyString(false);
-                string totalProfit = Main.Database.TotalProfit.ToCurrencyString(false);
-                GD.Print($"Total Invested: {totalInvested}, Total Return: {totalReturn},  Total Profit Inculing Tax: {totalProfit}, ROI: {Main.Database.ROI}");
+                var totalInvested = Main.Database.TotalInvested;
+                var totalReturn = Main.Database.TotalReturn;
+                var totalProfit = Main.Database.TotalProfit;
+                GD.Print($"Total Invested: {totalInvested.ToCurrencyString(false)}, Total Return: {totalReturn.ToCurrencyString(false)},  Total Profit With Tax Removed: {totalProfit.ToCurrencyString(false)}, ROI: {Main.Database.ROI}");
+
+                totals.GetNode<RichTextLabel>("Invested").Text = $"Invested:   {totalInvested.ToCurrencyString(true)}";
+                totals.GetNode<RichTextLabel>("Return").Text = $"Return:   {totalReturn.ToCurrencyString(true)}";
+                totals.GetNode<RichTextLabel>("Profit").Text = $"Profit:   {totalProfit.ToCurrencyString(true)}";
+                totals.GetNode<Label>("ROI").Text = $"ROI:   {Main.Database.ROI:00}%";
             }
             catch (Exception e)
             {
@@ -186,7 +197,7 @@ public partial class Investments : ScrollContainer
             // Go through all buys and check if any are investments
             foreach (var buy in sBuys)
             {
-                int ammountLeft = buy.Quantity;
+                int buyAmmountLeft = buy.Quantity;
                 var investment = new InvestmentData(buy);
 
                 Item btem = null;
@@ -210,7 +221,7 @@ public partial class Investments : ScrollContainer
                     foreach (var sell in sSells.Where(s => s.ItemId == buy.ItemId && s.Purchased > buy.Purchased))
                     {
                         var sellData = new SellData(sell);
-                        if (ammountLeft > 0)
+                        if (buyAmmountLeft > 0)
                         {
                             // Get all the other partial uses of this sell order
                             var databasePartials = Main.Database.Investments.SelectMany(i => i.SellDatas).Where(s => s.TransactionId == sell.Id);
@@ -225,32 +236,35 @@ public partial class Investments : ScrollContainer
                                 if (remaining > 0)
                                 {
                                     // If we need as much as is remaining or less, take what we need and continue
-                                    if (ammountLeft <= remaining)
+                                    if (buyAmmountLeft <= remaining)
                                     {
-                                        sellData.Quantity = ammountLeft;
-                                        ammountLeft = 0;
+                                        sellData.Quantity = buyAmmountLeft;
+                                        buyAmmountLeft = 0;
                                     }
                                     // If we need more than there is left, take what is left and continue
-                                    else if (ammountLeft > remaining)
+                                    else if (buyAmmountLeft > remaining)
                                     {
                                         sellData.Quantity = remaining;
-                                        ammountLeft -= remaining;
+                                        buyAmmountLeft -= remaining;
                                     }
                                 }
+                                // If there are no items left to use in this sell order, skip it
+                                else
+                                    continue;
                             }
                             // Was not in the database
                             else
                             {
                                 // If we need all of or less than the sell order, use it and continue
-                                if (ammountLeft <= sell.Quantity)
+                                if (buyAmmountLeft <= sell.Quantity)
                                 {
-                                    sellData.Quantity = ammountLeft;
-                                    ammountLeft = 0;
+                                    sellData.Quantity = buyAmmountLeft;
+                                    buyAmmountLeft = 0;
                                 }
                                 // If we need more than there is in the sell order, take what we need and continue
-                                else if (ammountLeft > sell.Quantity)
+                                else if (buyAmmountLeft > sell.Quantity)
                                 {
-                                    ammountLeft -= sell.Quantity;
+                                    buyAmmountLeft -= sell.Quantity;
                                 }
                             }
                             investment.SellDatas.Add(sellData);
@@ -263,9 +277,9 @@ public partial class Investments : ScrollContainer
                     if (investment.SellDatas.Count > 0)
                     {
                         // If there are left over bought items, remove them from this transaction because they did not sell
-                        if (ammountLeft > 0)
+                        if (buyAmmountLeft > 0)
                         {
-                            investment.Quantity -= ammountLeft;
+                            investment.Quantity -= buyAmmountLeft;
                         }
 
                         var item = Main.MyClient.WebApi.V2.Items.GetAsync(investment.ItemId).Result;

@@ -24,7 +24,7 @@ public class InvestmentsDatabase
 
         foreach (var investment in Investments)
         {
-            var readyGroup = groups.FirstOrDefault(c => c.ItemId == investment.ItemId && c.IndividualPrice == investment.IndividualPrice && c.Quantity + investment.Quantity < Constants.MaxItemStack);
+            var readyGroup = groups.FirstOrDefault(ci => ci.ItemId == investment.ItemId && ci.IndividualPrice == investment.IndividualPrice && ci.Quantity + investment.Quantity <= Constants.MaxItemStack);
             if (readyGroup is not null)
             {
                 readyGroup.SubInvestments.Add(investment);
@@ -32,7 +32,6 @@ public class InvestmentsDatabase
             else
             {
                 var newCollapsedInvestment = new CollapsedInvestmentData(investment);
-                newCollapsedInvestment.SubInvestments.Add(investment);
                 groups.Add(newCollapsedInvestment);
             }
         }

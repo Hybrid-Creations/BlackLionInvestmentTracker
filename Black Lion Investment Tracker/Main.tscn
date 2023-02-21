@@ -1,10 +1,11 @@
-[gd_scene load_steps=8 format=3 uid="uid://c3bj8k322k2p"]
+[gd_scene load_steps=9 format=3 uid="uid://c3bj8k322k2p"]
 
 [ext_resource type="Script" path="res://Main.cs" id="1_jgrri"]
 [ext_resource type="Script" path="res://MainTabs.cs" id="2_de7lj"]
 [ext_resource type="Script" path="res://Investments.cs" id="2_tpb8k"]
 [ext_resource type="Script" path="res://Listings.cs" id="3_yjd3c"]
-[ext_resource type="PackedScene" uid="uid://cvpjpr3o6ea3j" path="res://CollapsedTransactionItem.tscn" id="4_250gb"]
+[ext_resource type="PackedScene" uid="uid://cslg0jd6iwx01" path="res://CollapsedTransactionItem.tscn" id="4_250gb"]
+[ext_resource type="Texture2D" uid="uid://du668hhlqaqyd" path="res://cycle.png" id="5_ey6tk"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_p5u6s"]
 bg_color = Color(0.25098, 0.25098, 0.25098, 1)
@@ -42,7 +43,7 @@ script = ExtResource("2_de7lj")
 Investments = NodePath("Investments")
 Listings = NodePath("Listings")
 
-[node name="Investments" type="ScrollContainer" parent="TabContainer" node_paths=PackedStringArray("investmentHolder")]
+[node name="Investments" type="ScrollContainer" parent="TabContainer" node_paths=PackedStringArray("investmentHolder", "totals")]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
@@ -50,19 +51,110 @@ horizontal_scroll_mode = 0
 script = ExtResource("2_tpb8k")
 itemScene = ExtResource("4_250gb")
 investmentHolder = NodePath("VBoxContainer/InvsetmentHolder")
+totals = NodePath("VBoxContainer/VBoxContainer/Totals")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="TabContainer/Investments"]
 layout_mode = 2
+size_flags_horizontal = 3
 
 [node name="VBoxContainer" type="VBoxContainer" parent="TabContainer/Investments/VBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="ColumnTitles" type="HBoxContainer" parent="TabContainer/Investments/VBoxContainer/VBoxContainer"]
-custom_minimum_size = Vector2(0, 25)
+[node name="Totals" type="HBoxContainer" parent="TabContainer/Investments/VBoxContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 32)
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
+theme_override_constants/separation = 5
+
+[node name="SpacerL" type="Control" parent="TabContainer/Investments/VBoxContainer/VBoxContainer/Totals"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.1
+
+[node name="Button" type="Button" parent="TabContainer/Investments/VBoxContainer/VBoxContainer/Totals"]
+custom_minimum_size = Vector2(32, 32)
+layout_mode = 2
+icon = ExtResource("5_ey6tk")
+flat = true
+expand_icon = true
+
+[node name="Item" type="Label" parent="TabContainer/Investments/VBoxContainer/VBoxContainer/Totals"]
+visible = false
+custom_minimum_size = Vector2(64, 0)
+layout_mode = 2
+size_flags_stretch_ratio = 20.0
+text = "Item"
+horizontal_alignment = 1
+vertical_alignment = 2
+
+[node name="Total" type="Label" parent="TabContainer/Investments/VBoxContainer/VBoxContainer/Totals"]
+custom_minimum_size = Vector2(90, 0)
+layout_mode = 2
+size_flags_stretch_ratio = 20.0
+theme_override_font_sizes/font_size = 18
+text = "Totals:"
+horizontal_alignment = 1
+vertical_alignment = 2
+
+[node name="Invested" type="RichTextLabel" parent="TabContainer/Investments/VBoxContainer/VBoxContainer/Totals"]
+custom_minimum_size = Vector2(210, 0)
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_font_sizes/normal_font_size = 18
+bbcode_enabled = true
+text = "Invested: 999g 99s 99c"
+fit_content = true
+scroll_active = false
+autowrap_mode = 0
+shortcut_keys_enabled = false
+
+[node name="Return" type="RichTextLabel" parent="TabContainer/Investments/VBoxContainer/VBoxContainer/Totals"]
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_font_sizes/normal_font_size = 18
+bbcode_enabled = true
+text = "Return: 999g 99s 99c"
+fit_content = true
+scroll_active = false
+autowrap_mode = 0
+shortcut_keys_enabled = false
+
+[node name="Profit" type="RichTextLabel" parent="TabContainer/Investments/VBoxContainer/VBoxContainer/Totals"]
+custom_minimum_size = Vector2(190, 0)
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_font_sizes/normal_font_size = 18
+bbcode_enabled = true
+text = "Profit: 999g 99s 99c"
+fit_content = true
+scroll_active = false
+autowrap_mode = 0
+shortcut_keys_enabled = false
+
+[node name="ROI" type="Label" parent="TabContainer/Investments/VBoxContainer/VBoxContainer/Totals"]
+custom_minimum_size = Vector2(95, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "ROI: 69%"
+horizontal_alignment = 1
+vertical_alignment = 2
+
+[node name="SpacerR" type="Control" parent="TabContainer/Investments/VBoxContainer/VBoxContainer/Totals"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.1
+
+[node name="TitlesBorder2" type="ColorRect" parent="TabContainer/Investments/VBoxContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 2)
+layout_mode = 2
+color = Color(0.501961, 0.501961, 0.501961, 1)
+
+[node name="ColumnTitles" type="HBoxContainer" parent="TabContainer/Investments/VBoxContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 25)
+layout_mode = 2
 theme_override_constants/separation = 5
 
 [node name="SpacerL" type="Control" parent="TabContainer/Investments/VBoxContainer/VBoxContainer/ColumnTitles"]
@@ -108,7 +200,6 @@ horizontal_alignment = 1
 vertical_alignment = 2
 
 [node name="InvestDate" type="Label" parent="TabContainer/Investments/VBoxContainer/VBoxContainer/ColumnTitles"]
-visible = false
 custom_minimum_size = Vector2(125, 0)
 layout_mode = 2
 text = "Date Bought"
@@ -116,6 +207,7 @@ horizontal_alignment = 1
 vertical_alignment = 2
 
 [node name="SellDate" type="Label" parent="TabContainer/Investments/VBoxContainer/VBoxContainer/ColumnTitles"]
+visible = false
 custom_minimum_size = Vector2(130, 0)
 layout_mode = 2
 text = "Date Sold"
@@ -153,3 +245,4 @@ layout_mode = 2
 size_flags_horizontal = 3
 
 [connection signal="tab_selected" from="TabContainer" to="TabContainer" method="OnSelectTab"]
+[connection signal="pressed" from="TabContainer/Investments/VBoxContainer/VBoxContainer/Totals/Button" to="TabContainer/Investments" method="Refresh"]
