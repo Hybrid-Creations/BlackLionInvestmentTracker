@@ -10,7 +10,7 @@ public partial class Settings : Panel
     [Export]
     PackedScene mainScene;
 
-    public static SettingsData Data { get; private set; }
+    public static SettingsData Data { get; private set; } = new SettingsData();
 
     public override void _Ready()
     {
