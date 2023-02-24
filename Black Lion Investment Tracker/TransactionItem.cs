@@ -8,7 +8,7 @@ public partial class TransactionItem : VBoxContainer
     {
         GetNode<TextureRect>("ItemProperties/Icon").Texture = icon;
         GetNode<Label>("ItemProperties/Icon/Quantity").Text = investment.Quantity.ToString();
-        GetNode<Label>("ItemProperties/Name").Text = itemName;
+        GetNode<Label>("ItemProperties/Name").Text = $" {itemName}";
         GetNode<RichTextLabel>("ItemProperties/BuyPrice").Text = $"[right]{investment.TotalBuyPrice.ToCurrencyString(true)}[/right]";
         GetNode<RichTextLabel>("ItemProperties/SellPrice").Text = $"[right]{investment.TotalSellPrice.ToCurrencyString(true)}[/right]";
         GetNode<RichTextLabel>("ItemProperties/Profit").Text = $"[right]{investment.Profit.ToCurrencyString(true)}[/right]";

@@ -1,0 +1,39 @@
+[gd_scene load_steps=4 format=3 uid="uid://cwd7xqe5x67vw"]
+
+[ext_resource type="Theme" path="res://Themes/MainTheme.tres" id="1_2b1yv"]
+[ext_resource type="Script" path="res://RightClickMenu/RightClickMenu.cs" id="1_4n5vw"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_j4a1c"]
+bg_color = Color(0.12549, 0.12549, 0.12549, 1)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.752941, 0.752941, 0.752941, 1)
+border_blend = true
+
+[node name="RightClickMenu" type="PanelContainer"]
+theme = ExtResource("1_2b1yv")
+theme_override_styles/panel = SubResource("StyleBoxFlat_j4a1c")
+script = ExtResource("1_4n5vw")
+
+[node name="ButtonContainer" type="VBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="Button" type="Button" parent="ButtonContainer"]
+visible = false
+layout_mode = 2
+text = "asdlfjasdlkfjasdlf"
+flat = true
+
+[node name="ColorRect" type="ColorRect" parent="ButtonContainer"]
+visible = false
+custom_minimum_size = Vector2(0, 1)
+layout_mode = 2
+color = Color(0.501961, 0.501961, 0.501961, 1)
+
+[node name="Button2" type="Button" parent="ButtonContainer"]
+visible = false
+layout_mode = 2
+text = "asdlfjasdlkfjasdlf"
+flat = true

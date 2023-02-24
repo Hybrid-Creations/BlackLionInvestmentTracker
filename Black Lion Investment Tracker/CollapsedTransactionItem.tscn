@@ -1,10 +1,11 @@
-[gd_scene load_steps=7 format=3 uid="uid://cslg0jd6iwx01"]
+[gd_scene load_steps=8 format=3 uid="uid://t8kw0ms30gq5"]
 
 [ext_resource type="Script" path="res://CollapsedTransactionItem.cs" id="1_40a67"]
-[ext_resource type="PackedScene" uid="uid://dxrp1lsdbc4r8" path="res://TransactionItem.tscn" id="2_7mhta"]
+[ext_resource type="Theme" path="res://Themes/MainTheme.tres" id="1_o2ujm"]
+[ext_resource type="PackedScene" path="res://TransactionItem.tscn" id="2_7mhta"]
 [ext_resource type="Texture2D" uid="uid://dlbpcw8rui0ri" path="res://test.png" id="2_capki"]
-[ext_resource type="Texture2D" uid="uid://lm5hp18ipnd" path="res://arrow_right.png" id="3_00koi"]
-[ext_resource type="Texture2D" uid="uid://q0n8du351q8k" path="res://arrow_down.png" id="4_sm6eu"]
+[ext_resource type="Texture2D" uid="uid://lm5hp18ipnd" path="res://Sprites/arrow_right.png" id="3_00koi"]
+[ext_resource type="Texture2D" uid="uid://q0n8du351q8k" path="res://Sprites/arrow_down.png" id="4_sm6eu"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_bwiln"]
 outline_size = 3
@@ -17,6 +18,7 @@ anchors_preset = 10
 anchor_right = 1.0
 offset_bottom = 111.0
 grow_horizontal = 2
+theme = ExtResource("1_o2ujm")
 script = ExtResource("1_40a67")
 collapsedItem = NodePath("HBoxContainer/CollapsedItem")
 investmentItemScene = ExtResource("2_7mhta")
@@ -28,6 +30,7 @@ arrowDown = ExtResource("4_sm6eu")
 
 [node name="HBoxContainer" type="HBoxContainer" parent="."]
 layout_mode = 2
+mouse_filter = 0
 theme_override_constants/separation = 5
 
 [node name="ToggleTreeButton" type="Button" parent="HBoxContainer"]
@@ -42,6 +45,7 @@ expand_icon = true
 
 [node name="CollapsedItem" type="VBoxContainer" parent="HBoxContainer"]
 layout_mode = 2
+size_flags_horizontal = 3
 
 [node name="SpacerT" type="Control" parent="HBoxContainer/CollapsedItem"]
 layout_mode = 2
@@ -76,12 +80,12 @@ horizontal_alignment = 2
 vertical_alignment = 2
 
 [node name="Name" type="Label" parent="HBoxContainer/CollapsedItem/ItemProperties"]
-custom_minimum_size = Vector2(300, 0)
+custom_minimum_size = Vector2(305, 0)
 layout_mode = 2
-text = "Shaman's Incricate Gossamer Insignia"
+text = " Unopened Endless Bottle Of Batwing Brew"
 vertical_alignment = 1
 clip_text = true
-visible_characters = 36
+visible_characters = 40
 visible_characters_behavior = 1
 
 [node name="BuyPrice" type="RichTextLabel" parent="HBoxContainer/CollapsedItem/ItemProperties"]
@@ -90,7 +94,7 @@ layout_mode = 2
 size_flags_horizontal = 8
 size_flags_vertical = 4
 bbcode_enabled = true
-text = "[right]99[color=gold]g[/color] 99[color=silver]s[/color] 99[color=orange]c[/color][/right]"
+text = "[right]999[color=gold]g[/color] 99[color=silver]s[/color] 99[color=orange]c[/color][/right]"
 fit_content = true
 scroll_active = false
 autowrap_mode = 0
@@ -118,7 +122,7 @@ layout_mode = 2
 size_flags_horizontal = 8
 size_flags_vertical = 4
 bbcode_enabled = true
-text = "[right]99[color=gold]g[/color] 99[color=silver]s[/color] 99[color=orange]c[/color][/right]"
+text = "[right]999[color=gold]g[/color] 99[color=silver]s[/color] 99[color=orange]c[/color][/right]"
 fit_content = true
 scroll_active = false
 autowrap_mode = 0
@@ -146,7 +150,7 @@ layout_mode = 2
 size_flags_horizontal = 8
 size_flags_vertical = 4
 bbcode_enabled = true
-text = "[right]99[color=gold]g[/color] 99[color=silver]s[/color] 99[color=orange]c[/color][/right]"
+text = "[right]999[color=gold]g[/color] 99[color=silver]s[/color] 99[color=orange]c[/color][/right]"
 fit_content = true
 scroll_active = false
 autowrap_mode = 0
@@ -169,10 +173,10 @@ step = 1.0
 page = 23.0
 
 [node name="InvestDate" type="Label" parent="HBoxContainer/CollapsedItem/ItemProperties"]
-custom_minimum_size = Vector2(125, 0)
+custom_minimum_size = Vector2(122, 0)
 layout_mode = 2
 text = "29 months ago"
-horizontal_alignment = 1
+horizontal_alignment = 2
 vertical_alignment = 1
 
 [node name="SellDate" type="Label" parent="HBoxContainer/CollapsedItem/ItemProperties"]
@@ -228,35 +232,35 @@ vertical_alignment = 2
 custom_minimum_size = Vector2(95, 0)
 layout_mode = 2
 text = "Buy Price"
-horizontal_alignment = 1
+horizontal_alignment = 2
 vertical_alignment = 2
 
 [node name="SellPrice" type="Label" parent="SubItemTitles"]
 custom_minimum_size = Vector2(95, 0)
 layout_mode = 2
 text = "Sell Price"
-horizontal_alignment = 1
+horizontal_alignment = 2
 vertical_alignment = 2
 
 [node name="Profit" type="Label" parent="SubItemTitles"]
 custom_minimum_size = Vector2(95, 0)
 layout_mode = 2
 text = "Profit"
-horizontal_alignment = 1
+horizontal_alignment = 2
 vertical_alignment = 2
 
 [node name="InvestDate" type="Label" parent="SubItemTitles"]
 custom_minimum_size = Vector2(125, 0)
 layout_mode = 2
 text = "Date Bought"
-horizontal_alignment = 1
+horizontal_alignment = 2
 vertical_alignment = 2
 
 [node name="SellDate" type="Label" parent="SubItemTitles"]
 custom_minimum_size = Vector2(125, 0)
 layout_mode = 2
 text = "Date Sold"
-horizontal_alignment = 1
+horizontal_alignment = 2
 vertical_alignment = 2
 
 [node name="SpacerR" type="Control" parent="SubItemTitles"]
@@ -264,7 +268,13 @@ layout_mode = 2
 size_flags_horizontal = 3
 size_flags_stretch_ratio = 0.1
 
+[node name="TitlesBorder2" type="ColorRect" parent="."]
+custom_minimum_size = Vector2(0, 1)
+layout_mode = 2
+color = Color(0.377919, 0.377919, 0.377919, 1)
+
 [node name="SubInvestmentHolder" type="VBoxContainer" parent="."]
 layout_mode = 2
 
+[connection signal="gui_input" from="HBoxContainer" to="." method="GUIInput"]
 [connection signal="toggled" from="HBoxContainer/ToggleTreeButton" to="." method="TreeButtonToggled"]

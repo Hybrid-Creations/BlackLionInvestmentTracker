@@ -11,14 +11,15 @@ config_version=5
 [application]
 
 config/name="Black Lion Investment Tracker"
-run/main_scene="res://Main.tscn"
+run/main_scene="res://Settings/Settings.tscn"
 config/features=PackedStringArray("4.0", "C#", "Forward Plus")
 run/max_fps=30
-config/icon="res://icon.svg"
+config/icon="res://icon.png"
+config/windows_native_icon="res://icon.ico"
 
 [display]
 
-window/size/viewport_width=900
+window/size/viewport_width=1080
 window/size/viewport_height=900
 window/size/extend_to_title=true
 window/stretch/aspect="expand"

@@ -1,0 +1,6 @@
+[gd_resource type="Theme" load_steps=2 format=3]
+
+[ext_resource type="FontFile" uid="uid://dn042rauvk42g" path="res://Fonts/Cagliostro-Regular.ttf" id="1_4jk5m"]
+
+[resource]
+default_font = ExtResource("1_4jk5m")

@@ -1,3 +1,4 @@
+using System;
 using Godot;
 using Gw2Sharp;
 
@@ -15,14 +16,35 @@ public partial class Main : Node
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
     {
-        MyClient = new Gw2Client(new Connection("612B84FA-3D70-EB49-8727-6930F323551DABDBC42E-376E-448B-9FB1-6815DF67CC43"));
-        Database = new InvestmentsDatabase();
+        try
+        {
+            if (Saving.TryLoadDatabase(out var newData))
+            {
+                GD.Print("Sucessfully loaded database");
+                Database = newData;
+            }
+            else
+            {
+                GD.Print("Failed to loaded database");
+                Database = new InvestmentsDatabase();
+            }
+
+            GD.Print($"{Database.Investments.Count}, {newData.Investments.Count}, {newData.CollapsedInvestments.Count}, {newData.NotInvestments.Count}");
+
+            MyClient = new Gw2Client(new Connection(Settings.Data.APIKey));
+        }
+        catch (Exception e)
+        {
+            GD.PrintErr(e);
+            GetTree().Quit();
+        }
     }
 
     public override void _Notification(int what)
     {
         if (what == NotificationWMCloseRequest)
         {
+            Saving.SaveDatabase(Database);
             MyClient.Dispose();
             GetTree().Quit(); // default behavior
         }

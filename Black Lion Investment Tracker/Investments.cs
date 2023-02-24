@@ -19,12 +19,18 @@ public partial class Investments : ScrollContainer
     VBoxContainer investmentHolder;
     [Export]
     HBoxContainer totals;
+    [Export]
+    Label loadingLabel;
+
+    static Investments Instance;
 
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
     {
+        Instance = this;
         cancellationTokenSource = new CancellationTokenSource();
 
+        ClearTotals();
         Continue();
     }
 
@@ -33,6 +39,7 @@ public partial class Investments : ScrollContainer
         CancellationToken token = cancellationTokenSource.Token;
         Task.Run(async () =>
         {
+            await Task.Delay(500);
             do
             {
                 await Task.Delay(500);
@@ -41,7 +48,7 @@ public partial class Investments : ScrollContainer
                     break;
                 }
                 else
-                    await ShowInvestments();
+                    await CalculateAndShowInvestments();
                 await Task.Delay(30000);
 
             }
@@ -56,24 +63,36 @@ public partial class Investments : ScrollContainer
         cancellationTokenSource = new CancellationTokenSource();
     }
 
+    /// <summary>
+    /// Refreshes the entire database
+    /// </summary>
     public void Refresh()
     {
         Pause();
         Continue();
     }
 
+    /// <summary>
+    /// Only refreshes the list view from the database
+    /// </summary>
+    public void RefreshList()
+    {
+        ClearTotals();
+        ListInvestments();
+    }
+
     // Do Calcumations On History For Investments
-    Task ShowInvestments()
+    Task CalculateAndShowInvestments()
     {
         return Task.Run(async () =>
         {
             try
             {
                 GD.Print("Starting Investments");
-                totals.GetNode<RichTextLabel>("Invested").Text = $"Invested:   0";
-                totals.GetNode<RichTextLabel>("Return").Text = $"Return:   0";
-                totals.GetNode<RichTextLabel>("Profit").Text = $"Profit:   0";
-                totals.GetNode<Label>("ROI").Text = $"ROI:   0%";
+
+                ClearTotals();
+                ClearList();
+                loadingLabel.Show();
 
                 // Get All Transactions
                 List<CommerceTransactionHistory> buys = new();
@@ -87,38 +106,10 @@ public partial class Investments : ScrollContainer
 
                 Main.Database.GenerateCollapsed();
 
-                GetNode<Label>("VBoxContainer/VBoxContainer/Label").Hide();
-
-                // Remove Old Investment Items From UI
-                investmentHolder.ClearChildrenSafe();
-
-                // Add New Investment Items To UI
-                foreach (var investment in Main.Database.CollapsedInvestments.OrderBy(ci => ci.OldestPurchaseDate))
-                {
-                    try
-                    {
-                        var instance = itemScene.Instantiate<CollapsedTransactionItem>();
-                        instance.Init(ItemIconDatabase.GetItem(investment.ItemId).Name, ItemIconDatabase.GetIcon(investment.ItemId), investment);
-                        investmentHolder.AddChildSafe(instance, 0);
-                    }
-                    catch (Exception e)
-                    {
-                        GD.PrintErr(e);
-                    }
-                }
+                ListInvestments();
 
                 GD.Print($"Buy Listings:{buys.Count}, Sell Listings:{sells.Count}, Similar Items:{buys.Select(b => b.ItemId).Where(i => sells.Select(s => s.ItemId).Contains(i)).Count()}");
 
-                // Calculate Profit
-                var totalInvested = Main.Database.TotalInvested;
-                var totalReturn = Main.Database.TotalReturn;
-                var totalProfit = Main.Database.TotalProfit;
-                GD.Print($"Total Invested: {totalInvested.ToCurrencyString(false)}, Total Return: {totalReturn.ToCurrencyString(false)},  Total Profit With Tax Removed: {totalProfit.ToCurrencyString(false)}, ROI: {Main.Database.ROI}");
-
-                totals.GetNode<RichTextLabel>("Invested").Text = $"Invested:   {totalInvested.ToCurrencyString(true)}";
-                totals.GetNode<RichTextLabel>("Return").Text = $"Return:   {totalReturn.ToCurrencyString(true)}";
-                totals.GetNode<RichTextLabel>("Profit").Text = $"Profit:   {totalProfit.ToCurrencyString(true)}";
-                totals.GetNode<Label>("ROI").Text = $"ROI:   {Main.Database.ROI:00}%";
             }
             catch (Exception e)
             {
@@ -126,6 +117,66 @@ public partial class Investments : ScrollContainer
             }
         });
     }
+
+    private void ClearTotals()
+    {
+        totals.GetNode<RichTextLabel>("Invested").Text = $"Invested:   0";
+        totals.GetNode<RichTextLabel>("Return").Text = $"Return:   0";
+        totals.GetNode<RichTextLabel>("Profit").Text = $"Profit:   0";
+        totals.GetNode<Label>("ROI").Text = $"ROI:   0%";
+    }
+
+    private void SetTotals()
+    {
+        totals.GetNode<RichTextLabel>("Invested").Text = $"Invested:  {Main.Database.TotalInvested.ToCurrencyString(true)}";
+        totals.GetNode<RichTextLabel>("Return").Text = $"Return:  {Main.Database.TotalReturn.ToCurrencyString(true)}";
+        totals.GetNode<RichTextLabel>("Profit").Text = $"Profit:  {Main.Database.TotalProfit.ToCurrencyString(true)}";
+        totals.GetNode<Label>("ROI").Text = $"ROI:  {Main.Database.ROI:00}%";
+    }
+
+    public static void UpdateTotals()
+    {
+        Instance.SetTotals();
+    }
+
+    void ClearList()
+    {
+        // Remove Old Investment Items From UI
+        investmentHolder.ClearChildrenSafe();
+    }
+
+    public void ListInvestments()
+    {
+        ClearList();
+
+        loadingLabel.Hide();
+
+        // Add New Investment Items To UI
+        foreach (var investment in Main.Database.CollapsedInvestments.OrderBy(ci => ci.OldestPurchaseDate))
+        {
+            try
+            {
+                var instance = itemScene.Instantiate<CollapsedTransactionItem>();
+                instance.Init(ItemIconDatabase.GetItem(investment.ItemId).Name, ItemIconDatabase.GetIcon(investment.ItemId), investment);
+                investmentHolder.AddChildSafe(instance, 0);
+            }
+            catch (Exception e)
+            {
+                GD.PrintErr(e);
+            }
+        }
+
+        // Calculate Profit
+        var totalInvested = Main.Database.TotalInvested;
+        var totalReturn = Main.Database.TotalReturn;
+        var totalProfit = Main.Database.TotalProfit;
+        GD.Print($"Total Invested: {totalInvested.ToCurrencyString(false)}, Total Return: {totalReturn.ToCurrencyString(false)},  Total Profit With Tax Removed: {totalProfit.ToCurrencyString(false)}, ROI: {Main.Database.ROI}");
+        SetTotals();
+
+        Saving.SaveDatabase(Main.Database);
+    }
+
+
 
     Task GetBuyAndSellHistory(List<CommerceTransactionHistory> buys, List<CommerceTransactionHistory> sells)
     {
@@ -197,6 +248,18 @@ public partial class Investments : ScrollContainer
             // Go through all buys and check if any are investments
             foreach (var buy in sBuys)
             {
+                // Skip if we already have the transaction in the database, that means we have used it already
+                if (Main.Database.NotInvestments.Any(l => l == buy.Id))
+                {
+                    GD.Print($"Skipped buy order \"{buy.Id}\" as it was marked as not an investment.");
+                    continue;
+                }
+                if (Main.Database.Investments.Any(i => i.TransactionId == buy.Id))
+                {
+                    GD.Print($"Skipped buy order \"{buy.Id}\" as it was already in the database.");
+                    continue;
+                }
+
                 int buyAmmountLeft = buy.Quantity;
                 var investment = new InvestmentData(buy);
 
@@ -250,7 +313,10 @@ public partial class Investments : ScrollContainer
                                 }
                                 // If there are no items left to use in this sell order, skip it
                                 else
+                                {
+                                    GD.Print($"Skipped sell order \"{sell.Id}\" as it was already in the database and fully used.");
                                     continue;
+                                }
                             }
                             // Was not in the database
                             else
