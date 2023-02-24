@@ -1,7 +1,6 @@
-using System.IO;
-using System.Text.Json;
-using BLIT;
 using Godot;
+
+namespace BLIT;
 
 public partial class Settings : Panel
 {

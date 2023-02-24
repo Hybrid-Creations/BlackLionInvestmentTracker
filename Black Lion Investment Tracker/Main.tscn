@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3 uid="uid://7xgehqyewx1l"]
+[gd_scene load_steps=12 format=3 uid="uid://7xgehqyewx1l"]
 
 [ext_resource type="Script" path="res://Main.cs" id="1_jgrri"]
 [ext_resource type="Theme" path="res://Themes/MainTheme.tres" id="1_thssd"]
@@ -8,6 +8,7 @@
 [ext_resource type="PackedScene" uid="uid://t8kw0ms30gq5" path="res://CollapsedTransactionItem.tscn" id="4_250gb"]
 [ext_resource type="Texture2D" uid="uid://du668hhlqaqyd" path="res://Sprites/cycle.png" id="5_ey6tk"]
 [ext_resource type="Texture2D" uid="uid://b643uuwsu0y0v" path="res://Sprites/Settings.png" id="6_8rd2r"]
+[ext_resource type="Script" path="res://AppStatusIndicator.cs" id="9_ja276"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_p5u6s"]
 bg_color = Color(0.25098, 0.25098, 0.25098, 1)
@@ -257,6 +258,34 @@ script = ExtResource("3_yjd3c")
 [node name="VBoxContainer" type="VBoxContainer" parent="TabContainer/Listings"]
 layout_mode = 2
 size_flags_horizontal = 3
+
+[node name="AppStatusIndicator" type="Panel" parent="." node_paths=PackedStringArray("statusLabel")]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -24.0
+grow_horizontal = 2
+grow_vertical = 0
+script = ExtResource("9_ja276")
+statusLabel = NodePath("Status")
+
+[node name="Status" type="RichTextLabel" parent="AppStatusIndicator"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 10.0
+offset_right = -10.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/normal_font_size = 17
+bbcode_enabled = true
+text = "[center][right]Calculating Investments and downloading from the web and doing something else that is really cool this thing will take a lot of characters which is very important ... (345/693)"
+scroll_active = false
+autowrap_mode = 0
+shortcut_keys_enabled = false
 
 [connection signal="tab_selected" from="TabContainer" to="TabContainer" method="OnSelectTab"]
 [connection signal="pressed" from="TabContainer/Investments/VBoxContainer/VBoxContainer/Totals/Refresh" to="TabContainer/Investments" method="Refresh"]

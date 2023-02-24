@@ -1,38 +1,48 @@
 using System.Collections.Generic;
 using Godot;
 using Gw2Sharp.WebApi.V2.Models;
+using Newtonsoft.Json;
 
 namespace BLIT;
 
-public static class ItemIconDatabase
+public static class Cache
 {
-    static Dictionary<int, Item> itemDB = new();
-    static Dictionary<int, ImageTexture> iconDB = new();
-
-    public static Item GetItem(int itemId)
+    public class Items
     {
-        if (itemDB.TryGetValue(itemId, out var item) == false)
-        {
-            item = Main.MyClient.WebApi.V2.Items.GetAsync(itemId).Result;
-            itemDB.Add(itemId, item);
-        }
+        Dictionary<int, Item> itemDB = new();
+        public static Items Instance { get; } = new();
 
-        return item;
+        public static Item GetItem(int itemId)
+        {
+            if (Instance.itemDB.TryGetValue(itemId, out var item) == false)
+            {
+                item = Main.MyClient.WebApi.V2.Items.GetAsync(itemId).Result;
+                Instance.itemDB.Add(itemId, item);
+            }
+
+            return item;
+        }
     }
 
-    public static ImageTexture GetIcon(int itemId)
+    public class Icons
     {
-        if (iconDB.TryGetValue(itemId, out var icon) == false)
+        Dictionary<int, ImageTexture> iconDB = new();
+        public static Icons Instance { get; } = new();
+
+        public static ImageTexture GetIcon(int itemId)
         {
-            var item = GetItem(itemId);
-            var iconBytes = Main.MyClient.WebApi.Render.DownloadToByteArrayAsync(item.Icon.Url).Result;
+            if (Instance.iconDB.TryGetValue(itemId, out var icon) == false)
+            {
+                var item = Cache.Items.GetItem(itemId);
+                var iconBytes = Main.MyClient.WebApi.Render.DownloadToByteArrayAsync(item.Icon.Url).Result;
 
-            var image = new Image();
-            image.LoadPngFromBuffer(iconBytes);
-            icon = ImageTexture.CreateFromImage(image);
-            iconDB.Add(itemId, icon);
+                var image = new Image();
+                image.LoadPngFromBuffer(iconBytes);
+                icon = ImageTexture.CreateFromImage(image);
+                Instance.iconDB.Add(itemId, icon);
+            }
+
+            return icon;
         }
-
-        return icon;
     }
 }

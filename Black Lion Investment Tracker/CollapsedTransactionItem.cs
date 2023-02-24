@@ -59,7 +59,7 @@ public partial class CollapsedTransactionItem : VBoxContainer
             foreach (var investment in collapsedInvestment.SubInvestments.OrderBy(si => si.PurchaseDate))
             {
                 var instance = investmentItemScene.Instantiate<TransactionItem>();
-                instance.Init(ItemIconDatabase.GetItem(investment.ItemId).Name, ItemIconDatabase.GetIcon(investment.ItemId), investment);
+                instance.Init(Cache.Items.GetItem(investment.ItemId).Name, Cache.Icons.GetIcon(investment.ItemId), investment);
                 subInvestmentHolder.AddChild(instance, 0);
             }
         }

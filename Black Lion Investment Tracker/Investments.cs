@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -104,9 +105,12 @@ public partial class Investments : ScrollContainer
                 // Create the Investment database from those buy and sell orders
                 await CreateInvestmentsFromOrders(buys, sells);
 
+                Main.Database.CollapsedInvestments.Clear();
                 Main.Database.GenerateCollapsed();
 
                 ListInvestments();
+
+                AppStatusIndicator.ClearStatus();
 
                 GD.Print($"Buy Listings:{buys.Count}, Sell Listings:{sells.Count}, Similar Items:{buys.Select(b => b.ItemId).Where(i => sells.Select(s => s.ItemId).Contains(i)).Count()}");
 
@@ -157,11 +161,13 @@ public partial class Investments : ScrollContainer
             try
             {
                 var instance = itemScene.Instantiate<CollapsedTransactionItem>();
-                instance.Init(ItemIconDatabase.GetItem(investment.ItemId).Name, ItemIconDatabase.GetIcon(investment.ItemId), investment);
+                instance.Init(Cache.Items.GetItem(investment.ItemId).Name, Cache.Icons.GetIcon(investment.ItemId), investment);
                 investmentHolder.AddChildSafe(instance, 0);
             }
             catch (Exception e)
             {
+                // Most likely a new item that Gw2Sharp doesn't understand so we'll just skip it
+                GD.PushWarning($"Failed to retreive info on item {investment.ItemId}, most likely Gw2Sharp has not been updated yet to handle the item");
                 GD.PrintErr(e);
             }
         }
@@ -176,8 +182,6 @@ public partial class Investments : ScrollContainer
         Saving.SaveDatabase(Main.Database);
     }
 
-
-
     Task GetBuyAndSellHistory(List<CommerceTransactionHistory> buys, List<CommerceTransactionHistory> sells)
     {
         return Task.Run(async () =>
@@ -186,6 +190,9 @@ public partial class Investments : ScrollContainer
             int i = 0;
             while (true)
             {
+                string status = "Downloading transactions from GW2 server...";
+                AppStatusIndicator.ShowStatus(status);
+
                 bool @continue = false;
 
                 var pageBuys = Main.MyClient.WebApi.V2.Commerce.Transactions.History.Buys.PageAsync(i);
@@ -242,102 +249,39 @@ public partial class Investments : ScrollContainer
     {
         return Task.Run(() =>
         {
-            var sBuys = buys.OrderBy(b => b.Purchased);
-            var sSells = sells.OrderBy(s => s.Purchased);
+            string status = $"Checking for investments in transactions...";
+            AppStatusIndicator.ShowStatus($"{status} (0/{buys.Count})");
+            var sortedBuys = buys.OrderBy(b => b.Purchased);
+            var sortedSells = sells.OrderBy(s => s.Purchased);
 
             // Go through all buys and check if any are investments
-            foreach (var buy in sBuys)
+            int i = 0;
+            foreach (var buy in sortedBuys)
             {
                 // Skip if we already have the transaction in the database, that means we have used it already
                 if (Main.Database.NotInvestments.Any(l => l == buy.Id))
                 {
                     GD.Print($"Skipped buy order \"{buy.Id}\" as it was marked as not an investment.");
+                    SetStatusAndPrintDuration(status, ref i, buys.Count);
                     continue;
                 }
                 if (Main.Database.Investments.Any(i => i.TransactionId == buy.Id))
                 {
                     GD.Print($"Skipped buy order \"{buy.Id}\" as it was already in the database.");
+                    SetStatusAndPrintDuration(status, ref i, buys.Count);
                     continue;
                 }
 
                 int buyAmmountLeft = buy.Quantity;
                 var investment = new InvestmentData(buy);
 
-                Item btem = null;
-                try
-                {
-                    btem = Main.MyClient.WebApi.V2.Items.GetAsync(buy.ItemId).Result;
-                }
-                catch (Exception)
-                {
-                    // Most likely a new item that Gw2Sharp doesn't understand so we'll just skip it
-                    GD.PushWarning($"Failed to retreive info on item {buy.ItemId}, most likely Gw2Sharp has not been updated yet to handle the item");
-                    continue;
-                }
-
                 try
                 {
                     GD.Print("");
-                    GD.Print($"Checking Buy Order For {btem?.Name}");
+                    GD.Print($"Checking Buy Order For {buy.ItemId}");
 
                     // Make sure the sell transactions we look at are for the same item and only after the date the buy was purchase
-                    foreach (var sell in sSells.Where(s => s.ItemId == buy.ItemId && s.Purchased > buy.Purchased))
-                    {
-                        var sellData = new SellData(sell);
-                        if (buyAmmountLeft > 0)
-                        {
-                            // Get all the other partial uses of this sell order
-                            var databasePartials = Main.Database.Investments.SelectMany(i => i.SellDatas).Where(s => s.TransactionId == sell.Id);
-
-                            // If is in the database
-                            if (databasePartials.Any())
-                            {
-                                // Get the remaining quantity we can use in the sell order
-                                var remaining = sell.Quantity - databasePartials.Sum(p => p.Quantity);
-
-                                // If there is anything left in the sell order to use
-                                if (remaining > 0)
-                                {
-                                    // If we need as much as is remaining or less, take what we need and continue
-                                    if (buyAmmountLeft <= remaining)
-                                    {
-                                        sellData.Quantity = buyAmmountLeft;
-                                        buyAmmountLeft = 0;
-                                    }
-                                    // If we need more than there is left, take what is left and continue
-                                    else if (buyAmmountLeft > remaining)
-                                    {
-                                        sellData.Quantity = remaining;
-                                        buyAmmountLeft -= remaining;
-                                    }
-                                }
-                                // If there are no items left to use in this sell order, skip it
-                                else
-                                {
-                                    GD.Print($"Skipped sell order \"{sell.Id}\" as it was already in the database and fully used.");
-                                    continue;
-                                }
-                            }
-                            // Was not in the database
-                            else
-                            {
-                                // If we need all of or less than the sell order, use it and continue
-                                if (buyAmmountLeft <= sell.Quantity)
-                                {
-                                    sellData.Quantity = buyAmmountLeft;
-                                    buyAmmountLeft = 0;
-                                }
-                                // If we need more than there is in the sell order, take what we need and continue
-                                else if (buyAmmountLeft > sell.Quantity)
-                                {
-                                    buyAmmountLeft -= sell.Quantity;
-                                }
-                            }
-                            investment.SellDatas.Add(sellData);
-                        }
-                        // We made sure all the buys are accounted for so we don't need to check any more sells
-                        else break;
-                    }
+                    CheckSellOrdersForMatches(buy, ref buyAmmountLeft, investment, sortedSells);
 
                     // This is how we determine if an actual investment was created
                     if (investment.SellDatas.Count > 0)
@@ -348,8 +292,7 @@ public partial class Investments : ScrollContainer
                             investment.Quantity -= buyAmmountLeft;
                         }
 
-                        var item = Main.MyClient.WebApi.V2.Items.GetAsync(investment.ItemId).Result;
-                        GD.Print($"New Investment -> {item.Name}, Bought {investment.Quantity} for {investment.TotalBuyPrice}, Sold {investment.SellQuantity}/{investment.SellDatas.Count} for {investment.TotalSellPrice}, for a Profit of {investment.Profit}");
+                        GD.Print($"New Investment -> {buy.ItemId}, Bought {investment.Quantity} for {investment.TotalBuyPrice}, Sold {investment.SellQuantity}/{investment.SellDatas.Count} for {investment.TotalSellPrice}, for a Profit of {investment.Profit}");
                         Main.Database.Investments.Add(investment);
                     }
                 }
@@ -357,7 +300,84 @@ public partial class Investments : ScrollContainer
                 {
                     GD.PrintErr(e);
                 }
+
+                SetStatusAndPrintDuration(status, ref i, buys.Count);
             }
+            AppStatusIndicator.ShowStatus($"{status} ({buys.Count}/{buys.Count})");
         });
+
+        //---------- ---------- ---------- ---------- ----------
+        static void SetStatusAndPrintDuration(string status, ref int i, int buysCount)
+        {
+            AppStatusIndicator.ShowStatus($"{status} ({i}/{buysCount})");
+            i++;
+        }
+
+        //---------- ---------- ---------- ---------- ----------
+        static void CheckSellOrdersForMatches(CommerceTransactionHistory buy, ref int buyAmmountLeft, InvestmentData investment, IOrderedEnumerable<CommerceTransactionHistory> sortedSells)
+        {
+            var stopwatch = Stopwatch.StartNew();
+
+            foreach (var sell in sortedSells.Where(s => s.ItemId == buy.ItemId && s.Purchased > buy.Purchased))
+            {
+                var sellData = new SellData(sell);
+                if (buyAmmountLeft > 0)
+                {
+                    // Get all the other partial uses of this sell order
+                    var databasePartials = Main.Database.Investments.SelectMany(i => i.SellDatas).Where(s => s.TransactionId == sell.Id);
+
+                    // If is in the database
+                    if (databasePartials.Any())
+                    {
+                        // Get the remaining quantity we can use in the sell order
+                        var remaining = sell.Quantity - databasePartials.Sum(p => p.Quantity);
+
+                        // If there is anything left in the sell order to use
+                        if (remaining > 0)
+                        {
+                            // If we need as much as is remaining or less, take what we need and continue
+                            if (buyAmmountLeft <= remaining)
+                            {
+                                sellData.Quantity = buyAmmountLeft;
+                                buyAmmountLeft = 0;
+                            }
+                            // If we need more than there is left, take what is left and continue
+                            else if (buyAmmountLeft > remaining)
+                            {
+                                sellData.Quantity = remaining;
+                                buyAmmountLeft -= remaining;
+                            }
+                        }
+                        // If there are no items left to use in this sell order, skip it
+                        else
+                        {
+                            GD.Print($"Skipped sell order \"{sell.Id}\" as it was already in the database and fully used.");
+                            continue;
+                        }
+                    }
+                    // Was not in the database
+                    else
+                    {
+                        // If we need all of or less than the sell order, use it and continue
+                        if (buyAmmountLeft <= sell.Quantity)
+                        {
+                            sellData.Quantity = buyAmmountLeft;
+                            buyAmmountLeft = 0;
+                        }
+                        // If we need more than there is in the sell order, take what we need and continue
+                        else if (buyAmmountLeft > sell.Quantity)
+                        {
+                            buyAmmountLeft -= sell.Quantity;
+                        }
+                    }
+                    investment.SellDatas.Add(sellData);
+                }
+                // We made sure all the buys are accounted for so we don't need to check any more sells
+                else break;
+            }
+
+            if (stopwatch.ElapsedMilliseconds > 0)
+                GD.Print($"Checking All Sell Orders Took {stopwatch.ElapsedMilliseconds}ms");
+        }
     }
 }

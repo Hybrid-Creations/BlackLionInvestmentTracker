@@ -44,7 +44,8 @@ public partial class Main : Node
     {
         if (what == NotificationWMCloseRequest)
         {
-            Saving.SaveDatabase(Database);
+            GD.Print("Quitting");
+            Saving.SaveAll();
             MyClient.Dispose();
             GetTree().Quit(); // default behavior
         }
