@@ -53,12 +53,12 @@ public static partial class StringExtensions
     public static string ToCurrencyString(this int amount, bool richColoring) => ToCurrencyString((long)amount, richColoring);
     public static string ToCurrencyString(this long amount, bool richColoring)
     {
-        var positive = amount > 0;
-        var asStr = Mathf.Abs(amount).ToString("000000");
+        var positive = amount >= 0;
+        var asStr = Mathf.Abs(amount).ToString();
         var sb = new StringBuilder();
-        var gold = asStr[0..2];
-        var silver = asStr[2..4];
-        var copper = asStr[4..6];
+        var copper = $"{(asStr.Length > 1 ? asStr[^2] : "0")}{asStr[^1]}";
+        var silver = $"{(asStr.Length > 3 ? asStr[^4] : "0")}{(asStr.Length > 2 ? asStr[^3] : "0")}";
+        var gold = $"{(asStr.Length > 6 ? asStr[..^6] : "")}{(asStr.Length > 5 ? asStr[^6] : "0")}{(asStr.Length > 4 ? asStr[^5] : "0")}";
 
         var goldSuffix = $"{(richColoring ? "[color=gold]" : "")}g{(richColoring ? "[/color]" : "")}";
         var silverSuffix = $"{(richColoring ? "[color=silver]" : "")}s{(richColoring ? "[/color]" : "")}";

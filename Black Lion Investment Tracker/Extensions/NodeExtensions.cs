@@ -1,6 +1,6 @@
 using Godot;
 
-namespace blit.Extensions;
+namespace BLIT.Extensions;
 
 public static class NodeExtensions
 {

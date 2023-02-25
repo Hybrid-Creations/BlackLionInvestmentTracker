@@ -1,10 +1,8 @@
 using System.Linq;
-using blit.Extensions;
-using BLIT;
 using BLIT.Extensions;
 using Godot;
 
-namespace BLIT;
+namespace BLIT.UI;
 
 public partial class CollapsedTransactionItem : VBoxContainer
 {
@@ -31,7 +29,6 @@ public partial class CollapsedTransactionItem : VBoxContainer
 
     public override void _Ready()
     {
-        base._Ready();
         subInvestmentTitles.Hide();
     }
 
@@ -41,7 +38,7 @@ public partial class CollapsedTransactionItem : VBoxContainer
 
         collapsedItem.GetNode<TextureRect>("ItemProperties/Icon").Texture = _icon;
         collapsedItem.GetNode<Label>("ItemProperties/Icon/Quantity").Text = _collapsedInvestment.Quantity.ToString();
-        collapsedItem.GetNode<Label>("ItemProperties/Name").Text = $" {_itemName}";
+        collapsedItem.GetNode<Label>("ItemProperties/Name").Text = $"{_itemName}";
         collapsedItem.GetNode<RichTextLabel>("ItemProperties/BuyPrice").Text = $"[right]{_collapsedInvestment.TotalBuyPrice.ToCurrencyString(true)}[/right]";
         collapsedItem.GetNode<RichTextLabel>("ItemProperties/SellPrice").Text = $"[right]{_collapsedInvestment.TotalSellPrice.ToCurrencyString(true)}[/right]";
         collapsedItem.GetNode<RichTextLabel>("ItemProperties/Profit").Text = $"[right]{_collapsedInvestment.TotalProfit.ToCurrencyString(true)}[/right]";
@@ -91,7 +88,7 @@ public partial class CollapsedTransactionItem : VBoxContainer
                             Main.Database.NotInvestments.Add(investment.TransactionId);
                         }
 
-                        Saving.SaveDatabase(Main.Database);
+                        Main.Database.Save();
                         QueueFree();
                     }
                 });

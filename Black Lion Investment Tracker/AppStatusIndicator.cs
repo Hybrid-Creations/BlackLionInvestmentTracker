@@ -1,5 +1,7 @@
 using Godot;
 
+namespace BLIT;
+
 public partial class AppStatusIndicator : Panel
 {
     [Export]
@@ -7,24 +9,39 @@ public partial class AppStatusIndicator : Panel
 
     static AppStatusIndicator Instance;
 
+    static string newStatus = "";
+
     public override void _Ready()
     {
-        base._Ready();
-
         Instance = this;
         statusLabel.Clear();
         Hide();
     }
 
+    public override void _Process(double delta)
+    {
+        if (string.IsNullOrWhiteSpace(newStatus) == false)
+        {
+            statusLabel.Text = $"[center][right]{newStatus}";
+        }
+        if (newStatus == "clear")
+        {
+            statusLabel.Text = "";
+            Instance.Hide();
+            Instance.SetProcess(false);
+        }
+
+    }
+
     public static void ShowStatus(string status)
     {
-        Instance.statusLabel.Text = $"[center][right]{status}";
+        newStatus = status;
         Instance.Show();
+        Instance.SetProcess(true);
     }
 
     public static void ClearStatus()
     {
-        Instance.statusLabel.Text = $"";
-        Instance.Hide();
+        newStatus = "clear";
     }
 }

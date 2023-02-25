@@ -1,13 +1,14 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene load_steps=5 format=3 uid="uid://cch8ttqmwmt37"]
 
-[ext_resource type="Theme" path="res://Themes/MainTheme.tres" id="1_br344"]
-[ext_resource type="Script" path="res://TransactionItem.cs" id="1_wnh1n"]
+[ext_resource type="Theme" uid="uid://dy6mo6ior0maw" path="res://Themes/MainTheme.tres" id="1_br344"]
+[ext_resource type="Script" path="res://CompletedInvestments/TransactionItem.cs" id="1_wnh1n"]
 [ext_resource type="Texture2D" uid="uid://dlbpcw8rui0ri" path="res://test.png" id="2_nq3fi"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_bwiln"]
-outline_size = 3
+line_spacing = 4.0
+outline_size = 7
 outline_color = Color(0, 0, 0, 1)
-shadow_size = 2
+shadow_size = 7
 shadow_color = Color(0, 0, 0, 1)
 
 [node name="TransactionItem" type="VBoxContainer"]
@@ -41,7 +42,7 @@ layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_right = -2.0
+offset_right = -6.0
 offset_bottom = -2.0
 grow_horizontal = 2
 grow_vertical = 2

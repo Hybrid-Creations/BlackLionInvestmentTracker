@@ -22,7 +22,5 @@ public partial class SellData
     }
 
     [JsonConstructor]
-    public SellData()
-    {
-    }
+    public SellData() { }
 }

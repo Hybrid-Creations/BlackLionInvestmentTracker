@@ -1,3 +1,4 @@
+using BLIT.Saving;
 using Godot;
 
 namespace BLIT;
@@ -13,14 +14,9 @@ public partial class Settings : Panel
 
     public override void _Ready()
     {
-        base._Ready();
-
-        if (Saving.TryLoadSettings(out var savedData))
-        {
-            Data = savedData;
-            if (string.IsNullOrWhiteSpace(Data.APIKey) == false)
-                GetTree().ChangeSceneToPacked(mainScene);
-        };
+        Load();
+        if (string.IsNullOrWhiteSpace(Data.APIKey) == false)
+            GetTree().ChangeSceneToPacked(mainScene);
     }
 
     public void SetAPIKey()
@@ -29,7 +25,7 @@ public partial class Settings : Panel
         {
             Data.APIKey = apiKeyField.Text;
 
-            Saving.SaveSettings(Data);
+            Save();
             GetTree().ChangeSceneToPacked(mainScene);
         }
     }
@@ -38,28 +34,22 @@ public partial class Settings : Panel
     {
         public string APIKey;
     }
-}
 
-public static partial class Saving
-{
     const string settingsPath = "user://settings";
-
-    public static void SaveSettings(Settings.SettingsData data)
+    public static void Save()
     {
         var config = new ConfigFile();
-        config.SetValue("Settings", nameof(Settings.SettingsData.APIKey), data.APIKey);
+        config.SetValue("Settings", nameof(Settings.SettingsData.APIKey), Data.APIKey);
         config.Save(settingsPath);
     }
 
-    public static bool TryLoadSettings(out Settings.SettingsData data)
+    public static bool Load()
     {
-        data = new Settings.SettingsData();
-
         var config = new ConfigFile();
 
         if (config.Load(settingsPath) == Error.Ok)
         {
-            data.APIKey = config.GetValue("Settings", nameof(Settings.SettingsData.APIKey)).AsString();
+            Data.APIKey = config.GetValue("Settings", nameof(Settings.SettingsData.APIKey)).AsString();
             return true;
         }
         return false;

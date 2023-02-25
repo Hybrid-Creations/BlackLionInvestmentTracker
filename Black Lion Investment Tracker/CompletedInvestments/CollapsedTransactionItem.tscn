@@ -1,16 +1,17 @@
-[gd_scene load_steps=8 format=3 uid="uid://t8kw0ms30gq5"]
+[gd_scene load_steps=8 format=3 uid="uid://qn7vq81m07ip"]
 
-[ext_resource type="Script" path="res://CollapsedTransactionItem.cs" id="1_40a67"]
-[ext_resource type="Theme" path="res://Themes/MainTheme.tres" id="1_o2ujm"]
-[ext_resource type="PackedScene" path="res://TransactionItem.tscn" id="2_7mhta"]
+[ext_resource type="Script" path="res://CompletedInvestments/CollapsedTransactionItem.cs" id="1_40a67"]
+[ext_resource type="Theme" uid="uid://dy6mo6ior0maw" path="res://Themes/MainTheme.tres" id="1_o2ujm"]
+[ext_resource type="PackedScene" uid="uid://cch8ttqmwmt37" path="res://CompletedInvestments/TransactionItem.tscn" id="2_7mhta"]
 [ext_resource type="Texture2D" uid="uid://dlbpcw8rui0ri" path="res://test.png" id="2_capki"]
 [ext_resource type="Texture2D" uid="uid://lm5hp18ipnd" path="res://Sprites/arrow_right.png" id="3_00koi"]
 [ext_resource type="Texture2D" uid="uid://q0n8du351q8k" path="res://Sprites/arrow_down.png" id="4_sm6eu"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_bwiln"]
-outline_size = 3
+line_spacing = 4.0
+outline_size = 7
 outline_color = Color(0, 0, 0, 1)
-shadow_size = 2
+shadow_size = 7
 shadow_color = Color(0, 0, 0, 1)
 
 [node name="CollapsedTransactionItem" type="VBoxContainer" node_paths=PackedStringArray("collapsedItem", "subInvestmentHolder", "subInvestmentTitles", "toggleTreeButton")]
@@ -58,7 +59,7 @@ layout_mode = 2
 [node name="SpacerL" type="Control" parent="HBoxContainer/CollapsedItem/ItemProperties"]
 layout_mode = 2
 size_flags_horizontal = 3
-size_flags_stretch_ratio = 0.1
+size_flags_stretch_ratio = 0.5
 
 [node name="Icon" type="TextureRect" parent="HBoxContainer/CollapsedItem/ItemProperties"]
 custom_minimum_size = Vector2(64, 64)
@@ -70,7 +71,7 @@ layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_right = -2.0
+offset_right = -6.0
 offset_bottom = -2.0
 grow_horizontal = 2
 grow_vertical = 2
@@ -79,19 +80,21 @@ label_settings = SubResource("LabelSettings_bwiln")
 horizontal_alignment = 2
 vertical_alignment = 2
 
-[node name="Name" type="Label" parent="HBoxContainer/CollapsedItem/ItemProperties"]
-custom_minimum_size = Vector2(305, 0)
+[node name="SpacerL2" type="Control" parent="HBoxContainer/CollapsedItem/ItemProperties"]
 layout_mode = 2
-text = " Unopened Endless Bottle Of Batwing Brew"
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.1
+
+[node name="Name" type="Label" parent="HBoxContainer/CollapsedItem/ItemProperties"]
+custom_minimum_size = Vector2(350, 0)
+layout_mode = 2
+text = " Unopened Endless Bottle Of Batwing Brew And Swim Speed Infusion +10"
 vertical_alignment = 1
 clip_text = true
-visible_characters = 40
-visible_characters_behavior = 1
 
 [node name="BuyPrice" type="RichTextLabel" parent="HBoxContainer/CollapsedItem/ItemProperties"]
 custom_minimum_size = Vector2(100, 0)
 layout_mode = 2
-size_flags_horizontal = 8
 size_flags_vertical = 4
 bbcode_enabled = true
 text = "[right]999[color=gold]g[/color] 99[color=silver]s[/color] 99[color=orange]c[/color][/right]"
@@ -119,7 +122,6 @@ page = 23.0
 [node name="SellPrice" type="RichTextLabel" parent="HBoxContainer/CollapsedItem/ItemProperties"]
 custom_minimum_size = Vector2(100, 0)
 layout_mode = 2
-size_flags_horizontal = 8
 size_flags_vertical = 4
 bbcode_enabled = true
 text = "[right]999[color=gold]g[/color] 99[color=silver]s[/color] 99[color=orange]c[/color][/right]"
@@ -147,7 +149,6 @@ page = 23.0
 [node name="Profit" type="RichTextLabel" parent="HBoxContainer/CollapsedItem/ItemProperties"]
 custom_minimum_size = Vector2(100, 0)
 layout_mode = 2
-size_flags_horizontal = 8
 size_flags_vertical = 4
 bbcode_enabled = true
 text = "[right]999[color=gold]g[/color] 99[color=silver]s[/color] 99[color=orange]c[/color][/right]"
@@ -173,7 +174,7 @@ step = 1.0
 page = 23.0
 
 [node name="InvestDate" type="Label" parent="HBoxContainer/CollapsedItem/ItemProperties"]
-custom_minimum_size = Vector2(122, 0)
+custom_minimum_size = Vector2(133, 0)
 layout_mode = 2
 text = "29 months ago"
 horizontal_alignment = 2
@@ -190,7 +191,6 @@ vertical_alignment = 1
 [node name="SpacerR" type="Control" parent="HBoxContainer/CollapsedItem/ItemProperties"]
 layout_mode = 2
 size_flags_horizontal = 3
-size_flags_stretch_ratio = 0.1
 
 [node name="SpacerB" type="Control" parent="HBoxContainer/CollapsedItem"]
 layout_mode = 2

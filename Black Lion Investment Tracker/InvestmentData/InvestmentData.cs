@@ -17,12 +17,12 @@ public partial class InvestmentData
     public List<SellData> SellDatas;
 
     [JsonIgnore] public int TotalBuyPrice => IndividualPrice * Quantity;
-    [JsonIgnore] public int TotalSellPrice => SellDatas.Sum(s => s.IndividualPrice * s.Quantity);
+    [JsonIgnore] public int TotalSellPrice => SellDatas.Sum(s => s.TotalSellPrice);
     [JsonIgnore] public int SellQuantity => SellDatas.Sum(s => s.Quantity);
     [JsonIgnore] public DateTimeOffset LatestSellDate => SellDatas.OrderBy(d => d.SellDate).First().SellDate;
 
     // The Total We Sold For Reduced By The 15% BLTP Tax Minus The Total We Bought The Items For
-    [JsonIgnore] public int Profit => Mathf.FloorToInt((TotalSellPrice * .85f) - (IndividualPrice * Quantity));
+    [JsonIgnore] public int Profit => Mathf.FloorToInt((TotalSellPrice * .85f) - TotalBuyPrice);
     [JsonIgnore] public double ROI => Profit / (double)TotalBuyPrice * 100;
 
     public InvestmentData(CommerceTransactionHistory buyTransaction)
@@ -36,7 +36,5 @@ public partial class InvestmentData
     }
 
     [JsonConstructor]
-    public InvestmentData()
-    {
-    }
+    public InvestmentData() { }
 }

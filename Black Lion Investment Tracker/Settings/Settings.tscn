@@ -1,8 +1,8 @@
 [gd_scene load_steps=4 format=3 uid="uid://cmjk1fju2jai1"]
 
-[ext_resource type="Theme" path="res://Themes/MainTheme.tres" id="1_ihyau"]
+[ext_resource type="Theme" uid="uid://dy6mo6ior0maw" path="res://Themes/MainTheme.tres" id="1_ihyau"]
 [ext_resource type="Script" path="res://Settings/Settings.cs" id="2_x88c0"]
-[ext_resource type="PackedScene" uid="uid://7xgehqyewx1l" path="res://Main.tscn" id="3_ceqxv"]
+[ext_resource type="PackedScene" uid="uid://cymxv0dr67b5i" path="res://Main.tscn" id="3_ceqxv"]
 
 [node name="Settings" type="Panel" node_paths=PackedStringArray("apiKeyField")]
 anchors_preset = 15

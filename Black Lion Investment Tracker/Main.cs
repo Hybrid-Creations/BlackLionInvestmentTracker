@@ -1,43 +1,46 @@
-using System;
+using BLIT.Investments;
 using Godot;
 using Gw2Sharp;
 
-namespace BLIT;
+namespace BLIT.UI;
 
 public partial class Main : Node
 {
     [Export]
     VBoxContainer itemHolder;
 
+    [Export]
+    Investments Investments;
+
     public static Gw2Client MyClient { get; private set; }
 
-    public static InvestmentsDatabase Database { get; private set; }
+    public static InvestmentsDatabase Database { get; private set; } = new();
+
+    double refreshTimer = 1;
+    readonly int refreshTimeSeconds = 300;
 
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
     {
-        try
-        {
-            if (Saving.TryLoadDatabase(out var newData))
-            {
-                GD.Print("Sucessfully loaded database");
-                Database = newData;
-            }
-            else
-            {
-                GD.Print("Failed to loaded database");
-                Database = new InvestmentsDatabase();
-            }
+        Database.Load();
 
-            GD.Print($"{Database.Investments.Count}, {newData.Investments.Count}, {newData.CollapsedInvestments.Count}, {newData.NotInvestments.Count}");
+        MyClient = new Gw2Client(new Connection(Settings.Data.APIKey));
+    }
 
-            MyClient = new Gw2Client(new Connection(Settings.Data.APIKey));
-        }
-        catch (Exception e)
+    public override void _Process(double delta)
+    {
+        refreshTimer -= delta;
+        if (refreshTimer <= 0)
         {
-            GD.PrintErr(e);
-            GetTree().Quit();
+            RefreshDatabase();
+            refreshTimer = float.MaxValue;
         }
+    }
+
+    public void RefreshDatabase()
+    {
+        Database.Update(() => Investments.ListInvestments());
+
     }
 
     public override void _Notification(int what)
@@ -45,7 +48,8 @@ public partial class Main : Node
         if (what == NotificationWMCloseRequest)
         {
             GD.Print("Quitting");
-            Saving.SaveAll();
+            Database.Save();
+            Settings.Save();
             MyClient.Dispose();
             GetTree().Quit(); // default behavior
         }

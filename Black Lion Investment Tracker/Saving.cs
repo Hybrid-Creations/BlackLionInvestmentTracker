@@ -1,11 +1,26 @@
 
-namespace BLIT;
+using Godot;
+using Newtonsoft.Json;
 
-public partial class Saving
+namespace BLIT.Saving;
+
+public class SaveSystem
 {
-    public static void SaveAll()
+    public static void SaveToFile<T>(string pathOfFileToSaveTo, T objectToSave)
     {
-        SaveDatabase(Main.Database);
-        SaveSettings(Settings.Data);
+        using var file = FileAccess.Open(pathOfFileToSaveTo, FileAccess.ModeFlags.Write);
+        file.StoreString(JsonConvert.SerializeObject(objectToSave));
+    }
+
+    public static bool TryLoadFromFile<T>(string pathOfFileToLoadFrom, out T @object)
+    {
+        @object = default;
+        if (FileAccess.FileExists(pathOfFileToLoadFrom))
+        {
+            using var dbFile = FileAccess.Open(pathOfFileToLoadFrom, FileAccess.ModeFlags.Read);
+            @object = JsonConvert.DeserializeObject<T>(dbFile.GetAsText());
+            return true;
+        }
+        else return false;
     }
 }
