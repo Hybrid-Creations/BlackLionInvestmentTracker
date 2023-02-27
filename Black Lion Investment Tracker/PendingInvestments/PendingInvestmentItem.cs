@@ -5,15 +5,16 @@ namespace BLIT.UI;
 
 public partial class PendingInvestmentItem : VBoxContainer
 {
-    internal void Init(string itemName, ImageTexture icon, PendingInvestmentData pendingInvestment)
+    internal void Init(ItemData item, PendingInvestmentData pendingInvestment)
     {
-        GetNode<TextureRect>("ItemProperties/Icon").Texture = icon;
+        GetNode<TextureRect>("ItemProperties/Icon").Texture = item.Icon;
         GetNode<Label>("ItemProperties/Icon/Quantity").Text = pendingInvestment.Quantity.ToString();
-        GetNode<Label>("ItemProperties/Name").Text = $" {itemName}";
+        GetNode<Label>("ItemProperties/Name").Text = $" {item.Name}";
         GetNode<RichTextLabel>("ItemProperties/InvestmentPrice").Text = GetInvestmentPrice(pendingInvestment);
         GetNode<RichTextLabel>("ItemProperties/CurrentSellPrice").Text = GetCurrentSellPrice(pendingInvestment);
         GetNode<RichTextLabel>("ItemProperties/BreakEvenSellPrice").Text = GetNeededPriceForAnyProfit(pendingInvestment);
         GetNode<RichTextLabel>("ItemProperties/CurrentProfit").Text = $"[right]{pendingInvestment.PotentialProfit.ToCurrencyString(true)}[/right]";
+        GetNode<Label>("ItemProperties/InvestDate").Text = pendingInvestment.PurchaseDate.ToTimeSinceString();
     }
 
     private static string GetInvestmentPrice(PendingInvestmentData pendingInvestment)
@@ -30,7 +31,7 @@ public partial class PendingInvestmentItem : VBoxContainer
     {
         // If you are making profit, it looks good
         if (pendingInvestment.PotentialProfit > 0)
-            return "[center]-----[/center]";
+            return "[right]-----[/right]";
         // We know we arent making profit so calculate what you would have to sell it at to break even
         else
         {

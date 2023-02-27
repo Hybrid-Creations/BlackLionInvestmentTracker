@@ -1,5 +1,6 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 using BLIT.Saving;
 using BLIT.UI;
 using Godot;
@@ -23,38 +24,39 @@ public static partial class Cache
                 itemData = new ItemData(item, iconBytes);
                 itemDB.TryAdd(itemId, itemData);
             }
-
             return itemData;
         }
 
+        private const string pathToItems = "user://cache.items";
         public static void Save()
         {
             var saved = new SavedItems();
             saved.itemDB = itemDB;
-            saved.Save();
+            SaveSystem.SaveToFile(pathToItems, saved);
+        }
+
+        public static void Load()
+        {
+            if (SaveSystem.TryLoadFromFile(pathToItems, out SavedItems saved))
+                itemDB = new ConcurrentDictionary<int, ItemData>(saved.itemDB);
+            GD.Print($"Loaded Item Database: i:{itemDB.Count}");
         }
     }
 
     public class SavedItems
     {
         public IDictionary<int, ItemData> itemDB = new Dictionary<int, ItemData>();
-
-        public void Save()
-        {
-            SaveSystem.SaveToFile("user://cache.items", this);
-        }
     }
 }
 
+[DataContract]
 public class ItemData
 {
-    public string Name { get; private set; }
-    private byte[] iconBytes;
+    [DataMember] public string Name { get; private set; }
+    [DataMember] private byte[] iconBytes;
 
-    [JsonIgnore]
-    ImageTexture icon;
-    [JsonIgnore]
-    ImageTexture Icon
+    private ImageTexture icon;
+    public ImageTexture Icon
     {
         get
         {

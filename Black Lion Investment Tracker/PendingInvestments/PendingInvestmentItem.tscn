@@ -1,4 +1,4 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene load_steps=5 format=3 uid="uid://bjbxj6xq1qgc4"]
 
 [ext_resource type="Theme" uid="uid://dy6mo6ior0maw" path="res://Themes/MainTheme.tres" id="1_humwa"]
 [ext_resource type="Script" path="res://PendingInvestments/PendingInvestmentItem.cs" id="2_5db8b"]
@@ -46,7 +46,7 @@ horizontal_alignment = 2
 vertical_alignment = 2
 
 [node name="Name" type="Label" parent="ItemProperties"]
-custom_minimum_size = Vector2(233, 0)
+custom_minimum_size = Vector2(225, 0)
 layout_mode = 2
 text = "Shaman's Incricate Gossamer Insignia"
 vertical_alignment = 1

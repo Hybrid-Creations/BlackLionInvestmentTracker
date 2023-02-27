@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Threading.Tasks;
 using BLIT.Saving;
 using BLIT.UI;
@@ -170,29 +171,35 @@ public partial class InvestmentsDatabase
 
                 // Go through all buys and check if any are investments
                 int i = 0;
-                foreach (var buy in sortedBuys)
+                foreach (var buyOrder in sortedBuys)
                 {
                     // Skip if we already have the transaction in the database, that means we have used it already
-                    if (Main.Database.NotInvestments.Any(l => l == buy.Id))
+                    if (Main.Database.NotInvestments.Any(l => l == buyOrder.Id))
                     {
-                        GD.Print($"Skipped buy order \"{buy.Id}\" as it was marked as not an investment.");
+                        //GD.Print($"Skipped buy order \"{buy.Id}\" as it was marked as not an investment.");
                         SetStatusAndPrintDuration(status, ref i, buys.Count);
                         continue;
                     }
-                    if (Main.Database.Investments.Any(i => i.TransactionId == buy.Id))
+                    if (Main.Database.Investments.Any(i => i.TransactionId == buyOrder.Id))
                     {
-                        GD.Print($"Skipped buy order \"{buy.Id}\" as it was already in the database.");
+                        //GD.Print($"Skipped buy order \"{buy.Id}\" as it was already in the database.");
+                        SetStatusAndPrintDuration(status, ref i, buys.Count);
+                        continue;
+                    }
+                    if (Main.Database.PendingInvestments.Any(i => i.TransactionId == buyOrder.Id))
+                    {
+                        //GD.Print($"Skipped buy order \"{buy.Id}\" as it was already in the database.");
                         SetStatusAndPrintDuration(status, ref i, buys.Count);
                         continue;
                     }
 
-                    int buyAmmountLeft = buy.Quantity;
-                    var investment = new InvestmentData(buy);
+                    int buyAmmountLeft = buyOrder.Quantity;
+                    var investment = new InvestmentData(buyOrder);
 
                     try
                     {
                         // Make sure the sell transactions we look at are for the same item and only after the date the buy was purchase
-                        CheckHistorySellOrdersForMatches(buy, ref buyAmmountLeft, investment, sortedSells);
+                        CheckHistorySellOrdersForMatches(buyOrder, ref buyAmmountLeft, investment, sortedSells);
 
                         // This is how we determine if an actual investment was created
                         if (investment.SellDatas.Count > 0)
@@ -203,16 +210,16 @@ public partial class InvestmentsDatabase
                                 investment.Quantity -= buyAmmountLeft;
                             }
 
-                            GD.Print($"New Investment -> {buy.ItemId}, Bought {investment.Quantity} for {investment.TotalBuyPrice}, Sold {investment.SellQuantity}/{investment.SellDatas.Count} for {investment.TotalSellPrice}, for a Profit of {investment.Profit}");
+                            GD.Print($"New Investment -> {buyOrder.ItemId}, Bought {investment.Quantity} for {investment.TotalBuyPrice}, Sold {investment.SellQuantity}/{investment.SellDatas.Count} for {investment.TotalSellPrice}, for a Profit of {investment.Profit}");
                             Investments.Add(investment);
                         }
                         // This means we did buy the item, but we have not sold any yet, so it is pending
                         else
                         {
-                            var pendingInvestment = new PendingInvestmentData(buy, new Lazy<int>(() => Cache.Prices.GetPrice(buy.ItemId)));
+                            var pendingInvestment = new PendingInvestmentData(buyOrder, new Lazy<int>(() => Cache.Prices.GetPrice(buyOrder.ItemId)));
 
                             // Make sure the sell transactions we look at are for the same item and only after the date the buy was purchase
-                            CheckPostedSellOrdersForMatches(buy, ref buyAmmountLeft, pendingInvestment, sortedPostedSellOrders);
+                            CheckPostedSellOrdersForMatches(buyOrder, ref buyAmmountLeft, pendingInvestment, sortedPostedSellOrders);
 
                             PendingInvestments.Add(pendingInvestment);
                         }
@@ -402,14 +409,17 @@ public partial class InvestmentsDatabase
         groups.ForEach(c => CollapsedPendingInvestments.Add(c));
     }
 
+    [DataContract]
     public class CompletedInvestmentsData
     {
-        public List<InvestmentData> Investments { get; private set; } = new();
-        public List<long> NotInvestments { get; private set; } = new();
+        [DataMember] public List<InvestmentData> Investments { get; private set; } = new();
+        [DataMember] public List<long> NotInvestments { get; private set; } = new();
     }
+
+    [DataContract]
     public class PendingInvestmentsData
-{
-        public List<PendingInvestmentData> PendingInvestments { get; private set; } = new();
+    {
+        [DataMember] public List<PendingInvestmentData> PendingInvestments { get; private set; } = new();
     }
 
     // ---------- Saving
@@ -422,6 +432,6 @@ public partial class InvestmentsDatabase
     {
         if (SaveSystem.TryLoadFromFile(databasePath, out CompletedInvestmentsData newData))
             completedInvestmentsData = newData;
-        GD.Print($"Loaded Database; {Investments.Count}, {Investments.Count}, {CollapsedInvestments.Count}, {NotInvestments.Count}");
+        GD.Print($"Loaded Investment Database: i:{Investments.Count}, n:{NotInvestments.Count}");
     }
 }

@@ -32,13 +32,13 @@ public partial class CollapsedPendingTransactionItem : VBoxContainer
         subInvestmentTitles.Hide();
     }
 
-    public void Init(string _itemName, Texture2D _icon, CollapsedPendingInvestmentData _collapsedPendingInvestment)
+    public void Init(ItemData _item, CollapsedPendingInvestmentData _collapsedPendingInvestment)
     {
         collapsedPendingInvestment = _collapsedPendingInvestment;
 
-        itemProperties.GetNode<TextureRect>("Icon").Texture = _icon;
+        itemProperties.GetNode<TextureRect>("Icon").Texture = _item.Icon;
         itemProperties.GetNode<Label>("Icon/Quantity").Text = _collapsedPendingInvestment.Quantity.ToString();
-        itemProperties.GetNode<Label>("Name").Text = $"{_itemName}";
+        itemProperties.GetNode<Label>("Name").Text = $"{_item.Name}   " + _collapsedPendingInvestment.SubInvestments.Sum(s => s.PostedSellDatas.Count).ToString();
         itemProperties.GetNode<RichTextLabel>("InvestmentPrice").Text = GetInvestmentPrice(_collapsedPendingInvestment);
         itemProperties.GetNode<RichTextLabel>("CurrentSellPrice").Text = GetCurrentSellPrice(_collapsedPendingInvestment);
         itemProperties.GetNode<RichTextLabel>("BreakEvenSellPrice").Text = GetNeededPriceForAnyProfit(_collapsedPendingInvestment);
@@ -48,7 +48,7 @@ public partial class CollapsedPendingTransactionItem : VBoxContainer
 
     private static string GetInvestmentPrice(CollapsedPendingInvestmentData _collapsedPendingInvestment)
     {
-        return $"[right]{_collapsedPendingInvestment.TotalBuyPrice.ToCurrencyString(true)}\n [color=gray]each[/color][ {_collapsedPendingInvestment.IndividualPrice.ToCurrencyString(true)}/right]";
+        return $"[right]{_collapsedPendingInvestment.TotalBuyPrice.ToCurrencyString(true)}\n [color=gray]each[/color] {_collapsedPendingInvestment.IndividualPrice.ToCurrencyString(true)}[/right]";
     }
 
     private static string GetCurrentSellPrice(CollapsedPendingInvestmentData _collapsedPendingInvestment)
@@ -60,7 +60,7 @@ public partial class CollapsedPendingTransactionItem : VBoxContainer
     {
         // If you are making profit, it looks good
         if (_collapsedPendingInvestment.TotalPotentialProfit > 0)
-            return "[center]-----[/center]";
+            return "[right]-----[/right]";
         // We know we arent making profit so calculate what you would have to sell it at to break even
         else
         {
@@ -79,7 +79,7 @@ public partial class CollapsedPendingTransactionItem : VBoxContainer
             foreach (var investment in collapsedPendingInvestment.SubInvestments.OrderBy(si => si.PurchaseDate))
             {
                 var instance = pendingInvestmentItemScene.Instantiate<PendingInvestmentItem>();
-                instance.Init(Cache.Items.GetItemData(investment.ItemId).Name, Cache.Icons.GetIcon(investment.ItemId), investment);
+                instance.Init(Cache.Items.GetItemData(investment.ItemId), investment);
                 subInvestmentHolder.AddChild(instance, 0);
             }
         }

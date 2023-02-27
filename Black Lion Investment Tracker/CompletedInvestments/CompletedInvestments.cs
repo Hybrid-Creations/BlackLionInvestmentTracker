@@ -61,7 +61,7 @@ public partial class CompletedInvestments : VBoxContainer
             try
             {
                 var instance = collapsedTransactionScene.Instantiate<CollapsedTransactionItem>();
-                instance.Init(Cache.Items.GetItemData(investment.ItemId).Name, Cache.Icons.GetIcon(investment.ItemId), investment);
+                instance.Init(Cache.Items.GetItemData(investment.ItemId), investment);
                 investmentHolder.AddChildSafe(instance, 0);
             }
             catch (Exception e)

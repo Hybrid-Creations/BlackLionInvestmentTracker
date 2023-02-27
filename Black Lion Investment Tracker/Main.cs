@@ -25,6 +25,7 @@ public partial class Main : Node
     public override void _Ready()
     {
         Database.Load();
+        Cache.Items.Load();
 
         MyClient = new Gw2Client(new Connection(Settings.Data.APIKey));
     }

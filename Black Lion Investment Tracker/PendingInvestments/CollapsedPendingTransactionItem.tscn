@@ -3,7 +3,7 @@
 [ext_resource type="Theme" uid="uid://dy6mo6ior0maw" path="res://Themes/MainTheme.tres" id="1_etpwm"]
 [ext_resource type="Script" path="res://PendingInvestments/CollapsedPendingTransactionItem.cs" id="2_liwdd"]
 [ext_resource type="Texture2D" uid="uid://lm5hp18ipnd" path="res://Sprites/arrow_right.png" id="3_gcdpq"]
-[ext_resource type="PackedScene" path="res://PendingInvestments/PendingInvestmentItem.tscn" id="3_glp4t"]
+[ext_resource type="PackedScene" uid="uid://bjbxj6xq1qgc4" path="res://PendingInvestments/PendingInvestmentItem.tscn" id="3_glp4t"]
 [ext_resource type="Texture2D" uid="uid://dlbpcw8rui0ri" path="res://test.png" id="4_y4kh7"]
 [ext_resource type="Texture2D" uid="uid://q0n8du351q8k" path="res://Sprites/arrow_down.png" id="5_748kk"]
 [ext_resource type="LabelSettings" uid="uid://cohsxdtkacnpa" path="res://Themes/IconQuantityLabelSettings.tres" id="5_obt30"]
@@ -237,7 +237,7 @@ horizontal_alignment = 1
 vertical_alignment = 2
 
 [node name="Name" type="Label" parent="SubItemTitles"]
-custom_minimum_size = Vector2(233, 0)
+custom_minimum_size = Vector2(225, 0)
 layout_mode = 2
 size_flags_stretch_ratio = 20.0
 text = "Name"

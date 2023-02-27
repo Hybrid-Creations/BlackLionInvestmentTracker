@@ -32,13 +32,13 @@ public partial class CollapsedTransactionItem : VBoxContainer
         subInvestmentTitles.Hide();
     }
 
-    public void Init(string _itemName, Texture2D _icon, CollapsedInvestmentData _collapsedInvestment)
+    public void Init(ItemData _item, CollapsedInvestmentData _collapsedInvestment)
     {
         collapsedInvestment = _collapsedInvestment;
 
-        itemProperties.GetNode<TextureRect>("Icon").Texture = _icon;
+        itemProperties.GetNode<TextureRect>("Icon").Texture = _item.Icon;
         itemProperties.GetNode<Label>("Icon/Quantity").Text = _collapsedInvestment.Quantity.ToString();
-        itemProperties.GetNode<Label>("Name").Text = $"{_itemName}";
+        itemProperties.GetNode<Label>("Name").Text = $"{_item.Name}";
         itemProperties.GetNode<RichTextLabel>("BuyPrice").Text = $"[right]{_collapsedInvestment.TotalBuyPrice.ToCurrencyString(true)}[/right]";
         itemProperties.GetNode<RichTextLabel>("SellPrice").Text = $"[right]{_collapsedInvestment.TotalSellPrice.ToCurrencyString(true)}[/right]";
         itemProperties.GetNode<RichTextLabel>("Profit").Text = $"[right]{_collapsedInvestment.TotalProfit.ToCurrencyString(true)}[/right]";
@@ -56,7 +56,7 @@ public partial class CollapsedTransactionItem : VBoxContainer
             foreach (var investment in collapsedInvestment.SubInvestments.OrderBy(si => si.PurchaseDate))
             {
                 var instance = investmentItemScene.Instantiate<TransactionItem>();
-                instance.Init(Cache.Items.GetItemData(investment.ItemId).Name, Cache.Icons.GetIcon(investment.ItemId), investment);
+                instance.Init(Cache.Items.GetItemData(investment.ItemId), investment);
                 subInvestmentHolder.AddChild(instance, 0);
             }
         }
