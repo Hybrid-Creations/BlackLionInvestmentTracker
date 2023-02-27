@@ -1,27 +1,27 @@
-[gd_scene load_steps=8 format=3 uid="uid://qn7vq81m07ip"]
+[gd_scene load_steps=8 format=3 uid="uid://ofhpo2epp3ws"]
 
-[ext_resource type="Script" path="res://CompletedInvestments/CollapsedTransactionItem.cs" id="1_40a67"]
-[ext_resource type="Theme" uid="uid://dy6mo6ior0maw" path="res://Themes/MainTheme.tres" id="1_o2ujm"]
-[ext_resource type="PackedScene" uid="uid://cch8ttqmwmt37" path="res://CompletedInvestments/TransactionItem.tscn" id="2_7mhta"]
-[ext_resource type="Texture2D" uid="uid://dlbpcw8rui0ri" path="res://test.png" id="2_capki"]
-[ext_resource type="Texture2D" uid="uid://lm5hp18ipnd" path="res://Sprites/arrow_right.png" id="3_00koi"]
-[ext_resource type="Texture2D" uid="uid://q0n8du351q8k" path="res://Sprites/arrow_down.png" id="4_sm6eu"]
-[ext_resource type="LabelSettings" uid="uid://cohsxdtkacnpa" path="res://Themes/IconQuantityLabelSettings.tres" id="7_h5xjr"]
+[ext_resource type="Theme" uid="uid://dy6mo6ior0maw" path="res://Themes/MainTheme.tres" id="1_etpwm"]
+[ext_resource type="Script" path="res://PendingInvestments/CollapsedPendingTransactionItem.cs" id="2_liwdd"]
+[ext_resource type="Texture2D" uid="uid://lm5hp18ipnd" path="res://Sprites/arrow_right.png" id="3_gcdpq"]
+[ext_resource type="PackedScene" path="res://PendingInvestments/PendingInvestmentItem.tscn" id="3_glp4t"]
+[ext_resource type="Texture2D" uid="uid://dlbpcw8rui0ri" path="res://test.png" id="4_y4kh7"]
+[ext_resource type="Texture2D" uid="uid://q0n8du351q8k" path="res://Sprites/arrow_down.png" id="5_748kk"]
+[ext_resource type="LabelSettings" uid="uid://cohsxdtkacnpa" path="res://Themes/IconQuantityLabelSettings.tres" id="5_obt30"]
 
-[node name="CollapsedTransactionItem" type="VBoxContainer" node_paths=PackedStringArray("itemProperties", "subInvestmentHolder", "subInvestmentTitles", "toggleTreeButton")]
+[node name="CollapsedPendingTransactionItem" type="VBoxContainer" node_paths=PackedStringArray("itemProperties", "subInvestmentHolder", "subInvestmentTitles", "toggleTreeButton")]
 anchors_preset = 10
 anchor_right = 1.0
 offset_bottom = 111.0
 grow_horizontal = 2
-theme = ExtResource("1_o2ujm")
-script = ExtResource("1_40a67")
+theme = ExtResource("1_etpwm")
+script = ExtResource("2_liwdd")
 itemProperties = NodePath("HBoxContainer/CollapsedItem/ItemProperties")
-investmentItemScene = ExtResource("2_7mhta")
+pendingInvestmentItemScene = ExtResource("3_glp4t")
 subInvestmentHolder = NodePath("SubInvestmentHolder")
 subInvestmentTitles = NodePath("SubItemTitles")
 toggleTreeButton = NodePath("HBoxContainer/ToggleTreeButton")
-arrowRight = ExtResource("3_00koi")
-arrowDown = ExtResource("4_sm6eu")
+arrowRight = ExtResource("3_gcdpq")
+arrowDown = ExtResource("5_748kk")
 
 [node name="HBoxContainer" type="HBoxContainer" parent="."]
 layout_mode = 2
@@ -32,7 +32,7 @@ theme_override_constants/separation = 5
 custom_minimum_size = Vector2(32, 0)
 layout_mode = 2
 toggle_mode = true
-icon = ExtResource("3_00koi")
+icon = ExtResource("3_gcdpq")
 flat = true
 clip_text = true
 icon_alignment = 1
@@ -58,7 +58,7 @@ size_flags_stretch_ratio = 0.5
 [node name="Icon" type="TextureRect" parent="HBoxContainer/CollapsedItem/ItemProperties"]
 custom_minimum_size = Vector2(64, 64)
 layout_mode = 2
-texture = ExtResource("2_capki")
+texture = ExtResource("4_y4kh7")
 
 [node name="Quantity" type="Label" parent="HBoxContainer/CollapsedItem/ItemProperties/Icon"]
 layout_mode = 1
@@ -70,7 +70,7 @@ offset_bottom = -2.0
 grow_horizontal = 2
 grow_vertical = 2
 text = "250"
-label_settings = ExtResource("7_h5xjr")
+label_settings = ExtResource("5_obt30")
 horizontal_alignment = 2
 vertical_alignment = 2
 
@@ -80,31 +80,32 @@ size_flags_horizontal = 3
 size_flags_stretch_ratio = 0.1
 
 [node name="Name" type="Label" parent="HBoxContainer/CollapsedItem/ItemProperties"]
-custom_minimum_size = Vector2(350, 0)
+custom_minimum_size = Vector2(300, 0)
 layout_mode = 2
 text = " Unopened Endless Bottle Of Batwing Brew And Swim Speed Infusion +10"
 vertical_alignment = 1
 clip_text = true
 
-[node name="BuyPrice" type="RichTextLabel" parent="HBoxContainer/CollapsedItem/ItemProperties"]
-custom_minimum_size = Vector2(100, 0)
+[node name="InvestmentPrice" type="RichTextLabel" parent="HBoxContainer/CollapsedItem/ItemProperties"]
+custom_minimum_size = Vector2(125, 0)
 layout_mode = 2
 size_flags_vertical = 4
 bbcode_enabled = true
-text = "[right]999[color=gold]g[/color] 99[color=silver]s[/color] 99[color=orange]c[/color][/right]"
+text = "[right]999[color=gold]g[/color] 99[color=silver]s[/color] 99[color=orange]c[/color]
+[color=gray]each[/color] 9[color=gold]g[/color] 99[color=silver]s[/color] 99[color=orange]c[/color]"
 fit_content = true
 scroll_active = false
 autowrap_mode = 0
 shortcut_keys_enabled = false
 
-[node name="19065" type="VScrollBar" parent="HBoxContainer/CollapsedItem/ItemProperties/BuyPrice"]
+[node name="19065" type="VScrollBar" parent="HBoxContainer/CollapsedItem/ItemProperties/InvestmentPrice"]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
 step = 1.0
 
-[node name="17385" type="VScrollBar" parent="HBoxContainer/CollapsedItem/ItemProperties/BuyPrice"]
+[node name="17385" type="VScrollBar" parent="HBoxContainer/CollapsedItem/ItemProperties/InvestmentPrice"]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -113,25 +114,26 @@ max_value = 23.0
 step = 1.0
 page = 23.0
 
-[node name="SellPrice" type="RichTextLabel" parent="HBoxContainer/CollapsedItem/ItemProperties"]
-custom_minimum_size = Vector2(100, 0)
+[node name="CurrentSellPrice" type="RichTextLabel" parent="HBoxContainer/CollapsedItem/ItemProperties"]
+custom_minimum_size = Vector2(125, 0)
 layout_mode = 2
 size_flags_vertical = 4
 bbcode_enabled = true
-text = "[right]999[color=gold]g[/color] 99[color=silver]s[/color] 99[color=orange]c[/color][/right]"
+text = "[right]999[color=gold]g[/color] 99[color=silver]s[/color] 99[color=orange]c[/color]
+[color=gray]each[/color] 9[color=gold]g[/color] 99[color=silver]s[/color] 99[color=orange]c[/color]"
 fit_content = true
 scroll_active = false
 autowrap_mode = 0
 shortcut_keys_enabled = false
 
-[node name="19066" type="VScrollBar" parent="HBoxContainer/CollapsedItem/ItemProperties/SellPrice"]
+[node name="19066" type="VScrollBar" parent="HBoxContainer/CollapsedItem/ItemProperties/CurrentSellPrice"]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
 step = 1.0
 
-[node name="17386" type="VScrollBar" parent="HBoxContainer/CollapsedItem/ItemProperties/SellPrice"]
+[node name="17386" type="VScrollBar" parent="HBoxContainer/CollapsedItem/ItemProperties/CurrentSellPrice"]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -140,7 +142,35 @@ max_value = 23.0
 step = 1.0
 page = 23.0
 
-[node name="Profit" type="RichTextLabel" parent="HBoxContainer/CollapsedItem/ItemProperties"]
+[node name="BreakEvenSellPrice" type="RichTextLabel" parent="HBoxContainer/CollapsedItem/ItemProperties"]
+custom_minimum_size = Vector2(125, 0)
+layout_mode = 2
+size_flags_vertical = 4
+bbcode_enabled = true
+text = "[right]999[color=gold]g[/color] 99[color=silver]s[/color] 99[color=orange]c[/color]
+[color=gray]each[/color] 9[color=gold]g[/color] 99[color=silver]s[/color] 99[color=orange]c[/color]"
+fit_content = true
+scroll_active = false
+autowrap_mode = 0
+shortcut_keys_enabled = false
+
+[node name="19066" type="VScrollBar" parent="HBoxContainer/CollapsedItem/ItemProperties/BreakEvenSellPrice"]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+step = 1.0
+
+[node name="17386" type="VScrollBar" parent="HBoxContainer/CollapsedItem/ItemProperties/BreakEvenSellPrice"]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+max_value = 23.0
+step = 1.0
+page = 23.0
+
+[node name="CurrentProfit" type="RichTextLabel" parent="HBoxContainer/CollapsedItem/ItemProperties"]
 custom_minimum_size = Vector2(100, 0)
 layout_mode = 2
 size_flags_vertical = 4
@@ -151,14 +181,14 @@ scroll_active = false
 autowrap_mode = 0
 shortcut_keys_enabled = false
 
-[node name="19067" type="VScrollBar" parent="HBoxContainer/CollapsedItem/ItemProperties/Profit"]
+[node name="19067" type="VScrollBar" parent="HBoxContainer/CollapsedItem/ItemProperties/CurrentProfit"]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
 step = 1.0
 
-[node name="17387" type="VScrollBar" parent="HBoxContainer/CollapsedItem/ItemProperties/Profit"]
+[node name="17387" type="VScrollBar" parent="HBoxContainer/CollapsedItem/ItemProperties/CurrentProfit"]
 visible = false
 layout_mode = 0
 anchor_right = 1.0
@@ -168,18 +198,10 @@ step = 1.0
 page = 23.0
 
 [node name="InvestDate" type="Label" parent="HBoxContainer/CollapsedItem/ItemProperties"]
-custom_minimum_size = Vector2(133, 0)
+custom_minimum_size = Vector2(125, 0)
 layout_mode = 2
 text = "29 months ago"
 horizontal_alignment = 2
-vertical_alignment = 1
-
-[node name="SellDate" type="Label" parent="HBoxContainer/CollapsedItem/ItemProperties"]
-visible = false
-custom_minimum_size = Vector2(130, 0)
-layout_mode = 2
-text = "59 minutes ago"
-horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="SpacerR" type="Control" parent="HBoxContainer/CollapsedItem/ItemProperties"]
@@ -223,21 +245,28 @@ horizontal_alignment = 1
 vertical_alignment = 2
 
 [node name="BuyPrice" type="Label" parent="SubItemTitles"]
-custom_minimum_size = Vector2(95, 0)
+custom_minimum_size = Vector2(125, 0)
 layout_mode = 2
 text = "Buy Price"
 horizontal_alignment = 2
 vertical_alignment = 2
 
 [node name="SellPrice" type="Label" parent="SubItemTitles"]
-custom_minimum_size = Vector2(95, 0)
+custom_minimum_size = Vector2(125, 0)
 layout_mode = 2
 text = "Sell Price"
 horizontal_alignment = 2
 vertical_alignment = 2
 
+[node name="BreakEvenSellPrice" type="Label" parent="SubItemTitles"]
+custom_minimum_size = Vector2(125, 0)
+layout_mode = 2
+text = "Break Even"
+horizontal_alignment = 2
+vertical_alignment = 2
+
 [node name="Profit" type="Label" parent="SubItemTitles"]
-custom_minimum_size = Vector2(95, 0)
+custom_minimum_size = Vector2(115, 0)
 layout_mode = 2
 text = "Profit"
 horizontal_alignment = 2
@@ -247,13 +276,6 @@ vertical_alignment = 2
 custom_minimum_size = Vector2(125, 0)
 layout_mode = 2
 text = "Date Bought"
-horizontal_alignment = 2
-vertical_alignment = 2
-
-[node name="SellDate" type="Label" parent="SubItemTitles"]
-custom_minimum_size = Vector2(125, 0)
-layout_mode = 2
-text = "Date Sold"
 horizontal_alignment = 2
 vertical_alignment = 2
 

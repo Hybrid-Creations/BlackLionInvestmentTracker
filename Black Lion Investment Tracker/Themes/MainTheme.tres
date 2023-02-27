@@ -1,6 +1,9 @@
-[gd_resource type="Theme" load_steps=2 format=3 uid="uid://dy6mo6ior0maw"]
+[gd_resource type="Theme" load_steps=3 format=3 uid="uid://dy6mo6ior0maw"]
 
 [ext_resource type="FontFile" uid="uid://dn042rauvk42g" path="res://Fonts/Cagliostro-Regular.ttf" id="1_4jk5m"]
 
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_nnb7o"]
+
 [resource]
 default_font = ExtResource("1_4jk5m")
+Button/styles/focus = SubResource("StyleBoxEmpty_nnb7o")

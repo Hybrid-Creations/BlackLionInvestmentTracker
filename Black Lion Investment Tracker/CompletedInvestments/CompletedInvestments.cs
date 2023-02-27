@@ -5,7 +5,7 @@ using Godot;
 
 namespace BLIT.UI;
 
-public partial class Investments : VBoxContainer
+public partial class CompletedInvestments : VBoxContainer
 {
     [Export]
     PackedScene collapsedTransactionScene;
@@ -16,13 +16,9 @@ public partial class Investments : VBoxContainer
     [Export]
     Label loadingLabel;
 
-    static Investments Instance;
-
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
     {
-        Instance = this;
-
         ClearTotals();
         ClearList();
     }
@@ -65,7 +61,7 @@ public partial class Investments : VBoxContainer
             try
             {
                 var instance = collapsedTransactionScene.Instantiate<CollapsedTransactionItem>();
-                instance.Init(Cache.Items.GetItem(investment.ItemId).Name, Cache.Icons.GetIcon(investment.ItemId), investment);
+                instance.Init(Cache.Items.GetItemData(investment.ItemId).Name, Cache.Icons.GetIcon(investment.ItemId), investment);
                 investmentHolder.AddChildSafe(instance, 0);
             }
             catch (Exception e)

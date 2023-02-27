@@ -10,7 +10,9 @@ public partial class Main : Node
     VBoxContainer itemHolder;
 
     [Export]
-    Investments Investments;
+    CompletedInvestments Investments;
+    [Export]
+    PendingInvestments PendingInvestments;
 
     public static Gw2Client MyClient { get; private set; }
 
@@ -33,13 +35,17 @@ public partial class Main : Node
         if (refreshTimer <= 0)
         {
             RefreshDatabase();
-            refreshTimer = float.MaxValue;
+            refreshTimer = refreshTimeSeconds;
         }
     }
 
     public void RefreshDatabase()
     {
-        Database.Update(() => Investments.ListInvestments());
+        Database.Update(() =>
+        {
+            Investments.ListInvestments();
+            PendingInvestments.ListInvestments();
+        });
 
     }
 
@@ -50,6 +56,7 @@ public partial class Main : Node
             GD.Print("Quitting");
             Database.Save();
             Settings.Save();
+            Cache.Items.Save();
             MyClient.Dispose();
             GetTree().Quit(); // default behavior
         }

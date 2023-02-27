@@ -7,7 +7,7 @@ using Newtonsoft.Json;
 
 namespace BLIT;
 
-public partial class InvestmentData
+public class InvestmentData
 {
     public long TransactionId;
     public int ItemId;
@@ -22,16 +22,16 @@ public partial class InvestmentData
     [JsonIgnore] public DateTimeOffset LatestSellDate => SellDatas.OrderBy(d => d.SellDate).First().SellDate;
 
     // The Total We Sold For Reduced By The 15% BLTP Tax Minus The Total We Bought The Items For
-    [JsonIgnore] public int Profit => Mathf.FloorToInt((TotalSellPrice * .85f) - TotalBuyPrice);
+    [JsonIgnore] public int Profit => Mathf.FloorToInt((TotalSellPrice * Constants.MultiplyTax) - TotalBuyPrice);
     [JsonIgnore] public double ROI => Profit / (double)TotalBuyPrice * 100;
 
-    public InvestmentData(CommerceTransactionHistory buyTransaction)
+    public InvestmentData(CommerceTransactionHistory _buyTransaction)
     {
-        TransactionId = buyTransaction.Id;
-        ItemId = buyTransaction.ItemId;
-        PurchaseDate = buyTransaction.Purchased;
-        IndividualPrice = buyTransaction.Price;
-        Quantity = buyTransaction.Quantity;
+        TransactionId = _buyTransaction.Id;
+        ItemId = _buyTransaction.ItemId;
+        PurchaseDate = _buyTransaction.Purchased;
+        IndividualPrice = _buyTransaction.Price;
+        Quantity = _buyTransaction.Quantity;
         SellDatas = new List<SellData>();
     }
 

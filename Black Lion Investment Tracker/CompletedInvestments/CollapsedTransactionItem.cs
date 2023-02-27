@@ -7,7 +7,7 @@ namespace BLIT.UI;
 public partial class CollapsedTransactionItem : VBoxContainer
 {
     [Export]
-    VBoxContainer collapsedItem;
+    HBoxContainer itemProperties;
 
     [ExportCategory("Sub Investments")]
     [Export]
@@ -36,14 +36,14 @@ public partial class CollapsedTransactionItem : VBoxContainer
     {
         collapsedInvestment = _collapsedInvestment;
 
-        collapsedItem.GetNode<TextureRect>("ItemProperties/Icon").Texture = _icon;
-        collapsedItem.GetNode<Label>("ItemProperties/Icon/Quantity").Text = _collapsedInvestment.Quantity.ToString();
-        collapsedItem.GetNode<Label>("ItemProperties/Name").Text = $"{_itemName}";
-        collapsedItem.GetNode<RichTextLabel>("ItemProperties/BuyPrice").Text = $"[right]{_collapsedInvestment.TotalBuyPrice.ToCurrencyString(true)}[/right]";
-        collapsedItem.GetNode<RichTextLabel>("ItemProperties/SellPrice").Text = $"[right]{_collapsedInvestment.TotalSellPrice.ToCurrencyString(true)}[/right]";
-        collapsedItem.GetNode<RichTextLabel>("ItemProperties/Profit").Text = $"[right]{_collapsedInvestment.TotalProfit.ToCurrencyString(true)}[/right]";
-        collapsedItem.GetNode<Label>("ItemProperties/InvestDate").Text = _collapsedInvestment.OldestPurchaseDate.ToTimeSinceString();
-        collapsedItem.GetNode<Label>("ItemProperties/SellDate").Text = _collapsedInvestment.LatestSellDate.ToTimeSinceString();
+        itemProperties.GetNode<TextureRect>("Icon").Texture = _icon;
+        itemProperties.GetNode<Label>("Icon/Quantity").Text = _collapsedInvestment.Quantity.ToString();
+        itemProperties.GetNode<Label>("Name").Text = $"{_itemName}";
+        itemProperties.GetNode<RichTextLabel>("BuyPrice").Text = $"[right]{_collapsedInvestment.TotalBuyPrice.ToCurrencyString(true)}[/right]";
+        itemProperties.GetNode<RichTextLabel>("SellPrice").Text = $"[right]{_collapsedInvestment.TotalSellPrice.ToCurrencyString(true)}[/right]";
+        itemProperties.GetNode<RichTextLabel>("Profit").Text = $"[right]{_collapsedInvestment.TotalProfit.ToCurrencyString(true)}[/right]";
+        itemProperties.GetNode<Label>("InvestDate").Text = _collapsedInvestment.OldestPurchaseDate.ToTimeSinceString();
+        itemProperties.GetNode<Label>("SellDate").Text = _collapsedInvestment.LatestSellDate.ToTimeSinceString();
     }
 
     public void TreeButtonToggled(bool enabled)
@@ -56,7 +56,7 @@ public partial class CollapsedTransactionItem : VBoxContainer
             foreach (var investment in collapsedInvestment.SubInvestments.OrderBy(si => si.PurchaseDate))
             {
                 var instance = investmentItemScene.Instantiate<TransactionItem>();
-                instance.Init(Cache.Items.GetItem(investment.ItemId).Name, Cache.Icons.GetIcon(investment.ItemId), investment);
+                instance.Init(Cache.Items.GetItemData(investment.ItemId).Name, Cache.Icons.GetIcon(investment.ItemId), investment);
                 subInvestmentHolder.AddChild(instance, 0);
             }
         }

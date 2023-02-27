@@ -16,35 +16,15 @@ public partial class InvestmentsDatabase
 
     public List<InvestmentData> Investments => completedInvestmentsData.Investments;
     public List<long> NotInvestments => completedInvestmentsData.NotInvestments;
-    public List<InvestmentData> PendingTransactions => pendingInvestmentsData.PendingTransactions;
+    public List<PendingInvestmentData> PendingInvestments => pendingInvestmentsData.PendingInvestments;
     public List<CollapsedInvestmentData> CollapsedInvestments { get; private set; } = new List<CollapsedInvestmentData>();
+    public List<CollapsedPendingInvestmentData> CollapsedPendingInvestments { get; private set; } = new List<CollapsedPendingInvestmentData>();
     public long TotalInvested => completedInvestmentsData.Investments.Sum(i => i.TotalBuyPrice);
     public long TotalReturn => completedInvestmentsData.Investments.Sum(i => i.TotalSellPrice);
     public long TotalProfit => completedInvestmentsData.Investments.Sum(i => i.Profit);
     public double ROI => TotalProfit / (double)TotalInvested * 100;
 
     bool updating;
-
-    public void GenerateCollapsed()
-    {
-        List<CollapsedInvestmentData> groups = new();
-
-        foreach (var investment in Investments)
-        {
-            var readyGroup = groups.FirstOrDefault(ci => ci.ItemId == investment.ItemId && ci.IndividualPrice == investment.IndividualPrice && ci.Quantity + investment.Quantity <= Constants.MaxItemStack);
-            if (readyGroup is not null)
-            {
-                readyGroup.SubInvestments.Add(investment);
-            }
-            else
-            {
-                var newCollapsedInvestment = new CollapsedInvestmentData(investment);
-                groups.Add(newCollapsedInvestment);
-            }
-        }
-
-        groups.ForEach(c => CollapsedInvestments.Add(c));
-    }
 
     public void Update(Action OnAfterUpdate)
     {
@@ -69,22 +49,25 @@ public partial class InvestmentsDatabase
                 GD.Print("Starting Database Update");
 
                 // Get All Transactions
-                List<CommerceTransactionHistory> buys = new();
-                List<CommerceTransactionHistory> sells = new();
+                List<CommerceTransactionHistory> buyOrders = new();
+                List<CommerceTransactionHistory> sellOrders = new();
+                List<CommerceTransactionCurrent> postedSellOrders = new();
 
                 // Get all the buy and sell orders from the API
-                await GetBuyAndSellHistory(buys, sells);
+                await GetBuyAndSellHistory(buyOrders, sellOrders, postedSellOrders);
 
                 // Create the Investment database from those buy and sell orders
-                await CreateInvestmentsFromOrders(buys, sells);
+                await CreateInvestmentsFromOrders(buyOrders, sellOrders, postedSellOrders);
 
                 Main.Database.CollapsedInvestments.Clear();
                 Main.Database.GenerateCollapsed();
 
+                Main.Database.CollapsedPendingInvestments.Clear();
+                Main.Database.GenerateCollapsedPending();
+
                 AppStatusIndicator.ClearStatus();
 
-                GD.Print($"Buy Listings:{buys.Count}, Sell Listings:{sells.Count}, Similar Items:{buys.Select(b => b.ItemId).Where(i => sells.Select(s => s.ItemId).Contains(i)).Count()}");
-
+                //GD.Print($"Buy Listings:{buyOrders.Count}, Sell Listings:{sellOrders.Count}, Similar Items:{buyOrders.Select(b => b.ItemId).Where(i => sellOrders.Select(s => s.ItemId).Contains(i)).Count()}");
             }
             catch (System.Exception e)
             {
@@ -92,67 +75,79 @@ public partial class InvestmentsDatabase
             }
         });
 
-        Task GetBuyAndSellHistory(List<CommerceTransactionHistory> buys, List<CommerceTransactionHistory> sells)
+        Task GetBuyAndSellHistory(List<CommerceTransactionHistory> buyOrders, List<CommerceTransactionHistory> sellOrders, List<CommerceTransactionCurrent> postedSellOrders)
         {
             return Task.Run(async () =>
             {
                 try
                 {
+                    AppStatusIndicator.ShowStatus("Downloading transactions from GW2 server...");
                     // loop through all pages to get all the transactions then continue
+
                     int pageIndex = 0;
                     while (true)
                     {
-                        string status = "Downloading transactions from GW2 server...";
-                        AppStatusIndicator.ShowStatus(status);
-
-                        bool @continue = false;
-
                         var pageBuys = Main.MyClient.WebApi.V2.Commerce.Transactions.History.Buys.PageAsync(pageIndex);
-                        while (true)
+                        await Task.Delay(250);
+                        if (pageBuys.Status == TaskStatus.RanToCompletion)
                         {
-                            await Task.Delay(250);
-                            if (pageBuys.Status == TaskStatus.RanToCompletion)
-                            {
-                                buys.AddRange(pageBuys.Result);
+                            AppStatusIndicator.ShowStatus("Downloading buy order history from GW2 server...");
+                            buyOrders.AddRange(pageBuys.Result);
 
-                                // Break out of inner loop When we have the items we need
-                                // And continue
-                                @continue = true;
-                                break;
-                            }
-
-                            // Break out of inner loop if it fails
-                            // And don't continue
-                            if (pageBuys.Status == TaskStatus.Faulted)
-                                break;
+                            //Increment Loop
+                            pageIndex++;
+                            // Keep looping through pages till we have all the items
+                            continue;
                         }
 
-                        var pageSells = Main.MyClient.WebApi.V2.Commerce.Transactions.History.Sells.PageAsync(pageIndex);
-                        while (true)
-                        {
-                            await Task.Delay(250);
-                            if (pageSells.Status == TaskStatus.RanToCompletion)
-                            {
-                                sells.AddRange(pageSells.Result);
-
-                                // Break out of inner loop When we have the items we need
-                                // And continue
-                                @continue = true;
-                                break;
-                            }
-
-                            // Break out of inner loop if it fails
-                            // And don't continue
-                            if (pageSells.Status == TaskStatus.Faulted)
-                                break;
-                        }
-
-                        // Break out if we did not get any new elements
-                        if (@continue == false)
+                        // Break out of inner loop if it fails
+                        // And don't continue
+                        if (pageBuys.Status == TaskStatus.Faulted)
                             break;
+                    }
 
-                        //Increment Loop
-                        pageIndex++;
+                    pageIndex = 0;
+                    while (true)
+                    {
+                        var pageSells = Main.MyClient.WebApi.V2.Commerce.Transactions.History.Sells.PageAsync(pageIndex);
+                        await Task.Delay(250);
+                        if (pageSells.Status == TaskStatus.RanToCompletion)
+                        {
+                            AppStatusIndicator.ShowStatus("Downloading sell order history from GW2 server...");
+                            sellOrders.AddRange(pageSells.Result);
+
+                            //Increment Loop
+                            pageIndex++;
+                            // Keep looping through pages till we have all the items
+                            continue;
+                        }
+
+                        // Break out of inner loop if it fails
+                        // And don't continue
+                        if (pageSells.Status == TaskStatus.Faulted)
+                            break;
+                    }
+
+                    pageIndex = 0;
+                    while (true)
+                    {
+                        var postedSells = Main.MyClient.WebApi.V2.Commerce.Transactions.Current.Sells.PageAsync(pageIndex);
+                        await Task.Delay(250);
+                        if (postedSells.Status == TaskStatus.RanToCompletion)
+                        {
+                            AppStatusIndicator.ShowStatus("Downloading current sell orders from GW2 server...");
+                            postedSellOrders.AddRange(postedSells.Result);
+
+                            //Increment Loop
+                            pageIndex++;
+                            // Keep looping through pages till we have all the items
+                            continue;
+                        }
+
+                        // Break out of inner loop if it fails
+                        // And don't continue
+                        if (postedSells.Status == TaskStatus.Faulted)
+                            break;
                     }
                 }
                 catch (System.Exception e)
@@ -163,7 +158,7 @@ public partial class InvestmentsDatabase
             });
         }
 
-        Task CreateInvestmentsFromOrders(List<CommerceTransactionHistory> buys, List<CommerceTransactionHistory> sells)
+        Task CreateInvestmentsFromOrders(List<CommerceTransactionHistory> buys, List<CommerceTransactionHistory> sells, List<CommerceTransactionCurrent> postedSellOrders)
         {
             return Task.Run(() =>
             {
@@ -171,6 +166,7 @@ public partial class InvestmentsDatabase
                 AppStatusIndicator.ShowStatus($"{status} (0/{buys.Count})");
                 var sortedBuys = buys.OrderBy(b => b.Purchased);
                 var sortedSells = sells.OrderBy(s => s.Purchased);
+                var sortedPostedSellOrders = postedSellOrders.OrderBy(p => p.Created);
 
                 // Go through all buys and check if any are investments
                 int i = 0;
@@ -195,11 +191,8 @@ public partial class InvestmentsDatabase
 
                     try
                     {
-                        GD.Print("");
-                        GD.Print($"Checking Buy Order For {buy.ItemId}");
-
                         // Make sure the sell transactions we look at are for the same item and only after the date the buy was purchase
-                        CheckSellOrdersForMatches(buy, ref buyAmmountLeft, investment, sortedSells);
+                        CheckHistorySellOrdersForMatches(buy, ref buyAmmountLeft, investment, sortedSells);
 
                         // This is how we determine if an actual investment was created
                         if (investment.SellDatas.Count > 0)
@@ -216,8 +209,12 @@ public partial class InvestmentsDatabase
                         // This means we did buy the item, but we have not sold any yet, so it is pending
                         else
                         {
-                            //TODO: Here is where we have the "Pending" Investments, as the buy orders have not been sold back
-                            PendingTransactions.Add(investment);
+                            var pendingInvestment = new PendingInvestmentData(buy, new Lazy<int>(() => Cache.Prices.GetPrice(buy.ItemId)));
+
+                            // Make sure the sell transactions we look at are for the same item and only after the date the buy was purchase
+                            CheckPostedSellOrdersForMatches(buy, ref buyAmmountLeft, pendingInvestment, sortedPostedSellOrders);
+
+                            PendingInvestments.Add(pendingInvestment);
                         }
                     }
                     catch (System.Exception e)
@@ -238,21 +235,21 @@ public partial class InvestmentsDatabase
             }
 
             //---------- ---------- ---------- ---------- ----------
-            void CheckSellOrdersForMatches(CommerceTransactionHistory buy, ref int buyAmmountLeft, InvestmentData investment, IOrderedEnumerable<CommerceTransactionHistory> sortedSells)
+            void CheckHistorySellOrdersForMatches(CommerceTransactionHistory buyOrder, ref int buyAmmountLeft, InvestmentData investment, IOrderedEnumerable<CommerceTransactionHistory> sortedSellOrders)
             {
-                foreach (var sell in sortedSells.Where(s => s.ItemId == buy.ItemId && s.Purchased > buy.Purchased))
+                foreach (var sellOrder in sortedSellOrders.Where(s => s.ItemId == buyOrder.ItemId && s.Purchased > buyOrder.Purchased))
                 {
-                    var sellData = new SellData(sell);
+                    var sellData = new SellData(sellOrder);
                     if (buyAmmountLeft > 0)
                     {
                         // Get all the other partial uses of this sell order
-                        var databasePartials = Investments.SelectMany(i => i.SellDatas).Where(s => s.TransactionId == sell.Id);
+                        var databasePartials = Investments.SelectMany(i => i.SellDatas).Where(s => s.TransactionId == sellOrder.Id);
 
                         // If is in the database
                         if (databasePartials.Any())
                         {
                             // Get the remaining quantity we can use in the sell order
-                            var remaining = sell.Quantity - databasePartials.Sum(p => p.Quantity);
+                            var remaining = sellOrder.Quantity - databasePartials.Sum(p => p.Quantity);
 
                             // If there is anything left in the sell order to use
                             if (remaining > 0)
@@ -273,7 +270,7 @@ public partial class InvestmentsDatabase
                             // If there are no items left to use in this sell order, skip it
                             else
                             {
-                                GD.Print($"Skipped sell order \"{sell.Id}\" as it was already in the database and fully used.");
+                                GD.Print($"Skipped sell order \"{sellOrder.Id}\" as it was already in the database and fully used.");
                                 continue;
                             }
                         }
@@ -281,15 +278,15 @@ public partial class InvestmentsDatabase
                         else
                         {
                             // If we need all of or less than the sell order, use it and continue
-                            if (buyAmmountLeft <= sell.Quantity)
+                            if (buyAmmountLeft <= sellOrder.Quantity)
                             {
                                 sellData.Quantity = buyAmmountLeft;
                                 buyAmmountLeft = 0;
                             }
                             // If we need more than there is in the sell order, take what we need and continue
-                            else if (buyAmmountLeft > sell.Quantity)
+                            else if (buyAmmountLeft > sellOrder.Quantity)
                             {
-                                buyAmmountLeft -= sell.Quantity;
+                                buyAmmountLeft -= sellOrder.Quantity;
                             }
                         }
                         investment.SellDatas.Add(sellData);
@@ -298,7 +295,111 @@ public partial class InvestmentsDatabase
                     else break;
                 }
             }
+
+            //---------- ---------- ---------- ---------- ----------
+            void CheckPostedSellOrdersForMatches(CommerceTransactionHistory buyOrder, ref int buyAmmountLeft, PendingInvestmentData pendingInvestment, IOrderedEnumerable<CommerceTransactionCurrent> sortedPostedSellOrders)
+            {
+                foreach (var postedSellOrder in sortedPostedSellOrders.Where(s => s.ItemId == buyOrder.ItemId && s.Created > buyOrder.Purchased))
+                {
+                    var pendingSellData = new PendingSellData(postedSellOrder);
+                    if (buyAmmountLeft > 0)
+                    {
+                        // Get all the other partial uses of this sell order
+                        var databasePartials = PendingInvestments.SelectMany(i => i.PostedSellDatas).Where(s => s.TransactionId == postedSellOrder.Id);
+
+                        // If is in the database
+                        if (databasePartials.Any())
+                        {
+                            // Get the remaining quantity we can use in the sell order
+                            var remaining = postedSellOrder.Quantity - databasePartials.Sum(p => p.Quantity);
+
+                            // If there is anything left in the sell order to use
+                            if (remaining > 0)
+                            {
+                                // If we need as much as is remaining or less, take what we need and continue
+                                if (buyAmmountLeft <= remaining)
+                                {
+                                    pendingSellData.Quantity = buyAmmountLeft;
+                                    buyAmmountLeft = 0;
+                                }
+                                // If we need more than there is left, take what is left and continue
+                                else if (buyAmmountLeft > remaining)
+                                {
+                                    pendingSellData.Quantity = remaining;
+                                    buyAmmountLeft -= remaining;
+                                }
+                            }
+                            // If there are no items left to use in this sell order, skip it
+                            else
+                            {
+                                GD.Print($"Skipped sell posting \"{postedSellOrder.Id}\" as it was already in the database and fully used.");
+                                continue;
+                            }
+                        }
+                        // Was not in the database
+                        else
+                        {
+                            // If we need all of or less than the sell order, use it and continue
+                            if (buyAmmountLeft <= postedSellOrder.Quantity)
+                            {
+                                pendingSellData.Quantity = buyAmmountLeft;
+                                buyAmmountLeft = 0;
+                            }
+                            // If we need more than there is in the sell order, take what we need and continue
+                            else if (buyAmmountLeft > postedSellOrder.Quantity)
+                            {
+                                buyAmmountLeft -= postedSellOrder.Quantity;
+                            }
+                        }
+                        pendingInvestment.PostedSellDatas.Add(pendingSellData);
+                    }
+                    // We made sure all the buys are accounted for so we don't need to check any more sells
+                    else break;
+                }
+            }
         }
+    }
+
+    public void GenerateCollapsed()
+    {
+        List<CollapsedInvestmentData> groups = new();
+
+        foreach (var investment in Investments)
+        {
+            var readyGroup = groups.FirstOrDefault(ci => ci.ItemId == investment.ItemId && ci.IndividualPrice == investment.IndividualPrice && ci.Quantity + investment.Quantity <= Constants.MaxItemStack);
+            if (readyGroup is not null)
+            {
+                readyGroup.SubInvestments.Add(investment);
+            }
+            else
+            {
+                var newCollapsedInvestment = new CollapsedInvestmentData(investment);
+                groups.Add(newCollapsedInvestment);
+            }
+        }
+
+        groups.ForEach(c => CollapsedInvestments.Add(c));
+    }
+
+    public void GenerateCollapsedPending()
+    {
+        List<CollapsedPendingInvestmentData> groups = new();
+
+        foreach (var investment in PendingInvestments.Where(p => p.PostedSellDatas.Count == 0))
+        {
+            var readyGroup = groups.FirstOrDefault(ci => ci.ItemId == investment.ItemId && ci.IndividualPrice == investment.IndividualPrice && ci.Quantity + investment.Quantity <= Constants.MaxItemStack);
+            if (readyGroup is not null)
+            {
+                readyGroup.SubInvestments.Add(investment);
+            }
+            else
+            {
+                var newCollapsedInvestment = new CollapsedPendingInvestmentData(investment, new Lazy<int>(() => Cache.Prices.GetPrice(investment.ItemId)));
+                groups.Add(newCollapsedInvestment);
+            }
+        }
+
+        groups.ForEach(c => CollapsedPendingInvestments.Add(c));
     }
 
     public class CompletedInvestmentsData
@@ -307,10 +408,11 @@ public partial class InvestmentsDatabase
         public List<long> NotInvestments { get; private set; } = new();
     }
     public class PendingInvestmentsData
-    {
-        public List<InvestmentData> PendingTransactions { get; private set; } = new();
+{
+        public List<PendingInvestmentData> PendingInvestments { get; private set; } = new();
     }
 
+    // ---------- Saving
     const string databasePath = "user://database.completed";
     public void Save()
     {
