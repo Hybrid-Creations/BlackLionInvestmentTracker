@@ -4,23 +4,23 @@ using Newtonsoft.Json;
 
 namespace BLIT;
 
-public partial class SellData
-{
-    public long TransactionId;
-    public DateTimeOffset SellDate;
-    public int IndividualPrice;
-    public int Quantity;
+// public partial class SellData
+// {
+//     public long TransactionId;
+//     public DateTimeOffset SellDate;
+//     public int IndividualPrice;
+//     public int Quantity;
 
-    [JsonIgnore] public int TotalSellPrice => IndividualPrice * Quantity;
+//     [JsonIgnore] public int TotalSellPrice => IndividualPrice * Quantity;
 
-    public SellData(CommerceTransactionHistory sellTransaction)
-    {
-        TransactionId = sellTransaction.Id;
-        SellDate = sellTransaction.Purchased;
-        IndividualPrice = sellTransaction.Price;
-        Quantity = sellTransaction.Quantity;
-    }
+//     public SellData(CommerceTransactionHistory sellTransaction)
+//     {
+//         TransactionId = sellTransaction.Id;
+//         SellDate = sellTransaction.Purchased;
+//         IndividualPrice = sellTransaction.Price;
+//         Quantity = sellTransaction.Quantity;
+//     }
 
-    [JsonConstructor]
-    public SellData() { }
-}
+//     [JsonConstructor]
+//     public SellData() { }
+// }

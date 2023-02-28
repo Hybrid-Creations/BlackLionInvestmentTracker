@@ -1,5 +1,7 @@
 using System.Linq;
+using BLIT.ConstantVariables;
 using BLIT.Extensions;
+using BLIT.Investments;
 using Godot;
 
 namespace BLIT.UI;
@@ -25,25 +27,24 @@ public partial class CollapsedTransactionItem : VBoxContainer
     [Export]
     Texture2D arrowDown;
 
-    CollapsedInvestmentData collapsedInvestment;
+    CollapsedCompletedInvestment collapsedInvestment;
 
     public override void _Ready()
     {
         subInvestmentTitles.Hide();
     }
 
-    public void Init(ItemData _item, CollapsedInvestmentData _collapsedInvestment)
+    public void Init(ItemData _item, CollapsedCompletedInvestment _collapsedInvestment)
     {
         collapsedInvestment = _collapsedInvestment;
 
         itemProperties.GetNode<TextureRect>("Icon").Texture = _item.Icon;
         itemProperties.GetNode<Label>("Icon/Quantity").Text = _collapsedInvestment.Quantity.ToString();
-        itemProperties.GetNode<Label>("Name").Text = $"{_item.Name}";
-        itemProperties.GetNode<RichTextLabel>("BuyPrice").Text = $"[right]{_collapsedInvestment.TotalBuyPrice.ToCurrencyString(true)}[/right]";
-        itemProperties.GetNode<RichTextLabel>("SellPrice").Text = $"[right]{_collapsedInvestment.TotalSellPrice.ToCurrencyString(true)}[/right]";
+        itemProperties.GetNode<Label>("Name").Text = _item.Name;
+        itemProperties.GetNode<RichTextLabel>("BuyPrice").Text = _collapsedInvestment.GetBuyPriceStringFromInvestment(true, RichStringAlignment.RIGHT);
+        itemProperties.GetNode<RichTextLabel>("SellPrice").Text = _collapsedInvestment.GetSellPriceStringFromInvestment(true, RichStringAlignment.RIGHT);
         itemProperties.GetNode<RichTextLabel>("Profit").Text = $"[right]{_collapsedInvestment.TotalProfit.ToCurrencyString(true)}[/right]";
         itemProperties.GetNode<Label>("InvestDate").Text = _collapsedInvestment.OldestPurchaseDate.ToTimeSinceString();
-        itemProperties.GetNode<Label>("SellDate").Text = _collapsedInvestment.LatestSellDate.ToTimeSinceString();
     }
 
     public void TreeButtonToggled(bool enabled)
@@ -53,10 +54,10 @@ public partial class CollapsedTransactionItem : VBoxContainer
             subInvestmentTitles.Show();
             toggleTreeButton.Icon = arrowDown;
 
-            foreach (var investment in collapsedInvestment.SubInvestments.OrderBy(si => si.PurchaseDate))
+            foreach (var investment in collapsedInvestment.SubInvestments.OrderBy(si => si.Data.BuyData.DatePurchased))
             {
                 var instance = investmentItemScene.Instantiate<TransactionItem>();
-                instance.Init(Cache.Items.GetItemData(investment.ItemId), investment);
+                instance.Init(Cache.Items.GetItemData(investment.Data.BuyData.ItemId), investment);
                 subInvestmentHolder.AddChild(instance, 0);
             }
         }
@@ -80,12 +81,12 @@ public partial class CollapsedTransactionItem : VBoxContainer
                 {
                     if (str == MarkNotAnInvestment)
                     {
-                        Main.Database.CollapsedInvestments.Remove(collapsedInvestment);
+                        Main.Database.CollapsedCompletedInvestments.Remove(collapsedInvestment);
 
                         foreach (var investment in collapsedInvestment.SubInvestments)
                         {
-                            Main.Database.Investments.Remove(investment);
-                            Main.Database.NotInvestments.Add(investment.TransactionId);
+                            Main.Database.CompletedInvestments.Remove(investment);
+                            Main.Database.NotInvestments.Add(investment.Data.BuyData.TransactionId);
                         }
 
                         Main.Database.Save();

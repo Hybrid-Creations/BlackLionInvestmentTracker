@@ -1,20 +1,13 @@
-using System;
-using System.Linq;
 using BLIT.Extensions;
+using BLIT.Investments;
 using Godot;
 
 namespace BLIT.UI;
 
-public partial class CompletedInvestments : VBoxContainer
+public partial class CompletedInvestments : InvestmentPage<CollapsedCompletedInvestment, CompletedInvestment, CompletedInvestmentData, BuyData, SellData>
 {
     [Export]
-    PackedScene collapsedTransactionScene;
-    [Export]
-    VBoxContainer investmentHolder;
-    [Export]
     HBoxContainer totals;
-    [Export]
-    Label loadingLabel;
 
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
@@ -54,26 +47,7 @@ public partial class CompletedInvestments : VBoxContainer
         loadingLabel.Hide();
 
         string status = "Filling list of Investments...";
-        int index = 0;
-        // Add New Investment Items To UI
-        foreach (var investment in Main.Database.CollapsedInvestments.OrderBy(ci => ci.OldestPurchaseDate))
-        {
-            try
-            {
-                var instance = collapsedTransactionScene.Instantiate<CollapsedTransactionItem>();
-                instance.Init(Cache.Items.GetItemData(investment.ItemId), investment);
-                investmentHolder.AddChildSafe(instance, 0);
-            }
-            catch (Exception e)
-            {
-                // Most likely a new item that Gw2Sharp doesn't understand so we'll just skip it
-                GD.PushWarning($"Failed to retreive info on item {investment.ItemId}, most likely Gw2Sharp has not been updated yet to handle the item");
-                GD.PrintErr(e);
-            }
-            AppStatusIndicator.ShowStatus($"{status} ({index}/{Main.Database.CollapsedInvestments.Count})");
-            index++;
-        }
-        AppStatusIndicator.ShowStatus($"{status} ({Main.Database.CollapsedInvestments.Count}/{Main.Database.CollapsedInvestments.Count})");
+        ListInvestmentDatas(Main.Database.CollapsedCompletedInvestments, status);
 
         // Calculate Profit
         var totalInvested = Main.Database.TotalInvested;

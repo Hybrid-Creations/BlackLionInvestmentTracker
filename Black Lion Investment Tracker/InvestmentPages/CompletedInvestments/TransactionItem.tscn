@@ -1,17 +1,17 @@
-[gd_scene load_steps=5 format=3 uid="uid://bjbxj6xq1qgc4"]
+[gd_scene load_steps=5 format=3]
 
-[ext_resource type="Theme" uid="uid://dy6mo6ior0maw" path="res://Themes/MainTheme.tres" id="1_humwa"]
-[ext_resource type="Script" path="res://PendingInvestments/PendingInvestmentItem.cs" id="2_5db8b"]
-[ext_resource type="Texture2D" uid="uid://dlbpcw8rui0ri" path="res://test.png" id="2_6s3c7"]
-[ext_resource type="LabelSettings" uid="uid://cohsxdtkacnpa" path="res://Themes/IconQuantityLabelSettings.tres" id="4_rtbqr"]
+[ext_resource type="Theme" uid="uid://dy6mo6ior0maw" path="res://Themes/MainTheme.tres" id="1_br344"]
+[ext_resource type="Script" path="res://InvestmentPages/CompletedInvestments/TransactionItem.cs" id="1_wnh1n"]
+[ext_resource type="Texture2D" uid="uid://dlbpcw8rui0ri" path="res://test.png" id="2_nq3fi"]
+[ext_resource type="LabelSettings" uid="uid://cohsxdtkacnpa" path="res://Themes/IconQuantityLabelSettings.tres" id="4_p2ulu"]
 
-[node name="PendingItem" type="VBoxContainer"]
+[node name="TransactionItem" type="VBoxContainer"]
 anchors_preset = 10
 anchor_right = 1.0
 offset_bottom = 73.0
 grow_horizontal = 2
-theme = ExtResource("1_humwa")
-script = ExtResource("2_5db8b")
+theme = ExtResource("1_br344")
+script = ExtResource("1_wnh1n")
 
 [node name="SpacerT" type="Control" parent="."]
 layout_mode = 2
@@ -29,7 +29,7 @@ size_flags_stretch_ratio = 0.1
 [node name="Icon" type="TextureRect" parent="ItemProperties"]
 custom_minimum_size = Vector2(64, 64)
 layout_mode = 2
-texture = ExtResource("2_6s3c7")
+texture = ExtResource("2_nq3fi")
 
 [node name="Quantity" type="Label" parent="ItemProperties/Icon"]
 layout_mode = 1
@@ -41,12 +41,12 @@ offset_bottom = -2.0
 grow_horizontal = 2
 grow_vertical = 2
 text = "250"
-label_settings = ExtResource("4_rtbqr")
+label_settings = ExtResource("4_p2ulu")
 horizontal_alignment = 2
 vertical_alignment = 2
 
 [node name="Name" type="Label" parent="ItemProperties"]
-custom_minimum_size = Vector2(225, 0)
+custom_minimum_size = Vector2(233, 0)
 layout_mode = 2
 text = "Shaman's Incricate Gossamer Insignia"
 vertical_alignment = 1
@@ -55,53 +55,37 @@ visible_characters = 28
 visible_characters_behavior = 1
 visible_ratio = 0.777778
 
-[node name="InvestmentPrice" type="RichTextLabel" parent="ItemProperties"]
-custom_minimum_size = Vector2(125, 0)
+[node name="BuyPrice" type="RichTextLabel" parent="ItemProperties"]
+custom_minimum_size = Vector2(95, 0)
 layout_mode = 2
 size_flags_horizontal = 8
 size_flags_vertical = 4
 bbcode_enabled = true
-text = "[right]999[color=gold]g[/color] 99[color=silver]s[/color] 99[color=orange]c[/color]
-[color=gray]each[/color] 9[color=gold]g[/color] 99[color=silver]s[/color] 99[color=orange]c[/color]"
+text = "[right]999[color=gold]g[/color] 99[color=silver]s[/color] 99[color=orange]c[/color][/right]"
 fit_content = true
 scroll_active = false
 autowrap_mode = 0
 shortcut_keys_enabled = false
 
-[node name="CurrentSellPrice" type="RichTextLabel" parent="ItemProperties"]
-custom_minimum_size = Vector2(125, 0)
+[node name="SellPrice" type="RichTextLabel" parent="ItemProperties"]
+custom_minimum_size = Vector2(95, 0)
 layout_mode = 2
 size_flags_horizontal = 8
 size_flags_vertical = 4
 bbcode_enabled = true
-text = "[right]999[color=gold]g[/color] 99[color=silver]s[/color] 99[color=orange]c[/color]
-[color=gray]each[/color] 9[color=gold]g[/color] 99[color=silver]s[/color] 99[color=orange]c[/color]"
+text = "[right]999[color=gold]g[/color] 99[color=silver]s[/color] 99[color=orange]c[/color][/right]"
 fit_content = true
 scroll_active = false
 autowrap_mode = 0
 shortcut_keys_enabled = false
 
-[node name="BreakEvenSellPrice" type="RichTextLabel" parent="ItemProperties"]
-custom_minimum_size = Vector2(125, 0)
+[node name="Profit" type="RichTextLabel" parent="ItemProperties"]
+custom_minimum_size = Vector2(95, 0)
 layout_mode = 2
 size_flags_horizontal = 8
 size_flags_vertical = 4
 bbcode_enabled = true
-text = "[right]999[color=gold]g[/color] 99[color=silver]s[/color] 99[color=orange]c[/color]
-[color=gray]each[/color] 9[color=gold]g[/color] 99[color=silver]s[/color] 99[color=orange]c[/color]"
-fit_content = true
-scroll_active = false
-autowrap_mode = 0
-shortcut_keys_enabled = false
-
-[node name="CurrentProfit" type="RichTextLabel" parent="ItemProperties"]
-custom_minimum_size = Vector2(115, 0)
-layout_mode = 2
-size_flags_horizontal = 8
-size_flags_vertical = 4
-bbcode_enabled = true
-text = "[right]999[color=gold]g[/color] 99[color=silver]s[/color] 99[color=orange]c[/color]
-"
+text = "[right]999[color=gold]g[/color] 99[color=silver]s[/color] 99[color=orange]c[/color][/right]"
 fit_content = true
 scroll_active = false
 autowrap_mode = 0
@@ -111,6 +95,13 @@ shortcut_keys_enabled = false
 custom_minimum_size = Vector2(125, 0)
 layout_mode = 2
 text = "29 months ago"
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="SellDate" type="Label" parent="ItemProperties"]
+custom_minimum_size = Vector2(125, 0)
+layout_mode = 2
+text = "59 minutes ago"
 horizontal_alignment = 2
 vertical_alignment = 1
 

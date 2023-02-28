@@ -1,22 +1,18 @@
 using System;
 using Gw2Sharp.WebApi.V2.Models;
 
-namespace BLIT;
+namespace BLIT.Investments;
 
-public partial class PendingSellData
+public partial class PendingSellData : SellData
 {
-    public long TransactionId;
-    public DateTimeOffset CreatedDate;
-    public int IndividualPrice;
-    public int Quantity;
+    public DateTimeOffset CreatedDate { get => Date; }
 
-    public int TotalSellPrice => IndividualPrice * Quantity;
-
-    public PendingSellData(CommerceTransactionCurrent sellTransaction)
+    public PendingSellData(CommerceTransactionCurrent currentSellTransaction) : base()
     {
-        TransactionId = sellTransaction.Id;
-        CreatedDate = sellTransaction.Created;
-        IndividualPrice = sellTransaction.Price;
-        Quantity = sellTransaction.Quantity;
+        TransactionId = currentSellTransaction.Id;
+        ItemId = currentSellTransaction.ItemId;
+        Date = currentSellTransaction.Created;
+        IndividualSellPrice = currentSellTransaction.Price;
+        Quantity = currentSellTransaction.Quantity;
     }
 }

@@ -1,5 +1,7 @@
 using System.Linq;
+using BLIT.ConstantVariables;
 using BLIT.Extensions;
+using BLIT.Investments;
 using Godot;
 
 namespace BLIT.UI;
@@ -25,38 +27,28 @@ public partial class CollapsedPendingTransactionItem : VBoxContainer
     [Export]
     Texture2D arrowDown;
 
-    CollapsedPendingInvestmentData collapsedPendingInvestment;
+    CollapsedPendingInvestment collapsedPendingInvestment;
 
     public override void _Ready()
     {
         subInvestmentTitles.Hide();
     }
 
-    public void Init(ItemData _item, CollapsedPendingInvestmentData _collapsedPendingInvestment)
+    public void Init(ItemData _item, CollapsedPendingInvestment _collapsedPendingInvestment)
     {
         collapsedPendingInvestment = _collapsedPendingInvestment;
 
         itemProperties.GetNode<TextureRect>("Icon").Texture = _item.Icon;
         itemProperties.GetNode<Label>("Icon/Quantity").Text = _collapsedPendingInvestment.Quantity.ToString();
-        itemProperties.GetNode<Label>("Name").Text = $"{_item.Name}   " + _collapsedPendingInvestment.SubInvestments.Sum(s => s.PostedSellDatas.Count).ToString();
-        itemProperties.GetNode<RichTextLabel>("InvestmentPrice").Text = GetInvestmentPrice(_collapsedPendingInvestment);
-        itemProperties.GetNode<RichTextLabel>("CurrentSellPrice").Text = GetCurrentSellPrice(_collapsedPendingInvestment);
+        itemProperties.GetNode<Label>("Name").Text = _item.Name;
+        itemProperties.GetNode<RichTextLabel>("InvestmentPrice").Text = _collapsedPendingInvestment.GetBuyPriceStringFromInvestment(true, RichStringAlignment.RIGHT);
+        itemProperties.GetNode<RichTextLabel>("CurrentSellPrice").Text = _collapsedPendingInvestment.GetSellPriceStringFromInvestment(true, RichStringAlignment.RIGHT);
         itemProperties.GetNode<RichTextLabel>("BreakEvenSellPrice").Text = GetNeededPriceForAnyProfit(_collapsedPendingInvestment);
         itemProperties.GetNode<RichTextLabel>("CurrentProfit").Text = $"[right]{_collapsedPendingInvestment.TotalPotentialProfit.ToCurrencyString(true)}[/right]";
         itemProperties.GetNode<Label>("InvestDate").Text = _collapsedPendingInvestment.OldestPurchaseDate.ToTimeSinceString();
     }
 
-    private static string GetInvestmentPrice(CollapsedPendingInvestmentData _collapsedPendingInvestment)
-    {
-        return $"[right]{_collapsedPendingInvestment.TotalBuyPrice.ToCurrencyString(true)}\n [color=gray]each[/color] {_collapsedPendingInvestment.IndividualPrice.ToCurrencyString(true)}[/right]";
-    }
-
-    private static string GetCurrentSellPrice(CollapsedPendingInvestmentData _collapsedPendingInvestment)
-    {
-        return $"[right]{_collapsedPendingInvestment.TotalPotentialSellPrice.ToCurrencyString(true)}\n [color=gray]each[/color] {_collapsedPendingInvestment.CurrentIndividualSellPrice.Value.ToCurrencyString(true)}[/right]";
-    }
-
-    private static string GetNeededPriceForAnyProfit(CollapsedPendingInvestmentData _collapsedPendingInvestment)
+    private static string GetNeededPriceForAnyProfit(CollapsedPendingInvestment _collapsedPendingInvestment)
     {
         // If you are making profit, it looks good
         if (_collapsedPendingInvestment.TotalPotentialProfit > 0)
@@ -64,7 +56,7 @@ public partial class CollapsedPendingTransactionItem : VBoxContainer
         // We know we arent making profit so calculate what you would have to sell it at to break even
         else
         {
-            var idealPrice = Mathf.CeilToInt(_collapsedPendingInvestment.IndividualPrice * Constants.MultiplyInverseTax);
+            var idealPrice = Mathf.CeilToInt(_collapsedPendingInvestment.IndividualSellPrice * Constants.MultiplyInverseTax);
             return $"[right]{(_collapsedPendingInvestment.Quantity * idealPrice).ToCurrencyString(true)}\n [color=gray]each[/color] {idealPrice.ToCurrencyString(true)}[/right]";
         }
     }
@@ -76,10 +68,10 @@ public partial class CollapsedPendingTransactionItem : VBoxContainer
             subInvestmentTitles.Show();
             toggleTreeButton.Icon = arrowDown;
 
-            foreach (var investment in collapsedPendingInvestment.SubInvestments.OrderBy(si => si.PurchaseDate))
+            foreach (var investment in collapsedPendingInvestment.SubInvestments.OrderBy(si => si.LatestSellDate))
             {
                 var instance = pendingInvestmentItemScene.Instantiate<PendingInvestmentItem>();
-                instance.Init(Cache.Items.GetItemData(investment.ItemId), investment);
+                instance.Init(Cache.Items.GetItemData(investment.Data.BuyData.ItemId), investment);
                 subInvestmentHolder.AddChild(instance, 0);
             }
         }
@@ -108,7 +100,7 @@ public partial class CollapsedPendingTransactionItem : VBoxContainer
                         foreach (var investment in collapsedPendingInvestment.SubInvestments)
                         {
                             Main.Database.PendingInvestments.Remove(investment);
-                            Main.Database.NotInvestments.Add(investment.TransactionId);
+                            Main.Database.NotInvestments.Add(investment.Data.BuyData.TransactionId);
                         }
 
                         Main.Database.Save();

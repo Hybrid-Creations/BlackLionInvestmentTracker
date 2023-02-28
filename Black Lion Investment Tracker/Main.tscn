@@ -1,13 +1,13 @@
-[gd_scene load_steps=13 format=3 uid="uid://dxko7eym5bhvk"]
+[gd_scene load_steps=13 format=3 uid="uid://c80w7piarfwit"]
 
 [ext_resource type="Script" path="res://Main.cs" id="1_jgrri"]
 [ext_resource type="Theme" uid="uid://dy6mo6ior0maw" path="res://Themes/MainTheme.tres" id="1_thssd"]
-[ext_resource type="Script" path="res://CompletedInvestments/CompletedInvestments.cs" id="3_xvx34"]
-[ext_resource type="PackedScene" uid="uid://qn7vq81m07ip" path="res://CompletedInvestments/CollapsedTransactionItem.tscn" id="4_250gb"]
+[ext_resource type="Script" path="res://InvestmentPages/CompletedInvestments/CompletedInvestments.cs" id="3_xvx34"]
+[ext_resource type="PackedScene" uid="uid://cc7x74cstvn4w" path="res://InvestmentPages/CompletedInvestments/CollapsedTransactionItem.tscn" id="4_250gb"]
 [ext_resource type="Texture2D" uid="uid://du668hhlqaqyd" path="res://Sprites/cycle.png" id="5_ey6tk"]
-[ext_resource type="Script" path="res://PendingInvestments/PendingInvestments.cs" id="6_5ayt2"]
+[ext_resource type="Script" path="res://InvestmentPages/PendingInvestments/PendingInvestments.cs" id="6_5ayt2"]
 [ext_resource type="Texture2D" uid="uid://b643uuwsu0y0v" path="res://Sprites/Settings.png" id="6_8rd2r"]
-[ext_resource type="PackedScene" uid="uid://ofhpo2epp3ws" path="res://PendingInvestments/CollapsedPendingTransactionItem.tscn" id="8_kscqx"]
+[ext_resource type="Script" path="res://InvestmentPages/PotentialInvestments/PotentialInvestments.cs" id="8_xfe06"]
 [ext_resource type="Script" path="res://AppStatusIndicator.cs" id="9_ja276"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_p5u6s"]
@@ -50,12 +50,12 @@ grow_vertical = 2
 theme_override_font_sizes/font_size = 22
 tab_alignment = 1
 
-[node name="Completed Investments" type="VBoxContainer" parent="TabContainer" node_paths=PackedStringArray("investmentHolder", "totals", "loadingLabel")]
+[node name="Completed Investments" type="VBoxContainer" parent="TabContainer" node_paths=PackedStringArray("totals", "investmentHolder", "loadingLabel")]
 layout_mode = 2
 script = ExtResource("3_xvx34")
-collapsedTransactionScene = ExtResource("4_250gb")
-investmentHolder = NodePath("ScrollContainer/VBoxContainer/InvsetmentHolder")
 totals = NodePath("Totals")
+collapsedInvestmentScene = ExtResource("4_250gb")
+investmentHolder = NodePath("ScrollContainer/VBoxContainer/InvsetmentHolder")
 loadingLabel = NodePath("ScrollContainer/VBoxContainer/VBoxContainer/Loading")
 
 [node name="Totals" type="HBoxContainer" parent="TabContainer/Completed Investments"]
@@ -186,21 +186,21 @@ horizontal_alignment = 1
 vertical_alignment = 2
 
 [node name="BuyPrice" type="Label" parent="TabContainer/Completed Investments/ColumnTitles"]
-custom_minimum_size = Vector2(100, 0)
+custom_minimum_size = Vector2(125, 0)
 layout_mode = 2
 text = "Buy Price"
 horizontal_alignment = 2
 vertical_alignment = 2
 
 [node name="SellPrice" type="Label" parent="TabContainer/Completed Investments/ColumnTitles"]
-custom_minimum_size = Vector2(100, 0)
+custom_minimum_size = Vector2(125, 0)
 layout_mode = 2
 text = "Sell Price"
 horizontal_alignment = 2
 vertical_alignment = 2
 
 [node name="Profit" type="Label" parent="TabContainer/Completed Investments/ColumnTitles"]
-custom_minimum_size = Vector2(100, 0)
+custom_minimum_size = Vector2(115, 0)
 layout_mode = 2
 text = "Profit "
 horizontal_alignment = 2
@@ -259,7 +259,6 @@ layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 script = ExtResource("6_5ayt2")
-collapsedPendingTransactionScene = ExtResource("8_kscqx")
 investmentHolder = NodePath("ScrollContainer/VBoxContainer/InvestmentHolder")
 loadingLabel = NodePath("ScrollContainer/VBoxContainer/VBoxContainer/Loading")
 
@@ -361,6 +360,114 @@ text = "Loading Investments..."
 horizontal_alignment = 1
 
 [node name="InvestmentHolder" type="VBoxContainer" parent="TabContainer/Pending Investments/ScrollContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Potential Investments" type="VBoxContainer" parent="TabContainer"]
+visible = false
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("8_xfe06")
+
+[node name="ColumnTitles" type="HBoxContainer" parent="TabContainer/Potential Investments"]
+custom_minimum_size = Vector2(0, 25)
+layout_mode = 2
+theme_override_constants/separation = 5
+
+[node name="SpacerBtn" type="Control" parent="TabContainer/Potential Investments/ColumnTitles"]
+custom_minimum_size = Vector2(32, 0)
+layout_mode = 2
+
+[node name="SpacerL" type="Control" parent="TabContainer/Potential Investments/ColumnTitles"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.5
+
+[node name="Item" type="Label" parent="TabContainer/Potential Investments/ColumnTitles"]
+custom_minimum_size = Vector2(64, 0)
+layout_mode = 2
+size_flags_stretch_ratio = 20.0
+text = "Item"
+horizontal_alignment = 1
+vertical_alignment = 2
+
+[node name="SpacerL2" type="Control" parent="TabContainer/Potential Investments/ColumnTitles"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.1
+
+[node name="Name" type="Label" parent="TabContainer/Potential Investments/ColumnTitles"]
+custom_minimum_size = Vector2(300, 0)
+layout_mode = 2
+size_flags_stretch_ratio = 20.0
+text = "Name"
+horizontal_alignment = 1
+vertical_alignment = 2
+
+[node name="BuyPrice" type="Label" parent="TabContainer/Potential Investments/ColumnTitles"]
+custom_minimum_size = Vector2(125, 0)
+layout_mode = 2
+text = "Buy Price"
+horizontal_alignment = 2
+vertical_alignment = 2
+
+[node name="SellPrice" type="Label" parent="TabContainer/Potential Investments/ColumnTitles"]
+custom_minimum_size = Vector2(125, 0)
+layout_mode = 2
+text = "Sell Price"
+horizontal_alignment = 2
+vertical_alignment = 2
+
+[node name="BreakEvenSellPrice" type="Label" parent="TabContainer/Potential Investments/ColumnTitles"]
+custom_minimum_size = Vector2(125, 0)
+layout_mode = 2
+text = "Break Even"
+horizontal_alignment = 2
+vertical_alignment = 2
+
+[node name="Profit" type="Label" parent="TabContainer/Potential Investments/ColumnTitles"]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+text = "Profit "
+horizontal_alignment = 2
+vertical_alignment = 2
+
+[node name="InvestDate" type="Label" parent="TabContainer/Potential Investments/ColumnTitles"]
+custom_minimum_size = Vector2(125, 0)
+layout_mode = 2
+text = "Date Started"
+horizontal_alignment = 2
+vertical_alignment = 2
+
+[node name="SpacerR" type="Control" parent="TabContainer/Potential Investments/ColumnTitles"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="TitlesBorder" type="ColorRect" parent="TabContainer/Potential Investments"]
+custom_minimum_size = Vector2(0, 2)
+layout_mode = 2
+color = Color(0.501961, 0.501961, 0.501961, 1)
+
+[node name="ScrollContainer" type="ScrollContainer" parent="TabContainer/Potential Investments"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="VBoxContainer" type="VBoxContainer" parent="TabContainer/Potential Investments/ScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="VBoxContainer" type="VBoxContainer" parent="TabContainer/Potential Investments/ScrollContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Loading" type="Label" parent="TabContainer/Potential Investments/ScrollContainer/VBoxContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "Loading Investments..."
+horizontal_alignment = 1
+
+[node name="InvestmentHolder" type="VBoxContainer" parent="TabContainer/Potential Investments/ScrollContainer/VBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 
