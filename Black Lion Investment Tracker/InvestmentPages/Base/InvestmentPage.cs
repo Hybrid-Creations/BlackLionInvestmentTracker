@@ -8,7 +8,7 @@ using Gw2Sharp.WebApi.Exceptions;
 
 namespace BLIT.UI;
 
-public partial class InvestmentPageeee<TCollapedInvestment, TInvestment, TInvestmentData, TBuyData, TSellData, TCollapedInvestmentItemScene, TinvestmentItemScene> : VBoxContainer
+public partial class InvestmentPage<TCollapedInvestment, TInvestment, TInvestmentData, TBuyData, TSellData, TCollapedInvestmentItemScene, TinvestmentItemScene> : VBoxContainer
  where TCollapedInvestment : CollapsedInvestment<TInvestment, TInvestmentData, TBuyData, TSellData>
  where TInvestment : Investment<TInvestmentData, TBuyData, TSellData>
  where TInvestmentData : InvestmentData<TBuyData, TSellData>
@@ -44,7 +44,7 @@ where TinvestmentItemScene : InvestmentItem<TInvestment, TInvestmentData, TBuyDa
             }
             catch (Exception e)
             {
-                GD.PrintErr(e);
+                GD.PushError(e);
             }
             AppStatusIndicator.ShowStatus($"{baseStatusMessage} ({index}/{investmentDatas.Count})");
             index++;

@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=3 uid="uid://cyp3gemcogg2j"]
+[gd_scene load_steps=15 format=3 uid="uid://cyp3gemcogg2j"]
 
 [ext_resource type="Script" path="res://Main.cs" id="1_jgrri"]
 [ext_resource type="Theme" uid="uid://dy6mo6ior0maw" path="res://Themes/MainTheme.tres" id="1_thssd"]
@@ -10,6 +10,7 @@
 [ext_resource type="PackedScene" uid="uid://bxn1v7wpgjyvc" path="res://InvestmentPages/PendingInvestments/CollapsedPendingInvestmentItem.tscn" id="7_03m2k"]
 [ext_resource type="Script" path="res://InvestmentPages/PotentialInvestments/PotentialInvestments.cs" id="8_xfe06"]
 [ext_resource type="Script" path="res://AppStatusIndicator.cs" id="9_ja276"]
+[ext_resource type="PackedScene" uid="uid://bhtvty2d0yrk" path="res://InvestmentPages/PotentialInvestments/CollapsedPotentialInvestmentItem.tscn" id="9_wo1vk"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_p5u6s"]
 bg_color = Color(0.25098, 0.25098, 0.25098, 1)
@@ -20,7 +21,7 @@ bg_color = Color(0.188235, 0.188235, 0.188235, 1)
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_y1w62"]
 bg_color = Color(0.25098, 0.25098, 0.25098, 1)
 
-[node name="Main" type="Panel" node_paths=PackedStringArray("itemHolder", "PendingInvestments")]
+[node name="Main" type="Panel" node_paths=PackedStringArray("itemHolder", "CompletedInvestments", "PendingInvestments")]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -30,6 +31,7 @@ theme = ExtResource("1_thssd")
 theme_override_styles/panel = SubResource("StyleBoxFlat_p5u6s")
 script = ExtResource("1_jgrri")
 itemHolder = NodePath("TabContainer/Pending Investments/ScrollContainer/VBoxContainer")
+CompletedInvestments = NodePath("TabContainer/Completed Investments")
 PendingInvestments = NodePath("TabContainer/Pending Investments")
 
 [node name="TabsBackground" type="Panel" parent="."]
@@ -51,7 +53,6 @@ theme_override_font_sizes/font_size = 22
 tab_alignment = 1
 
 [node name="Completed Investments" type="VBoxContainer" parent="TabContainer" node_paths=PackedStringArray("totals", "investmentHolder", "loadingLabel")]
-visible = false
 layout_mode = 2
 script = ExtResource("3_xvx34")
 totals = NodePath("Totals")
@@ -255,6 +256,7 @@ horizontal_alignment = 1
 layout_mode = 2
 
 [node name="Pending Investments" type="VBoxContainer" parent="TabContainer" node_paths=PackedStringArray("investmentHolder", "loadingLabel")]
+visible = false
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
@@ -364,12 +366,15 @@ horizontal_alignment = 1
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="Potential Investments" type="VBoxContainer" parent="TabContainer"]
+[node name="Potential Investments" type="VBoxContainer" parent="TabContainer" node_paths=PackedStringArray("investmentHolder", "loadingLabel")]
 visible = false
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 script = ExtResource("8_xfe06")
+collapsedInvestmentScene = ExtResource("9_wo1vk")
+investmentHolder = NodePath("ScrollContainer/VBoxContainer/InvestmentHolder")
+loadingLabel = NodePath("ScrollContainer/VBoxContainer/VBoxContainer/Loading")
 
 [node name="ColumnTitles" type="HBoxContainer" parent="TabContainer/Potential Investments"]
 custom_minimum_size = Vector2(0, 25)

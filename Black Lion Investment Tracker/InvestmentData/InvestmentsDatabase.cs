@@ -74,7 +74,7 @@ public partial class InvestmentsDatabase
             }
             catch (System.Exception e)
             {
-                GD.PrintErr(e);
+                GD.PushError(e);
             }
         });
     }
@@ -156,7 +156,7 @@ public partial class InvestmentsDatabase
             }
             catch (System.Exception e)
             {
-                GD.PrintErr(e);
+                GD.PushError(e);
                 throw e;
             }
         });
@@ -230,7 +230,7 @@ public partial class InvestmentsDatabase
                 }
                 catch (System.Exception e)
                 {
-                    GD.PrintErr(e);
+                    GD.PushError(e);
                 }
 
                 SetStatusAndPrintDuration(status, ref i, buys.Count);

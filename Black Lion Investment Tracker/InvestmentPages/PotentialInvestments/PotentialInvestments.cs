@@ -4,7 +4,7 @@ using BLIT.Investments;
 
 namespace BLIT.UI;
 
-public partial class PotentialInvestments : InvestmentPageeee<CollapsedPotentialInvestment, PotentialInvestment, PotentialInvestmentData, BuyData, PotentialSellData, CollapsedPotentialInvestmentItem, PotentialInvestmentItem>
+public partial class PotentialInvestments : InvestmentPage<CollapsedPotentialInvestment, PotentialInvestment, PotentialInvestmentData, BuyData, PotentialSellData, CollapsedPotentialInvestmentItem, PotentialInvestmentItem>
 {
     private void ClearList()
     {

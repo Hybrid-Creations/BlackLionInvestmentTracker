@@ -45,6 +45,14 @@ where TInvestmentItemScene : InvestmentItem<TInvestment, TInvestmentData, TBuyDa
     {
         collapsedInvestment = _collapsedInvestment;
 
+        TextureRect texRectIcon = itemProperties.GetNode<TextureRect>("Icon");
+        Label lblQuantity = itemProperties.GetNode<Label>("Icon/Quantity");
+        Label lblName = itemProperties.GetNode<Label>("Name");
+        RichTextLabel richLblBuyPrice = itemProperties.GetNode<RichTextLabel>("BuyPrice");
+        RichTextLabel richLblSellPrice = itemProperties.GetNode<RichTextLabel>("SellPrice");
+        RichTextLabel richLblProfit = itemProperties.GetNode<RichTextLabel>("Profit");
+        Label lblBuyDate = itemProperties.GetNode<Label>("BuyDate");
+
         itemProperties.GetNode<TextureRect>("Icon").Texture = _item.Icon;
         itemProperties.GetNode<Label>("Icon/Quantity").Text = _collapsedInvestment.Quantity.ToString();
         itemProperties.GetNode<Label>("Name").Text = _item.Name;

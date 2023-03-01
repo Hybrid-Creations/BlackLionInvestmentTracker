@@ -1,6 +1,5 @@
 [gd_scene load_steps=2 format=3 uid="uid://bm07bh2cb856s"]
 
-[ext_resource type="PackedScene" uid="uid://8wk62jqodlip" path="res://InvestmentPages/Base/InvestmentItem.tscn" id="1_pe35q"]
+[ext_resource type="PackedScene" uid="uid://dx4oojgad8vbx" path="res://InvestmentPages/Base/InvestmentItem.tscn" id="1_pe35q"]
 
 [node name="CompletedInvestmentItem" instance=ExtResource("1_pe35q")]
-script = null

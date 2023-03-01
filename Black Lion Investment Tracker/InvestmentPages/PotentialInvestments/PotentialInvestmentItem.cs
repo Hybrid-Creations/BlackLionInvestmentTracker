@@ -9,6 +9,8 @@ public partial class PotentialInvestmentItem : InvestmentItem<PotentialInvestmen
 {
     public override void Init(ItemData item, PotentialInvestment potentialInvestment)
     {
+        base.Init(item, potentialInvestment);
+
         itemProperties.GetNode<RichTextLabel>("CurrentSellPrice").Text = potentialInvestment.GetSellPriceStringFromInvestment<PotentialInvestment, PotentialInvestmentData, BuyData, PotentialSellData>(true, RichStringAlignment.RIGHT);
         itemProperties.GetNode<RichTextLabel>("BreakEvenSellPrice").Text = GetNeededPriceForAnyProfit(potentialInvestment);
         itemProperties.GetNode<RichTextLabel>("CurrentProfit").Text = $"[right]{potentialInvestment.PotentialProfit.ToCurrencyString(true)}[/right]";

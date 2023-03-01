@@ -2,7 +2,7 @@ using BLIT.Investments;
 
 namespace BLIT.UI;
 
-public sealed partial class CollapsedCompletedInvestmentItem : CollapsedInvestmentItem<CollapsedCompletedInvestment, CompletedInvestment, CompletedInvestmentData, BuyData, SellData, CompletedInvestmentItem>
+public sealed partial class CollapsedCompletedInvestmentItem : CollapsedInvestmentItem<CollapsedCompletedInvestment, CompletedInvestment, CompletedInvestmentData, BuyData, SellData, CompleteInvestmentItem>
 {
     protected override void OnMarkedNotAnInvestment()
     {

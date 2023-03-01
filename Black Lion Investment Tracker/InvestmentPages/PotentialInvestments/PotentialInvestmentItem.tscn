@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3 uid="uid://dpx8k6vqjm2el"]
 
-[ext_resource type="PackedScene" uid="uid://8wk62jqodlip" path="res://InvestmentPages/Base/InvestmentItem.tscn" id="1_sab0x"]
+[ext_resource type="PackedScene" uid="uid://dx4oojgad8vbx" path="res://InvestmentPages/Base/InvestmentItem.tscn" id="1_sab0x"]
 [ext_resource type="Script" path="res://InvestmentPages/PotentialInvestments/PotentialInvestmentItem.cs" id="2_vsp2l"]
 
 [node name="PotentialInvestmentItem" node_paths=PackedStringArray("itemProperties") instance=ExtResource("1_sab0x")]
