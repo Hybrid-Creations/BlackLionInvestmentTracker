@@ -21,16 +21,14 @@ public partial class AppStatusIndicator : Panel
     public override void _Process(double delta)
     {
         if (string.IsNullOrWhiteSpace(newStatus) == false)
-        {
             statusLabel.Text = $"[center][right]{newStatus}";
-        }
+
         if (newStatus == "clear")
         {
             statusLabel.Text = "";
             Instance.Hide();
             Instance.SetProcess(false);
         }
-
     }
 
     public static void ShowStatus(string status)

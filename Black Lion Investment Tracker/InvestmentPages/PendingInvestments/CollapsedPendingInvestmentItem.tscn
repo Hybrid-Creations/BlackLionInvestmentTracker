@@ -1,0 +1,54 @@
+[gd_scene load_steps=6 format=3 uid="uid://bxn1v7wpgjyvc"]
+
+[ext_resource type="PackedScene" uid="uid://gvbguuwb5rl2" path="res://InvestmentPages/Base/CollapsedInvestmentItem.tscn" id="1_aq7qp"]
+[ext_resource type="Script" path="res://InvestmentPages/PendingInvestments/CollapsedPendingInvestmentItem.cs" id="2_tcv6t"]
+[ext_resource type="Texture2D" uid="uid://lm5hp18ipnd" path="res://Sprites/arrow_right.png" id="3_m3ipi"]
+[ext_resource type="Texture2D" uid="uid://q0n8du351q8k" path="res://Sprites/arrow_down.png" id="4_q73yc"]
+[ext_resource type="PackedScene" uid="uid://ckqq50qxgd5sb" path="res://InvestmentPages/PendingInvestments/PendingInvestmentItem.tscn" id="5_wvta3"]
+
+[node name="CollapsedPendingInvestmentItem" node_paths=PackedStringArray("itemProperties", "toggleTreeButton", "subInvestmentsHolder", "subInvestmentTitles") instance=ExtResource("1_aq7qp")]
+script = ExtResource("2_tcv6t")
+itemProperties = NodePath("HBoxContainer/CollapsedItem/ItemProperties")
+toggleTreeButton = NodePath("HBoxContainer/ToggleTreeButton")
+arrowRight = ExtResource("3_m3ipi")
+arrowDown = ExtResource("4_q73yc")
+subInvestmentItemScene = ExtResource("5_wvta3")
+subInvestmentsHolder = NodePath("SubInvestmentHolder")
+subInvestmentTitles = NodePath("SubItemTitles")
+
+[node name="Name" parent="HBoxContainer/CollapsedItem/ItemProperties" index="3"]
+custom_minimum_size = Vector2(300, 0)
+
+[node name="BreakEvenPrice" type="RichTextLabel" parent="HBoxContainer/CollapsedItem/ItemProperties" index="6"]
+custom_minimum_size = Vector2(125, 0)
+layout_mode = 2
+size_flags_vertical = 4
+bbcode_enabled = true
+text = "[right]999[color=gold]g[/color] 99[color=silver]s[/color] 99[color=orange]c[/color]
+[color=gray]each[/color] 9[color=gold]g[/color] 99[color=silver]s[/color] 99[color=orange]c[/color]"
+fit_content = true
+scroll_active = false
+autowrap_mode = 0
+shortcut_keys_enabled = false
+
+[node name="19066" type="VScrollBar" parent="HBoxContainer/CollapsedItem/ItemProperties/BreakEvenPrice" index="1"]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+step = 1.0
+
+[node name="17386" type="VScrollBar" parent="HBoxContainer/CollapsedItem/ItemProperties/BreakEvenPrice" index="2"]
+visible = false
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+max_value = 23.0
+step = 1.0
+page = 23.0
+
+[node name="Name" parent="SubItemTitles" index="2"]
+custom_minimum_size = Vector2(275, 0)
+
+[node name="Profit" parent="SubItemTitles" index="6"]
+custom_minimum_size = Vector2(125, 0)

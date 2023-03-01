@@ -1,17 +1,17 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene load_steps=5 format=3 uid="uid://8wk62jqodlip"]
 
-[ext_resource type="Theme" uid="uid://dy6mo6ior0maw" path="res://Themes/MainTheme.tres" id="1_br344"]
-[ext_resource type="Script" path="res://InvestmentPages/CompletedInvestments/CompletedInvsetmentItem.cs" id="1_wnh1n"]
-[ext_resource type="Texture2D" uid="uid://dlbpcw8rui0ri" path="res://test.png" id="2_nq3fi"]
-[ext_resource type="LabelSettings" uid="uid://cohsxdtkacnpa" path="res://Themes/IconQuantityLabelSettings.tres" id="4_p2ulu"]
+[ext_resource type="Theme" uid="uid://dy6mo6ior0maw" path="res://Themes/MainTheme.tres" id="1_humwa"]
+[ext_resource type="Texture2D" uid="uid://dlbpcw8rui0ri" path="res://test.png" id="2_6s3c7"]
+[ext_resource type="Script" path="res://InvestmentItem.cs" id="2_joo6j"]
+[ext_resource type="LabelSettings" uid="uid://cohsxdtkacnpa" path="res://Themes/IconQuantityLabelSettings.tres" id="4_rtbqr"]
 
-[node name="TransactionItem" type="VBoxContainer"]
+[node name="InvestmentItem" type="VBoxContainer"]
 anchors_preset = 10
 anchor_right = 1.0
 offset_bottom = 73.0
 grow_horizontal = 2
-theme = ExtResource("1_br344")
-script = ExtResource("1_wnh1n")
+theme = ExtResource("1_humwa")
+script = ExtResource("2_joo6j")
 
 [node name="SpacerT" type="Control" parent="."]
 layout_mode = 2
@@ -29,7 +29,7 @@ size_flags_stretch_ratio = 0.1
 [node name="Icon" type="TextureRect" parent="ItemProperties"]
 custom_minimum_size = Vector2(64, 64)
 layout_mode = 2
-texture = ExtResource("2_nq3fi")
+texture = ExtResource("2_6s3c7")
 
 [node name="Quantity" type="Label" parent="ItemProperties/Icon"]
 layout_mode = 1
@@ -41,12 +41,12 @@ offset_bottom = -2.0
 grow_horizontal = 2
 grow_vertical = 2
 text = "250"
-label_settings = ExtResource("4_p2ulu")
+label_settings = ExtResource("4_rtbqr")
 horizontal_alignment = 2
 vertical_alignment = 2
 
 [node name="Name" type="Label" parent="ItemProperties"]
-custom_minimum_size = Vector2(233, 0)
+custom_minimum_size = Vector2(250, 0)
 layout_mode = 2
 text = "Shaman's Incricate Gossamer Insignia"
 vertical_alignment = 1
@@ -56,42 +56,45 @@ visible_characters_behavior = 1
 visible_ratio = 0.777778
 
 [node name="BuyPrice" type="RichTextLabel" parent="ItemProperties"]
-custom_minimum_size = Vector2(95, 0)
+custom_minimum_size = Vector2(125, 0)
 layout_mode = 2
 size_flags_horizontal = 8
 size_flags_vertical = 4
 bbcode_enabled = true
-text = "[right]999[color=gold]g[/color] 99[color=silver]s[/color] 99[color=orange]c[/color][/right]"
+text = "[right]999[color=gold]g[/color] 99[color=silver]s[/color] 99[color=orange]c[/color]
+[color=gray]each[/color] 9[color=gold]g[/color] 99[color=silver]s[/color] 99[color=orange]c[/color]"
 fit_content = true
 scroll_active = false
 autowrap_mode = 0
 shortcut_keys_enabled = false
 
 [node name="SellPrice" type="RichTextLabel" parent="ItemProperties"]
-custom_minimum_size = Vector2(95, 0)
+custom_minimum_size = Vector2(125, 0)
 layout_mode = 2
 size_flags_horizontal = 8
 size_flags_vertical = 4
 bbcode_enabled = true
-text = "[right]999[color=gold]g[/color] 99[color=silver]s[/color] 99[color=orange]c[/color][/right]"
+text = "[right]999[color=gold]g[/color] 99[color=silver]s[/color] 99[color=orange]c[/color]
+[color=gray]each[/color] 9[color=gold]g[/color] 99[color=silver]s[/color] 99[color=orange]c[/color]"
 fit_content = true
 scroll_active = false
 autowrap_mode = 0
 shortcut_keys_enabled = false
 
 [node name="Profit" type="RichTextLabel" parent="ItemProperties"]
-custom_minimum_size = Vector2(95, 0)
+custom_minimum_size = Vector2(125, 0)
 layout_mode = 2
 size_flags_horizontal = 8
 size_flags_vertical = 4
 bbcode_enabled = true
-text = "[right]999[color=gold]g[/color] 99[color=silver]s[/color] 99[color=orange]c[/color][/right]"
+text = "[right]999[color=gold]g[/color] 99[color=silver]s[/color] 99[color=orange]c[/color]
+[color=gray]each[/color] 9[color=gold]g[/color] 99[color=silver]s[/color] 99[color=orange]c[/color]"
 fit_content = true
 scroll_active = false
 autowrap_mode = 0
 shortcut_keys_enabled = false
 
-[node name="InvestDate" type="Label" parent="ItemProperties"]
+[node name="BuyDate" type="Label" parent="ItemProperties"]
 custom_minimum_size = Vector2(125, 0)
 layout_mode = 2
 text = "29 months ago"
@@ -101,7 +104,7 @@ vertical_alignment = 1
 [node name="SellDate" type="Label" parent="ItemProperties"]
 custom_minimum_size = Vector2(125, 0)
 layout_mode = 2
-text = "59 minutes ago"
+text = "54 minutes ago"
 horizontal_alignment = 2
 vertical_alignment = 1
 

@@ -7,7 +7,7 @@ using Gw2Sharp.WebApi.Exceptions;
 
 namespace BLIT.UI;
 
-public partial class InvestmentPage<TCollapedInvestment, TInvestment, TInvestmentData, TBuyData, TSellData> : VBoxContainer
+public partial class InvestmentPageeee<TCollapedInvestment, TInvestment, TInvestmentData, TBuyData, TSellData> : VBoxContainer
  where TCollapedInvestment : CollapsedInvestment<TInvestment, TInvestmentData, TBuyData, TSellData>
  where TInvestment : Investment<TInvestmentData, TBuyData, TSellData>
  where TInvestmentData : InvestmentData<TBuyData, TSellData>

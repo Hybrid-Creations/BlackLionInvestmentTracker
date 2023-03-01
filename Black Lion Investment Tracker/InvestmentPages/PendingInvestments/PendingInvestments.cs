@@ -3,7 +3,7 @@ using BLIT.Investments;
 
 namespace BLIT.UI;
 
-public partial class PendingInvestments : InvestmentPage<CollapsedPendingInvestment, PendingInvestment, PendingInvestmentData, BuyData, PendingSellData>
+public partial class PendingInvestments : InvestmentPageeee<CollapsedPendingInvestment, PendingInvestment, PendingInvestmentData, BuyData, PendingSellData>
 {
     private void ClearList()
     {

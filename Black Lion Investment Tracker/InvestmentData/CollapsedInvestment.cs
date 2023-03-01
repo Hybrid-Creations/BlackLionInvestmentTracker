@@ -10,7 +10,7 @@ where TInvestmentData : InvestmentData<TBuyData, TSellData>
 where TBuyData : BuyData
 where TSellData : SellData
 {
-    public IList<TInvestment> SubInvestments { get; protected set; }
+    public List<TInvestment> SubInvestments { get; protected set; }
 
     public int ItemId => SubInvestments.First().Data.BuyData.ItemId;
 
@@ -26,6 +26,6 @@ where TSellData : SellData
 
     public CollapsedInvestment(params TInvestment[] subInvestments)
     {
-        SubInvestments = subInvestments;
+        SubInvestments = subInvestments.ToList();
     }
 }

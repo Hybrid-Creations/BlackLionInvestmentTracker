@@ -1,0 +1,8 @@
+[gd_scene load_steps=3 format=3 uid="uid://bm07bh2cb856s"]
+
+[ext_resource type="PackedScene" path="res://InvestmentPages/Base/InvestmentItem.tscn" id="1_pe35q"]
+[ext_resource type="Script" path="res://InvestmentPages/CompletedInvestments/CompletedInvsetmentItem.cs" id="2_0q75a"]
+
+[node name="CompletedInvestmentItem" node_paths=PackedStringArray("itemProperties") instance=ExtResource("1_pe35q")]
+script = ExtResource("2_0q75a")
+itemProperties = NodePath("ItemProperties")

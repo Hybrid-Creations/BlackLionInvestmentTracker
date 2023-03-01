@@ -1,7 +1,0 @@
-[gd_scene load_steps=3 format=3 uid="uid://dn5f8p75ajyrt"]
-
-[ext_resource type="PackedScene" uid="uid://dremky7ecw2u3" path="res://InvestmentPages/InvestmentItem.tscn" id="1_d7unh"]
-[ext_resource type="Script" path="res://InvestmentPages/CompletedInvestments/CompletedInvsetmentItem.cs" id="2_kl8fo"]
-
-[node name="CompletedInvestmentItem" instance=ExtResource("1_d7unh")]
-script = ExtResource("2_kl8fo")

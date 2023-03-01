@@ -5,14 +5,14 @@ using Godot;
 
 namespace BLIT.UI;
 
-public partial class CollapsedPendingTransactionItem : CollapsedInvestmentItem<CollapsedPendingInvestment, PendingInvestment, PendingInvestmentData, BuyData, PendingSellData, PendingInvestmentItem>
+public sealed partial class CollapsedPendingInvestmentItem : CollapsedInvestmentItem<CollapsedPendingInvestment, PendingInvestment, PendingInvestmentData, BuyData, PendingSellData, PendingInvestmentItem>
 {
     public override void Init(ItemData _item, CollapsedPendingInvestment _collapsedPendingInvestment)
     {
         base.Init(_item, _collapsedPendingInvestment);
-        itemProperties.GetNode<RichTextLabel>("CurrentSellPrice").Text = _collapsedPendingInvestment.GetSellPriceStringFromInvestment<CollapsedPendingInvestment, PendingInvestment, PendingInvestmentData, BuyData, PendingSellData>(true, RichStringAlignment.RIGHT);
+        itemProperties.GetNode<RichTextLabel>("SellPrice").Text = _collapsedPendingInvestment.GetSellPriceStringFromInvestment<CollapsedPendingInvestment, PendingInvestment, PendingInvestmentData, BuyData, PendingSellData>(true, RichStringAlignment.RIGHT);
         itemProperties.GetNode<RichTextLabel>("BreakEvenSellPrice").Text = GetNeededPriceForAnyProfit(_collapsedPendingInvestment);
-        itemProperties.GetNode<RichTextLabel>("CurrentProfit").Text = $"[right]{_collapsedPendingInvestment.TotalPotentialProfit.ToCurrencyString(true)}[/right]";
+        itemProperties.GetNode<RichTextLabel>("Profit").Text = $"[right]{_collapsedPendingInvestment.TotalPotentialProfit.ToCurrencyString(true)}[/right]";
     }
 
     private static string GetNeededPriceForAnyProfit(CollapsedPendingInvestment _collapsedPendingInvestment)

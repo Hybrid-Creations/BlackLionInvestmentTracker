@@ -89,13 +89,6 @@ where TInvestmentItemScene : InvestmentItem<TInvestment, TInvestmentData, TBuyDa
                     if (str == MarkNotAnInvestment)
                     {
                         OnMarkedNotAnInvestment();
-                        // Main.Database.CollapsedCompletedInvestments.Remove(collapsedInvestment);
-
-                        // foreach (var investment in collapsedInvestment.SubInvestments)
-                        // {
-                        //     Main.Database.CompletedInvestments.Remove(investment);
-                        //     Main.Database.NotInvestments.Add(investment.Data.BuyData.TransactionId);
-                        // }
 
                         Main.Database.Save();
                         QueueFree();

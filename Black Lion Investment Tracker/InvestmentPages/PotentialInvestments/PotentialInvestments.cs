@@ -3,7 +3,7 @@ using BLIT.Investments;
 
 namespace BLIT.UI;
 
-public partial class PotentialInvestments : InvestmentPage<CollapsedPotentialnvestment, PotentialInvestment, PotentialInvestmentData, BuyData, SellData>
+public partial class PotentialInvestments : InvestmentPageeee<CollapsedPotentialnvestment, PotentialInvestment, PotentialInvestmentData, BuyData, SellData>
 {
 
 }

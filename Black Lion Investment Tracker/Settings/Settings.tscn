@@ -2,7 +2,7 @@
 
 [ext_resource type="Theme" uid="uid://dy6mo6ior0maw" path="res://Themes/MainTheme.tres" id="1_ihyau"]
 [ext_resource type="Script" path="res://Settings/Settings.cs" id="2_x88c0"]
-[ext_resource type="PackedScene" uid="uid://dxko7eym5bhvk" path="res://Main.tscn" id="3_ceqxv"]
+[ext_resource type="PackedScene" uid="uid://cyp3gemcogg2j" path="res://Main.tscn" id="3_ceqxv"]
 
 [node name="Settings" type="Panel" node_paths=PackedStringArray("apiKeyField")]
 anchors_preset = 15

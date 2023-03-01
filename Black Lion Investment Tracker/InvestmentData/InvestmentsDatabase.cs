@@ -13,10 +13,7 @@ namespace BLIT.Investments;
 
 public partial class InvestmentsDatabase
 {
-    CompletedInvestmentsData completedInvestmentsData = new();
-    PendingInvestmentsData pendingInvestmentsData = new();
-
-    public List<long> NotInvestments { get; private set; }
+    public List<long> NotInvestments { get; private set; } = new();
     public List<CompletedInvestment> CompletedInvestments { get; private set; } = new();
     public List<PendingInvestment> PendingInvestments { get; private set; } = new();
     public List<CollapsedCompletedInvestment> CollapsedCompletedInvestments { get; private set; } = new();
@@ -213,7 +210,7 @@ public partial class InvestmentsDatabase
                         }
 
                         var investment = new CompletedInvestment(new CompletedInvestmentData(buyData, sellDatas));
-                        GD.Print($"New Investment -> {buyOrder.ItemId}, Bought {investment.Quantity} for {investment.TotalBuyPrice}, Sold {investment.SellQuantity}/{investment.Data.SellDatas.Count} for {investment.TotalSellPrice}, for a Profit of {investment.Profit}");
+                        //GD.Print($"New Investment -> {buyOrder.ItemId}, Bought {investment.Quantity} for {investment.TotalBuyPrice}, Sold {investment.SellQuantity}/{investment.Data.SellDatas.Count} for {investment.TotalSellPrice}, for a Profit of {investment.Profit}");
                         CompletedInvestments.Add(investment);
                     }
                     // This means we did buy the item, but we have not sold any yet, so it is pending
@@ -280,7 +277,7 @@ public partial class InvestmentsDatabase
                     // If there are no items left to use in this sell order, skip it
                     else
                     {
-                        GD.Print($"Skipped sell order \"{sellOrder.Id}\" as it was already in the database and fully used.");
+                        //GD.Print($"Skipped sell order \"{sellOrder.Id}\" as it was already in the database and fully used.");
                         continue;
                     }
                 }
@@ -429,9 +426,10 @@ public partial class InvestmentsDatabase
     const string databasePath = "user://database.completed";
     public void Save()
     {
-        completedInvestmentsData.Investments = CompletedInvestments.Select(c => c.Data).ToList();
-        completedInvestmentsData.NotInvestments = NotInvestments;
-        SaveSystem.SaveToFile(databasePath, completedInvestmentsData);
+        var savedData = new CompletedInvestmentsData();
+        savedData.Investments = CompletedInvestments.Select(c => c.Data).ToList();
+        savedData.NotInvestments = NotInvestments;
+        SaveSystem.SaveToFile(databasePath, savedData);
     }
 
     // ---------- Loading
@@ -439,9 +437,8 @@ public partial class InvestmentsDatabase
     {
         if (SaveSystem.TryLoadFromFile(databasePath, out CompletedInvestmentsData newData))
         {
-            completedInvestmentsData = newData;
-            CompletedInvestments = completedInvestmentsData.Investments.Select(i => new CompletedInvestment(i)).ToList();
-            NotInvestments = completedInvestmentsData.NotInvestments;
+            CompletedInvestments = newData.Investments.Select(i => new CompletedInvestment(i)).ToList() ?? new();
+            NotInvestments = newData.NotInvestments ?? new();
         }
         GD.Print($"Loaded Investment Database: i:{CompletedInvestments.Count}, n:{NotInvestments.Count}");
     }
