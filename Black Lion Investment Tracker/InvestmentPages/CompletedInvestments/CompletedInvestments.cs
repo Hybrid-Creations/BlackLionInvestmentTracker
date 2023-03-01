@@ -4,7 +4,7 @@ using Godot;
 
 namespace BLIT.UI;
 
-public partial class CompletedInvestments : InvestmentPageeee<CollapsedCompletedInvestment, CompletedInvestment, CompletedInvestmentData, BuyData, SellData>
+public partial class CompletedInvestments : InvestmentPageeee<CollapsedCompletedInvestment, CompletedInvestment, CompletedInvestmentData, BuyData, SellData, CollapsedCompletedInvestmentItem, CompletedInvestmentItem>
 {
     [Export]
     HBoxContainer totals;

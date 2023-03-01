@@ -10,7 +10,7 @@ public partial class Main : Node
     VBoxContainer itemHolder;
 
     [Export]
-    CompletedInvestments Investments;
+    CompletedInvestments CompletedInvestments;
     [Export]
     PendingInvestments PendingInvestments;
 
@@ -44,7 +44,7 @@ public partial class Main : Node
     {
         Database.Update(() =>
         {
-            Investments.ListInvestments();
+            CompletedInvestments.ListInvestments();
             PendingInvestments.ListInvestments();
         });
 

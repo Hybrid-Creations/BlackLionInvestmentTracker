@@ -1,18 +1,21 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using BLIT.Extensions;
 using BLIT.Investments;
 using Godot;
 using Gw2Sharp.WebApi.Exceptions;
 
 namespace BLIT.UI;
 
-public partial class InvestmentPageeee<TCollapedInvestment, TInvestment, TInvestmentData, TBuyData, TSellData> : VBoxContainer
+public partial class InvestmentPageeee<TCollapedInvestment, TInvestment, TInvestmentData, TBuyData, TSellData, TCollapedInvestmentItemScene, TinvestmentItemScene> : VBoxContainer
  where TCollapedInvestment : CollapsedInvestment<TInvestment, TInvestmentData, TBuyData, TSellData>
  where TInvestment : Investment<TInvestmentData, TBuyData, TSellData>
  where TInvestmentData : InvestmentData<TBuyData, TSellData>
  where TBuyData : BuyData
 where TSellData : SellData
+where TCollapedInvestmentItemScene : CollapsedInvestmentItem<TCollapedInvestment, TInvestment, TInvestmentData, TBuyData, TSellData, TinvestmentItemScene>
+where TinvestmentItemScene : InvestmentItem<TInvestment, TInvestmentData, TBuyData, TSellData>
 {
     [Export]
     protected PackedScene collapsedInvestmentScene;
@@ -30,9 +33,9 @@ where TSellData : SellData
         {
             try
             {
-                // var instance = collapsedInvestmentScene.Instantiate<CollapsedTransactionItem>();
-                // instance.Init(Cache.Items.GetItemData(investment.ItemId), investment);
-                // investmentHolder.AddChildSafe(instance, 0);
+                var instance = collapsedInvestmentScene.Instantiate<TCollapedInvestmentItemScene>();
+                instance.Init(Cache.Items.GetItemData(investment.ItemId), investment);
+                investmentHolder.AddChildSafe(instance, 0);
             }
             catch (NotFoundException)
             {

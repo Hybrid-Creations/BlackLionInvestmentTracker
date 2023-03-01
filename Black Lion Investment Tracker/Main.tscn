@@ -20,7 +20,7 @@ bg_color = Color(0.188235, 0.188235, 0.188235, 1)
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_y1w62"]
 bg_color = Color(0.25098, 0.25098, 0.25098, 1)
 
-[node name="Main" type="Panel" node_paths=PackedStringArray("itemHolder", "Investments", "PendingInvestments")]
+[node name="Main" type="Panel" node_paths=PackedStringArray("itemHolder", "PendingInvestments")]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -30,7 +30,6 @@ theme = ExtResource("1_thssd")
 theme_override_styles/panel = SubResource("StyleBoxFlat_p5u6s")
 script = ExtResource("1_jgrri")
 itemHolder = NodePath("TabContainer/Pending Investments/ScrollContainer/VBoxContainer")
-Investments = NodePath("TabContainer/Completed Investments")
 PendingInvestments = NodePath("TabContainer/Pending Investments")
 
 [node name="TabsBackground" type="Panel" parent="."]

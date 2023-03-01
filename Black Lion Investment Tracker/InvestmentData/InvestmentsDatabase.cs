@@ -16,8 +16,12 @@ public partial class InvestmentsDatabase
     public List<long> NotInvestments { get; private set; } = new();
     public List<CompletedInvestment> CompletedInvestments { get; private set; } = new();
     public List<PendingInvestment> PendingInvestments { get; private set; } = new();
+    public List<PotentialInvestment> PotentialInvestments { get; private set; } = new();
+
     public List<CollapsedCompletedInvestment> CollapsedCompletedInvestments { get; private set; } = new();
     public List<CollapsedPendingInvestment> CollapsedPendingInvestments { get; private set; } = new();
+    public List<CollapsedPotentialInvestment> CollapsedPotentialInvestments { get; private set; } = new();
+
     public long TotalInvested => CompletedInvestments.Sum(i => i.TotalBuyPrice);
     public long TotalReturn => CompletedInvestments.Sum(i => i.TotalSellPrice);
     public long TotalProfit => CompletedInvestments.Sum(i => i.Profit);
