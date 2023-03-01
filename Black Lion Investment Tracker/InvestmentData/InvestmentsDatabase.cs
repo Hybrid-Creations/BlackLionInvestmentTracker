@@ -37,8 +37,7 @@ public partial class InvestmentsDatabase
         {
             AppStatusIndicator.ShowStatus("Updating Database...");
             await CalculateAndUpdateInvestments();
-            var deffered = Callable.From(() => OnAfterUpdate?.Invoke());
-            deffered.CallDeferred();
+            OnAfterUpdate?.Invoke();
             updating = false;
         });
     }
@@ -181,19 +180,19 @@ public partial class InvestmentsDatabase
                 if (Main.Database.NotInvestments.Any(l => l == buyOrder.Id))
                 {
                     //GD.Print($"Skipped buy order \"{buy.Id}\" as it was marked as not an investment.");
-                    SetStatusAndPrintDuration(status, ref i, buys.Count);
+                    SetStatusAndPrintAmmount(status, ref i, buys.Count);
                     continue;
                 }
                 if (Main.Database.CompletedInvestments.Any(i => i.Data.BuyData.TransactionId == buyOrder.Id))
                 {
                     //GD.Print($"Skipped buy order \"{buy.Id}\" as it was already in the database.");
-                    SetStatusAndPrintDuration(status, ref i, buys.Count);
+                    SetStatusAndPrintAmmount(status, ref i, buys.Count);
                     continue;
                 }
                 if (Main.Database.PendingInvestments.Any(i => i.Data.BuyData.TransactionId == buyOrder.Id))
                 {
                     //GD.Print($"Skipped buy order \"{buy.Id}\" as it was already in the database.");
-                    SetStatusAndPrintDuration(status, ref i, buys.Count);
+                    SetStatusAndPrintAmmount(status, ref i, buys.Count);
                     continue;
                 }
 
@@ -234,13 +233,13 @@ public partial class InvestmentsDatabase
                     GD.PushError(e);
                 }
 
-                SetStatusAndPrintDuration(status, ref i, buys.Count);
+                SetStatusAndPrintAmmount(status, ref i, buys.Count);
             }
             AppStatusIndicator.ShowStatus($"{status} ({buys.Count}/{buys.Count})");
         });
     }
 
-    private void SetStatusAndPrintDuration(string status, ref int i, int buysCount)
+    private void SetStatusAndPrintAmmount(string status, ref int i, int buysCount)
     {
         AppStatusIndicator.ShowStatus($"{status} ({i}/{buysCount})");
         i++;
@@ -345,7 +344,7 @@ public partial class InvestmentsDatabase
                     // If there are no items left to use in this sell order, skip it
                     else
                     {
-                        GD.Print($"Skipped sell posting \"{postedSellOrder.Id}\" as it was already in the database and fully used.");
+                        //GD.Print($"Skipped sell posting \"{postedSellOrder.Id}\" as it was already in the database and fully used.");
                         continue;
                     }
                 }
