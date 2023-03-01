@@ -37,7 +37,8 @@ public partial class InvestmentsDatabase
         {
             AppStatusIndicator.ShowStatus("Updating Database...");
             await CalculateAndUpdateInvestments();
-            OnAfterUpdate?.Invoke();
+            var deffered = Callable.From(() => OnAfterUpdate?.Invoke());
+            deffered.CallDeferred();
             updating = false;
         });
     }
@@ -62,11 +63,11 @@ public partial class InvestmentsDatabase
                 // Create the Investment database from those buy and sell orders
                 await CreateInvestmentsFromOrders(buyOrders, sellOrders, postedSellOrders);
 
-                // Main.Database.CollapsedInvestments.Clear();
-                // Main.Database.GenerateCollapsed();
+                Main.Database.CollapsedCompletedInvestments.Clear();
+                Main.Database.GenerateCollapsedCompleted();
 
-                Main.Database.CollapsedPendingInvestments.Clear();
-                Main.Database.GenerateCollapsedPending();
+                //Main.Database.CollapsedPendingInvestments.Clear();
+                //Main.Database.GenerateCollapsedPending();
 
                 AppStatusIndicator.ClearStatus();
 
@@ -392,26 +393,26 @@ public partial class InvestmentsDatabase
         groups.ForEach(c => CollapsedCompletedInvestments.Add(c));
     }
 
-    public void GenerateCollapsedPending()
-    {
-        List<CollapsedPendingInvestment> groups = new();
+    // public void GenerateCollapsedPending()
+    // {
+    //     List<CollapsedPendingInvestment> groups = new();
 
-        foreach (var investment in PendingInvestments.Where(p => p.Data.PostedSellDatas.Count == 0))
-        {
-            var readyGroup = groups.FirstOrDefault(ci => ci.ItemId == investment.Data.BuyData.ItemId && ci.IndividualBuyPrice == investment.IndividualBuyPrice && ci.Quantity + investment.Quantity <= Constants.MaxItemStack);
-            if (readyGroup is not null)
-            {
-                readyGroup.SubInvestments.Add(investment);
-            }
-            else
-            {
-                var newCollapsedInvestment = new CollapsedPendingInvestment(investment);
-                groups.Add(newCollapsedInvestment);
-            }
-        }
+    //     foreach (var investment in PendingInvestments.Where(p => p.Data.PostedSellDatas.Count == 0))
+    //     {
+    //         var readyGroup = groups.FirstOrDefault(ci => ci.ItemId == investment.Data.BuyData.ItemId && ci.IndividualBuyPrice == investment.IndividualBuyPrice && ci.Quantity + investment.Quantity <= Constants.MaxItemStack);
+    //         if (readyGroup is not null)
+    //         {
+    //             readyGroup.SubInvestments.Add(investment);
+    //         }
+    //         else
+    //         {
+    //             var newCollapsedInvestment = new CollapsedPendingInvestment(investment);
+    //             groups.Add(newCollapsedInvestment);
+    //         }
+    //     }
 
-        groups.ForEach(c => CollapsedPendingInvestments.Add(c));
-    }
+    //     groups.ForEach(c => CollapsedPendingInvestments.Add(c));
+    // }
 
     [DataContract]
     public class CompletedInvestmentsData

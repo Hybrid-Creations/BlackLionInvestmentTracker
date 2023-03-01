@@ -53,13 +53,20 @@ where TInvestmentItemScene : InvestmentItem<TInvestment, TInvestmentData, TBuyDa
         RichTextLabel richLblProfit = itemProperties.GetNode<RichTextLabel>("Profit");
         Label lblBuyDate = itemProperties.GetNode<Label>("BuyDate");
 
-        itemProperties.GetNode<TextureRect>("Icon").Texture = _item.Icon;
-        itemProperties.GetNode<Label>("Icon/Quantity").Text = _collapsedInvestment.Quantity.ToString();
-        itemProperties.GetNode<Label>("Name").Text = _item.Name;
-        itemProperties.GetNode<RichTextLabel>("BuyPrice").Text = _collapsedInvestment.GetBuyPriceStringFromInvestment<TCollapsedInvestment, TInvestment, TInvestmentData, TBuyData, TSellData>(true, RichStringAlignment.RIGHT);
-        itemProperties.GetNode<RichTextLabel>("SellPrice").Text = _collapsedInvestment.GetSellPriceStringFromInvestment<TCollapsedInvestment, TInvestment, TInvestmentData, TBuyData, TSellData>(true, RichStringAlignment.RIGHT);
-        itemProperties.GetNode<RichTextLabel>("Profit").Text = $"[right]{_collapsedInvestment.TotalProfit.ToCurrencyString(true)}[/right]";
-        itemProperties.GetNode<Label>("InvestDate").Text = _collapsedInvestment.OldestPurchaseDate.ToTimeSinceString();
+        if (texRectIcon is not null)
+            texRectIcon.Texture = _item.Icon;
+        if (lblQuantity is not null)
+            lblQuantity.Text = _collapsedInvestment.Quantity.ToString();
+        if (lblName is not null)
+            lblName.Text = _item.Name;
+        if (richLblBuyPrice is not null)
+            richLblBuyPrice.Text = _collapsedInvestment.GetBuyPriceStringFromInvestment<TCollapsedInvestment, TInvestment, TInvestmentData, TBuyData, TSellData>(true, RichStringAlignment.RIGHT);
+        if (richLblSellPrice is not null)
+            richLblSellPrice.Text = _collapsedInvestment.GetSellPriceStringFromInvestment<TCollapsedInvestment, TInvestment, TInvestmentData, TBuyData, TSellData>(true, RichStringAlignment.RIGHT);
+        if (richLblProfit is not null)
+            richLblProfit.Text = $"[right]{_collapsedInvestment.TotalProfit.ToCurrencyString(true)}[/right]";
+        if (lblBuyDate is not null)
+            lblBuyDate.Text = _collapsedInvestment.OldestPurchaseDate.ToTimeSinceString();
     }
 
     public void TreeButtonToggled(bool enabled)

@@ -45,9 +45,8 @@ public partial class Main : Node
         Database.Update(() =>
         {
             CompletedInvestments.ListInvestments();
-            PendingInvestments.ListInvestments();
+            //PendingInvestments.ListInvestments();
         });
-
     }
 
     public override void _Notification(int what)

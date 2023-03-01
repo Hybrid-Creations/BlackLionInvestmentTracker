@@ -36,6 +36,7 @@ where TinvestmentItemScene : InvestmentItem<TInvestment, TInvestmentData, TBuyDa
                 var instance = collapsedInvestmentScene.Instantiate<TCollapedInvestmentItemScene>();
                 instance.Init(Cache.Items.GetItemData(investment.ItemId), investment);
                 investmentHolder.AddChildSafe(instance, 0);
+                GD.Print("woof");
             }
             catch (NotFoundException)
             {
@@ -48,6 +49,7 @@ where TinvestmentItemScene : InvestmentItem<TInvestment, TInvestmentData, TBuyDa
             }
             AppStatusIndicator.ShowStatus($"{baseStatusMessage} ({index}/{investmentDatas.Count})");
             index++;
+            break;
         }
         AppStatusIndicator.ShowStatus($"{baseStatusMessage} ({investmentDatas.Count}/{investmentDatas.Count})");
     }
