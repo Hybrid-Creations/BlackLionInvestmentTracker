@@ -5,18 +5,13 @@ using Godot;
 
 namespace BLIT.UI;
 
-public partial class PendingInvestmentItem : VBoxContainer
+public partial class PendingInvestmentItem : InvestmentItem<PendingInvestment, PendingInvestmentData, BuyData, PendingSellData>
 {
-    internal void Init(ItemData item, PendingInvestment pendingInvestment)
+    public override void Init(ItemData item, PendingInvestment pendingInvestment)
     {
-        GetNode<TextureRect>("ItemProperties/Icon").Texture = item.Icon;
-        GetNode<Label>("ItemProperties/Icon/Quantity").Text = pendingInvestment.Quantity.ToString();
-        GetNode<Label>("ItemProperties/Name").Text = $" {item.Name}";
-        GetNode<RichTextLabel>("ItemProperties/InvestmentPrice").Text = pendingInvestment.GetBuyPriceStringFromInvestment(true, RichStringAlignment.RIGHT);
-        GetNode<RichTextLabel>("ItemProperties/CurrentSellPrice").Text = pendingInvestment.GetSellPriceStringFromInvestment(true, RichStringAlignment.RIGHT);
-        GetNode<RichTextLabel>("ItemProperties/BreakEvenSellPrice").Text = GetNeededPriceForAnyProfit(pendingInvestment);
-        GetNode<RichTextLabel>("ItemProperties/CurrentProfit").Text = $"[right]{pendingInvestment.PotentialProfit.ToCurrencyString(true)}[/right]";
-        GetNode<Label>("ItemProperties/InvestDate").Text = pendingInvestment.Data.BuyData.DatePurchased.ToTimeSinceString();
+        itemProperties.GetNode<RichTextLabel>("CurrentSellPrice").Text = pendingInvestment.GetSellPriceStringFromInvestment<PendingInvestment, PendingInvestmentData, BuyData, PendingSellData>(true, RichStringAlignment.RIGHT);
+        itemProperties.GetNode<RichTextLabel>("BreakEvenSellPrice").Text = GetNeededPriceForAnyProfit(pendingInvestment);
+        itemProperties.GetNode<RichTextLabel>("CurrentProfit").Text = $"[right]{pendingInvestment.PotentialProfit.ToCurrencyString(true)}[/right]";
     }
 
     private static string GetNeededPriceForAnyProfit(PendingInvestment pendingInvestment)

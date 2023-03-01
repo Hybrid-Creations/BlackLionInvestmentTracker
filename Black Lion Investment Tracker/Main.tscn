@@ -1,9 +1,9 @@
-[gd_scene load_steps=13 format=3 uid="uid://c80w7piarfwit"]
+[gd_scene load_steps=13 format=3 uid="uid://cyp3gemcogg2j"]
 
 [ext_resource type="Script" path="res://Main.cs" id="1_jgrri"]
 [ext_resource type="Theme" uid="uid://dy6mo6ior0maw" path="res://Themes/MainTheme.tres" id="1_thssd"]
 [ext_resource type="Script" path="res://InvestmentPages/CompletedInvestments/CompletedInvestments.cs" id="3_xvx34"]
-[ext_resource type="PackedScene" uid="uid://cc7x74cstvn4w" path="res://InvestmentPages/CompletedInvestments/CollapsedTransactionItem.tscn" id="4_250gb"]
+[ext_resource type="PackedScene" uid="uid://cc7x74cstvn4w" path="res://InvestmentPages/CompletedInvestments/CollapsedCompletedInvestmentItem.tscn" id="4_v24ny"]
 [ext_resource type="Texture2D" uid="uid://du668hhlqaqyd" path="res://Sprites/cycle.png" id="5_ey6tk"]
 [ext_resource type="Script" path="res://InvestmentPages/PendingInvestments/PendingInvestments.cs" id="6_5ayt2"]
 [ext_resource type="Texture2D" uid="uid://b643uuwsu0y0v" path="res://Sprites/Settings.png" id="6_8rd2r"]
@@ -54,7 +54,7 @@ tab_alignment = 1
 layout_mode = 2
 script = ExtResource("3_xvx34")
 totals = NodePath("Totals")
-collapsedInvestmentScene = ExtResource("4_250gb")
+collapsedInvestmentScene = ExtResource("4_v24ny")
 investmentHolder = NodePath("ScrollContainer/VBoxContainer/InvsetmentHolder")
 loadingLabel = NodePath("ScrollContainer/VBoxContainer/VBoxContainer/Loading")
 

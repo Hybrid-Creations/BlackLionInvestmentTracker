@@ -1,26 +1,26 @@
 using System;
 using Gw2Sharp.WebApi.V2.Models;
-using Newtonsoft.Json;
 
-namespace BLIT;
+namespace BLIT.Investments;
 
-// public partial class SellData
-// {
-//     public long TransactionId;
-//     public DateTimeOffset SellDate;
-//     public int IndividualPrice;
-//     public int Quantity;
+public class SellData
+{
+    public virtual long TransactionId { get; protected set; }
+    public virtual int ItemId { get; protected set; }
+    public virtual int Quantity { get; internal set; }
+    public virtual int IndividualSellPrice { get; protected set; }
+    internal virtual DateTimeOffset Date { get; set; }
 
-//     [JsonIgnore] public int TotalSellPrice => IndividualPrice * Quantity;
+    protected SellData() { }
 
-//     public SellData(CommerceTransactionHistory sellTransaction)
-//     {
-//         TransactionId = sellTransaction.Id;
-//         SellDate = sellTransaction.Purchased;
-//         IndividualPrice = sellTransaction.Price;
-//         Quantity = sellTransaction.Quantity;
-//     }
+    public SellData(CommerceTransactionHistory sellTransaction)
+    {
+        if (sellTransaction is null) return;
 
-//     [JsonConstructor]
-//     public SellData() { }
-// }
+        TransactionId = sellTransaction.Id;
+        ItemId = sellTransaction.ItemId;
+        Date = sellTransaction.Created;
+        IndividualSellPrice = sellTransaction.Price;
+        Quantity = sellTransaction.Quantity;
+    }
+}

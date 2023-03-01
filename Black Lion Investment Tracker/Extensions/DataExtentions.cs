@@ -6,54 +6,53 @@ namespace BLIT.Extensions;
 public static class DataExtentions
 {
     // Buy
-    public static string GetBuyPriceStringFromInvestment(this CollapsedCompletedInvestment _collapsedInvestment, bool includeIndividualPrice, RichStringAlignment alignment)
+    public static string GetBuyPriceStringFromInvestment<TCollapsedInvestment, TInvestment, TInvestmentData, TBuyData, TSellData>(this TCollapsedInvestment collapsedInvestment, bool includeIndividualPrice, RichStringAlignment alignment)
+    where TCollapsedInvestment : CollapsedInvestment<TInvestment, TInvestmentData, TBuyData, TSellData>
+    where TInvestment : Investment<TInvestmentData, TBuyData, TSellData>
+    where TInvestmentData : InvestmentData<TBuyData, TSellData>
+    where TBuyData : BuyData
+    where TSellData : SellData
     {
-        return GetBuyPriceStringFromInvestment(_collapsedInvestment.TotalBuyPrice, _collapsedInvestment.IndividualBuyPrice, includeIndividualPrice, alignment);
+        return GetBuyPriceString(collapsedInvestment.TotalBuyPrice, collapsedInvestment.IndividualBuyPrice, includeIndividualPrice, alignment);
     }
 
-    public static string GetBuyPriceStringFromInvestment(this CollapsedPendingInvestment _collapsedPendingInvestment, bool includeIndividualPrice, RichStringAlignment alignment)
+    public static string GetBuyPriceStringFromInvestment<TInvestment, TInvestmentData, TBuyData, TSellData>(this TInvestment investment, bool includeIndividualPrice, RichStringAlignment alignment)
+    where TInvestment : Investment<TInvestmentData, TBuyData, TSellData>
+    where TInvestmentData : InvestmentData<TBuyData, TSellData>
+    where TBuyData : BuyData
+    where TSellData : SellData
     {
-        return GetBuyPriceStringFromInvestment(_collapsedPendingInvestment.TotalBuyPrice, _collapsedPendingInvestment.IndividualBuyPrice, includeIndividualPrice, alignment);
+        return GetBuyPriceString(investment.TotalBuyPrice, investment.IndividualBuyPrice, includeIndividualPrice, alignment);
     }
 
-    public static string GetBuyPriceStringFromInvestment(this CompletedInvestment _collapsedInvestment, bool includeIndividualPrice, RichStringAlignment alignment)
+    private static string GetBuyPriceString(int totalBuyPrice, int individualBuyPrice, bool includeIndividualPrice, RichStringAlignment alignment)
     {
-        return GetBuyPriceStringFromInvestment(_collapsedInvestment.TotalBuyPrice, _collapsedInvestment.IndividualBuyPrice, includeIndividualPrice, alignment);
-    }
-
-    public static string GetBuyPriceStringFromInvestment(this PendingInvestment _collapsedPendingInvestment, bool includeIndividualPrice, RichStringAlignment alignment)
-    {
-        return GetBuyPriceStringFromInvestment(_collapsedPendingInvestment.TotalBuyPrice, _collapsedPendingInvestment.IndividualBuyPrice, includeIndividualPrice, alignment);
-    }
-
-    private static string GetBuyPriceStringFromInvestment(int totalPrice, int individualPrice, bool includeIndividualPrice, RichStringAlignment alignment)
-    {
-        return $"{$"[{alignment}]".ToLower()}{totalPrice.ToCurrencyString(true)}{(includeIndividualPrice ? $"\n[color=gray]each[/color] {individualPrice.ToCurrencyString(true)}" : "")}";
+        return $"{$"[{alignment}]".ToLower()}{totalBuyPrice.ToCurrencyString(true)}{(includeIndividualPrice ? $"\n[color=gray]each[/color] {individualBuyPrice.ToCurrencyString(true)}" : "")}";
     }
 
     //Sell
-    public static string GetSellPriceStringFromInvestment(this CollapsedCompletedInvestment _collapsedInvestment, bool includeIndividualPrice, RichStringAlignment alignment)
+    public static string GetSellPriceStringFromInvestment<TCollapsedInvestment, TInvestment, TInvestmentData, TBuyData, TSellData>(this TCollapsedInvestment collapsedInvestment, bool includeIndividualPrice, RichStringAlignment alignment)
+    where TCollapsedInvestment : CollapsedInvestment<TInvestment, TInvestmentData, TBuyData, TSellData>
+    where TInvestment : Investment<TInvestmentData, TBuyData, TSellData>
+    where TInvestmentData : InvestmentData<TBuyData, TSellData>
+    where TBuyData : BuyData
+    where TSellData : SellData
     {
-        return GetSellPriceStringFromInvestment(_collapsedInvestment.TotalSellPrice, _collapsedInvestment.IndividualSellPrice, includeIndividualPrice, alignment);
+        return GetSellPriceString(collapsedInvestment.TotalSellPrice, collapsedInvestment.IndividualSellPrice, includeIndividualPrice, alignment);
     }
 
-    public static string GetSellPriceStringFromInvestment(this CollapsedPendingInvestment _collapsedPendingInvestment, bool includeIndividualPrice, RichStringAlignment alignment)
+    public static string GetSellPriceStringFromInvestment<TInvestment, TInvestmentData, TBuyData, TSellData>(this TInvestment investment, bool includeIndividualPrice, RichStringAlignment alignment)
+    where TInvestment : Investment<TInvestmentData, TBuyData, TSellData>
+    where TInvestmentData : InvestmentData<TBuyData, TSellData>
+    where TBuyData : BuyData
+    where TSellData : SellData
     {
-        return GetSellPriceStringFromInvestment(_collapsedPendingInvestment.TotalBuyPrice, _collapsedPendingInvestment.CurrentIndividualSellPrice, includeIndividualPrice, alignment);
+        return GetSellPriceString(investment.TotalSellPrice, investment.IndividualSellPrice, includeIndividualPrice, alignment);
     }
 
-    public static string GetSellPriceStringFromInvestment(this CompletedInvestment _collapsedInvestment, bool includeIndividualPrice, RichStringAlignment alignment)
-    {
-        return GetSellPriceStringFromInvestment(_collapsedInvestment.TotalSellPrice, _collapsedInvestment.IndividualSellPrice, includeIndividualPrice, alignment);
-    }
+    private static string GetSellPriceString(int totalSellPrice, int individualSellPrice, bool includeIndividualPrice, RichStringAlignment alignment)
 
-    public static string GetSellPriceStringFromInvestment(this PendingInvestment _collapsedPendingInvestment, bool includeIndividualPrice, RichStringAlignment alignment)
     {
-        return GetSellPriceStringFromInvestment(_collapsedPendingInvestment.TotalBuyPrice, _collapsedPendingInvestment.Data.CurrentIndividualSellPrice, includeIndividualPrice, alignment);
-    }
-
-    private static string GetSellPriceStringFromInvestment(int totalPrice, int individualPrice, bool includeIndividualPrice, RichStringAlignment alignment)
-    {
-        return $"{$"[{alignment}]".ToLower()}{totalPrice.ToCurrencyString(true)}{(includeIndividualPrice ? $"\n[color=gray]each[/color] {individualPrice.ToCurrencyString(true)}" : "")}";
+        return $"{$"[{alignment}]".ToLower()}{totalSellPrice.ToCurrencyString(true)}{(includeIndividualPrice ? $"\n[color=gray]each[/color] {individualSellPrice.ToCurrencyString(true)}" : "")}";
     }
 }

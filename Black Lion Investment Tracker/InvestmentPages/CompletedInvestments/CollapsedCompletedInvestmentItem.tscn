@@ -1,27 +1,16 @@
-[gd_scene load_steps=8 format=3 uid="uid://cc7x74cstvn4w"]
+[gd_scene load_steps=5 format=3 uid="uid://cc7x74cstvn4w"]
 
-[ext_resource type="Script" path="res://InvestmentPages/CompletedInvestments/CollapsedTransactionItem.cs" id="1_40a67"]
 [ext_resource type="Theme" uid="uid://dy6mo6ior0maw" path="res://Themes/MainTheme.tres" id="1_o2ujm"]
 [ext_resource type="Texture2D" uid="uid://dlbpcw8rui0ri" path="res://test.png" id="2_capki"]
 [ext_resource type="Texture2D" uid="uid://lm5hp18ipnd" path="res://Sprites/arrow_right.png" id="3_00koi"]
-[ext_resource type="PackedScene" path="res://InvestmentPages/CompletedInvestments/TransactionItem.tscn" id="3_s3txg"]
-[ext_resource type="Texture2D" uid="uid://q0n8du351q8k" path="res://Sprites/arrow_down.png" id="4_sm6eu"]
 [ext_resource type="LabelSettings" uid="uid://cohsxdtkacnpa" path="res://Themes/IconQuantityLabelSettings.tres" id="7_h5xjr"]
 
-[node name="CollapsedTransactionItem" type="VBoxContainer" node_paths=PackedStringArray("itemProperties", "subInvestmentHolder", "subInvestmentTitles", "toggleTreeButton")]
+[node name="CollapsedTransactionItem" type="VBoxContainer"]
 anchors_preset = 10
 anchor_right = 1.0
 offset_bottom = 111.0
 grow_horizontal = 2
 theme = ExtResource("1_o2ujm")
-script = ExtResource("1_40a67")
-itemProperties = NodePath("HBoxContainer/CollapsedItem/ItemProperties")
-investmentItemScene = ExtResource("3_s3txg")
-subInvestmentHolder = NodePath("SubInvestmentHolder")
-subInvestmentTitles = NodePath("SubItemTitles")
-toggleTreeButton = NodePath("HBoxContainer/ToggleTreeButton")
-arrowRight = ExtResource("3_00koi")
-arrowDown = ExtResource("4_sm6eu")
 
 [node name="HBoxContainer" type="HBoxContainer" parent="."]
 layout_mode = 2

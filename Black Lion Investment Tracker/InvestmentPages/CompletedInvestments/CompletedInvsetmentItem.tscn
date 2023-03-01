@@ -1,7 +1,7 @@
 [gd_scene load_steps=5 format=3]
 
 [ext_resource type="Theme" uid="uid://dy6mo6ior0maw" path="res://Themes/MainTheme.tres" id="1_br344"]
-[ext_resource type="Script" path="res://InvestmentPages/CompletedInvestments/TransactionItem.cs" id="1_wnh1n"]
+[ext_resource type="Script" path="res://InvestmentPages/CompletedInvestments/CompletedInvsetmentItem.cs" id="1_wnh1n"]
 [ext_resource type="Texture2D" uid="uid://dlbpcw8rui0ri" path="res://test.png" id="2_nq3fi"]
 [ext_resource type="LabelSettings" uid="uid://cohsxdtkacnpa" path="res://Themes/IconQuantityLabelSettings.tres" id="4_p2ulu"]
 
