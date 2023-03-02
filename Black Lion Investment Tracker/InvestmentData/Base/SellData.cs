@@ -1,15 +1,19 @@
 using System;
+using System.Runtime.Serialization;
 using Gw2Sharp.WebApi.V2.Models;
 
 namespace BLIT.Investments;
 
+[DataContract]
 public class SellData
 {
-    public virtual long TransactionId { get; protected set; }
-    public virtual int ItemId { get; protected set; }
-    public virtual int Quantity { get; internal set; }
-    public virtual int IndividualSellPrice { get; protected set; }
-    internal virtual DateTimeOffset Date { get; set; }
+    [DataMember] public long TransactionId { get; protected set; }
+    [DataMember] public int ItemId { get; protected set; }
+    [DataMember] public int Quantity { get; internal set; }
+    [DataMember] public int IndividualSellPrice { get; protected set; }
+    [DataMember] internal DateTimeOffset Date { get; set; }
+
+    public int TotalSellPrice => IndividualSellPrice * Quantity;
 
     protected SellData() { }
 

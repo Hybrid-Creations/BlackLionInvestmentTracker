@@ -26,7 +26,7 @@ public partial class Main : Node
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
     {
-        // Database.Load();
+        Database.Load();
         Cache.Items.Load();
 
         MyClient = new Gw2Client(new Connection(Settings.Data.APIKey));
