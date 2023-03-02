@@ -75,7 +75,7 @@ size_flags_horizontal = 8
 size_flags_vertical = 4
 bbcode_enabled = true
 text = "[right]999[color=gold]g[/color] 99[color=silver]s[/color] 99[color=orange]c[/color]
-[color=gray]each[/color] 9[color=gold]g[/color] 99[color=silver]s[/color] 99[color=orange]c[/color]"
+[color=gray]avg[/color] 9[color=gold]g[/color] 99[color=silver]s[/color] 99[color=orange]c[/color]"
 fit_content = true
 scroll_active = false
 autowrap_mode = 0
@@ -101,7 +101,7 @@ size_flags_horizontal = 8
 size_flags_vertical = 4
 bbcode_enabled = true
 text = "[right]999[color=gold]g[/color] 99[color=silver]s[/color] 99[color=orange]c[/color]
-[color=gray]each[/color] 9[color=gold]g[/color] 99[color=silver]s[/color] 99[color=orange]c[/color]"
+[color=gray]avg[/color] 9[color=gold]g[/color] 99[color=silver]s[/color] 99[color=orange]c[/color]"
 fit_content = true
 scroll_active = false
 autowrap_mode = 0

@@ -3,10 +3,8 @@ using BLIT.ConstantVariables;
 
 namespace BLIT.Investments;
 
-public class PotentialInvestment
+public class PotentialInvestment : Investment
 {
-    internal BuyData BuyData { get; private set; }
-
     private readonly Lazy<int> lazyCurrentSellPrice;
     internal int CurrentSellPrice => lazyCurrentSellPrice.Value;
 
@@ -22,9 +20,8 @@ public class PotentialInvestment
     /// </summary>
     public int TotalPotentialProfit => (int)Math.Floor((TotalPotentialSellPrice * Constants.MultiplyTax) - BuyData.TotalBuyPrice);
 
-    public PotentialInvestment(BuyData buyData, Lazy<int> lazyCurrentSellPrice)
+    public PotentialInvestment(BuyData buyData, Lazy<int> lazyCurrentSellPrice) : base(buyData)
     {
-        BuyData = buyData;
         this.lazyCurrentSellPrice = lazyCurrentSellPrice;
     }
 }

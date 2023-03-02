@@ -2,29 +2,34 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using BLIT.ConstantVariables;
+using Godot;
 
 namespace BLIT.Investments;
 
-public class PendingInvestment
+public class PendingInvestment : Investment
 {
-    internal BuyData BuyData { get; private set; }
     internal List<SellData> PostedSellDatas { get; private set; } = new();
 
-    public int IndividualPostedSellPrice => PostedSellDatas.First().IndividualSellPrice;
-    public int TotalPostedSellPrice => PostedSellDatas.Sum(s => s.IndividualSellPrice * s.Quantity);
+    public int AverageIndividualPostedSellPrice { get; private set; }
+    public int TotalPostedSellPrice { get; private set; }
 
     /// <summary>
     /// The Indivual Profit We Got From Selling Reduced By The 15% BLTP Tax, Minus The Individual Price We Bought The Items For.
     /// </summary>
-    public int IndividualPotentialProfit => (int)Math.Floor((PostedSellDatas.First().IndividualSellPrice * Constants.MultiplyTax) - BuyData.IndividualBuyPrice);
+    public int AverageIndividualPotentialProfit { get; private set; }
     /// <summary>
     /// The Total Profit We Got From Selling Reduced By The 15% BLTP Tax, Minus The Total We Bought The Items For.
     /// </summary>
-    public int TotalPotentialProfit => (int)Math.Floor((TotalPostedSellPrice * Constants.MultiplyTax) - BuyData.TotalBuyPrice);
+    public int TotalPotentialProfit { get; private set; }
 
-    public PendingInvestment(BuyData buyData, List<SellData> sellDatas)
+    public PendingInvestment(BuyData buyData, List<SellData> sellDatas) : base(buyData)
     {
-        BuyData = buyData;
         PostedSellDatas = sellDatas;
+
+        AverageIndividualPostedSellPrice = Mathf.RoundToInt(PostedSellDatas.Average(p => p.IndividualSellPrice));
+        TotalPostedSellPrice = PostedSellDatas.Sum(s => s.IndividualSellPrice * s.Quantity);
+
+        AverageIndividualPotentialProfit = Mathf.FloorToInt((AverageIndividualPostedSellPrice * Constants.MultiplyTax) - BuyData.IndividualBuyPrice);
+        TotalPotentialProfit = Mathf.FloorToInt((TotalPostedSellPrice * Constants.MultiplyTax) - BuyData.TotalBuyPrice);
     }
 }

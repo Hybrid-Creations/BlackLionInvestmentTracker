@@ -24,7 +24,7 @@ public partial class InvestmentsDatabase
 
     public long TotalInvested => CompletedInvestments.Sum(i => i.BuyData.TotalBuyPrice);
     public long TotalReturn => CompletedInvestments.Sum(i => i.TotalSellPrice);
-    public long TotalProfit => CompletedInvestments.Sum(i => i.Profit);
+    public long TotalProfit => CompletedInvestments.Sum(i => i.TotalProfit);
     public double ROI => TotalProfit / (double)TotalInvested * 100;
 
     bool updating;
@@ -201,28 +201,23 @@ public partial class InvestmentsDatabase
                     continue;
                 }
 
-                int buyAmmountLeft = buyOrder.Quantity;
-                var buyData = new BuyData(buyOrder);
-
                 try
                 {
+                    int buyAmmountLeft = buyOrder.Quantity;
                     // Make sure the sell transactions we look at are for the same item and only after the date the buy was purchase
-                    var sellDatas = CheckHistorySellOrdersForCompleteInvestmentMatches(buyOrder, ref buyAmmountLeft, sortedSells);
+                    var sellDataList = CheckHistorySellOrdersForCompleteInvestmentMatches(buyOrder, ref buyAmmountLeft, sortedSells);
+                    var buyData = new BuyData(buyOrder);
 
-                    // This is how we determine if an actual investment was created
-                    if (sellDatas.Count > 0)
+                    // If there are previous sell orders ascociated with this buy order, its a completed investment
+                    if (sellDataList.Count > 0)
                     {
                         // If there are left over bought items, remove them from this transaction because they did not sell
-                        if (buyAmmountLeft > 0)
-                        {
-                            buyData.Quantity -= buyAmmountLeft;
-                        }
+                        buyData.Quantity -= buyAmmountLeft;
 
-                        var investment = new CompletedInvestment(buyData, sellDatas);
-                        //GD.Print($"New Investment -> {buyOrder.ItemId}, Bought {investment.Quantity} for {investment.TotalBuyPrice}, Sold {investment.SellQuantity}/{investment.Data.SellDatas.Count} for {investment.TotalSellPrice}, for a Profit of {investment.Profit}");
+                        var investment = new CompletedInvestment(buyData, sellDataList);
                         CompletedInvestments.Add(investment);
                     }
-                    // This means we did buy the item, but we have not sold any yet, so it is pending
+                    // If there are not any previous sell orders ascociated with this buy order that means it is either a pending investment or potential investment
                     else
                     {
                         // Make sure the sell transactions we look at are for the same item and only after the date the buy was purchase
@@ -258,7 +253,7 @@ public partial class InvestmentsDatabase
 
     private List<SellData> CheckHistorySellOrdersForCompleteInvestmentMatches(CommerceTransactionHistory buyOrder, ref int buyAmmountLeft, IOrderedEnumerable<CommerceTransactionHistory> sortedSellOrders)
     {
-        var sellDataList = new List<SellData>();
+        var sellDataDictionary = new List<SellData>();
         foreach (var sellOrder in sortedSellOrders.Where(s => s.ItemId == buyOrder.ItemId && s.Purchased > buyOrder.Purchased))
         {
             var sellData = new SellData(sellOrder);
@@ -311,12 +306,21 @@ public partial class InvestmentsDatabase
                         buyAmmountLeft -= sellOrder.Quantity;
                     }
                 }
-                sellDataList.Add(sellData);
+
+                // If the hey does exists add the item to the list
+                //if (sellDataDictionary.TryGetValue(sellData.IndividualSellPrice, out var list))
+                sellDataDictionary.Add(sellData);
+                // Othersie create a new list for this key
+                // else
+                //     sellDataDictionary[sellData.IndividualSellPrice] = new List<SellData>
+                //     {
+                //         sellData
+                //     };
             }
             // We made sure all the buys are accounted for so we don't need to check any more sells
             else break;
         }
-        return sellDataList;
+        return sellDataDictionary;
     }
 
     private List<SellData> CheckPostedSellOrdersForMatches(CommerceTransactionHistory buyOrder, ref int buyAmmountLeft, IOrderedEnumerable<CommerceTransactionCurrent> sortedPostedSellOrders)
@@ -451,7 +455,6 @@ public partial class InvestmentsDatabase
         [DataMember] public List<CompletedInvestment> CompletedInvestments { get; internal set; } = new();
         [DataMember] public List<long> NotInvestments { get; internal set; } = new();
     }
-
 
     // ---------- Saving
     const string databasePath = "user://database.completed";

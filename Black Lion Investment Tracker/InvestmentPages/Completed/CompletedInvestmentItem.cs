@@ -1,4 +1,4 @@
-using System;
+using System.Linq;
 using BLIT.ConstantVariables;
 using BLIT.Extensions;
 using BLIT.Investments;
@@ -10,6 +10,10 @@ public partial class CompletedInvestmentItem : InvestmentItem
 {
     public virtual void Init(ItemData item, CompletedInvestment investment)
     {
+        var firstPrice = investment.SellDatas.First().IndividualSellPrice;
+        if (investment.SellDatas.Any(s => s.IndividualSellPrice != firstPrice))
+            GD.Print("Big OOPSIE");
+
         itemProperties.GetNode<TextureRect>("Icon").Texture = item.Icon;
         itemProperties.GetNode<Label>("Icon/Quantity").Text = investment.BuyData.Quantity.ToString();
         itemProperties.GetNode<Label>("Name").Text = item.Name;

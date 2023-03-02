@@ -1,19 +1,10 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace BLIT.Investments;
 
-public class CollapsedPotentialInvestment
+public class CollapsedPotentialInvestment : CollapsedInvestment<PotentialInvestment>
 {
-    public List<PotentialInvestment> SubInvestments { get; protected set; }
-
-    public int ItemId => SubInvestments.First().BuyData.ItemId;
-    public int Quantity => SubInvestments.Sum(i => i.BuyData.Quantity);
-
-    public int IndividualBuyPrice => SubInvestments.First().BuyData.IndividualBuyPrice;
-    public int TotalBuyPrice => SubInvestments.Sum(i => i.BuyData.TotalBuyPrice);
-
     public int IndividualPotentialSellPrice => SubInvestments.First().IndividualPotentialSellPrice;
     public int TotalPotentialSellPrice => SubInvestments.Sum(i => i.TotalPotentialSellPrice);
 
