@@ -42,7 +42,8 @@ public partial class RightClickMenu : PanelContainer
         btnContainer.AddChild(closeBtn);
         rootNode.AddChild(instance);
 
-        MainInstance?.QueueFree();
+        if (MainInstance.IsQueuedForDeletion() == false)
+            MainInstance?.QueueFree();
         MainInstance = instance;
     }
 

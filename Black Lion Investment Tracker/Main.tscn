@@ -60,6 +60,7 @@ theme_override_font_sizes/font_size = 22
 tab_alignment = 1
 
 [node name="Completed Investments" type="VBoxContainer" parent="TabContainer" node_paths=PackedStringArray("totals", "investmentHolder", "loadingLabel")]
+visible = false
 layout_mode = 2
 script = ExtResource("3_eciwu")
 totals = NodePath("Totals")
@@ -387,7 +388,6 @@ text = "Loading Investments..."
 horizontal_alignment = 1
 
 [node name="Potential Investments" type="VBoxContainer" parent="TabContainer" node_paths=PackedStringArray("investmentHolder", "loadingLabel")]
-visible = false
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3

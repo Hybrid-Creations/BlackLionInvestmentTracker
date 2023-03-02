@@ -61,16 +61,21 @@ public partial class CompletedInvestmentsPage : InvestmentsPage
                 instance.Init(Cache.Items.GetItemData(investment.ItemId), investment);
                 investmentHolder.AddChildSafe(instance, 0);
             }
-            catch (NotFoundException)
+            catch (AggregateException ag)
             {
-                // Most likely a new item that Gw2Sharp doesn't understand so we'll just skip it
-                GD.PushWarning($"Failed to retreive info on item {investment.ItemId}, most likely Gw2Sharp has not been updated yet to handle the item");
+                if (ag.ToString().Contains("Unsupported type") && ag.ToString().Contains("GW2Sharp"))
+                {
+                    // Most likely a new item that Gw2Sharp doesn't understand so we'll just skip it
+                    GD.PushWarning($"Failed to retreive info on item {investment.ItemId}, most likely Gw2Sharp has not been updated yet to handle the item");
+                }
+                else
+                {
+                    ProbablyRealException(ag);
+                }
             }
             catch (Exception e)
             {
-                GD.PushError(e);
-                GD.PushWarning("Unexpected error from GW2Sharp, might be an API issue?");
-                APIStatusIndicator.ShowStatus("Possible Issues With API, Some Requests Are Failing.");
+                ProbablyRealException(e);
             }
             AppStatusIndicator.ShowStatus($"{baseStatusMessage} ({index}/{investmentDatas.Count})");
             index++;
@@ -85,5 +90,12 @@ public partial class CompletedInvestmentsPage : InvestmentsPage
         SetTotals();
 
         AppStatusIndicator.ClearStatus();
+    }
+
+    private static void ProbablyRealException(Exception e)
+    {
+        GD.PushError(e);
+        GD.PushWarning("Unexpected error from GW2Sharp, might be an API issue?");
+        APIStatusIndicator.ShowStatus("Possible Issues With API, Some Requests Are Failing.");
     }
 }
