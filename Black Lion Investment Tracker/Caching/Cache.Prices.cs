@@ -7,17 +7,22 @@ public static partial class Cache
 {
     public class Prices
     {
-        static ConcurrentDictionary<int, int> sellsDB = new();
+        static readonly ConcurrentDictionary<int, int> pricesDB = new();
 
         public static int GetPrice(int itemId)
         {
-            if (sellsDB.TryGetValue(itemId, out var price) == false)
+            if (pricesDB.TryGetValue(itemId, out var price) == false)
             {
                 price = Main.MyClient.WebApi.V2.Commerce.Prices.GetAsync(itemId).Result.Sells.UnitPrice;
-                sellsDB.TryAdd(itemId, price);
+                pricesDB.TryAdd(itemId, price);
             }
 
             return price;
+        }
+
+        public static void Clear()
+        {
+            pricesDB.Clear();
         }
     }
 }

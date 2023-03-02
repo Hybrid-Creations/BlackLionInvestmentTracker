@@ -1,0 +1,26 @@
+[gd_scene load_steps=6 format=3 uid="uid://b2b0qo4lrxcpe"]
+
+[ext_resource type="PackedScene" uid="uid://gvbguuwb5rl2" path="res://InvestmentPages/Base/CollapsedInvestmentItem.tscn" id="1_htx2q"]
+[ext_resource type="Script" path="res://InvestmentPages/Completed/CollapsedCompletedInvestmentItem.cs" id="2_fxtmv"]
+[ext_resource type="PackedScene" uid="uid://cuq254wmca7y7" path="res://InvestmentPages/Completed/CompletedInvestmentItem.tscn" id="3_26g4i"]
+[ext_resource type="Texture2D" uid="uid://lm5hp18ipnd" path="res://Sprites/arrow_right.png" id="3_cdc21"]
+[ext_resource type="Texture2D" uid="uid://q0n8du351q8k" path="res://Sprites/arrow_down.png" id="4_2iqrm"]
+
+[node name="CollapsedCompletedInvestmentItem" node_paths=PackedStringArray("itemProperties", "toggleTreeButton", "subInvestmentsHolder", "subInvestmentTitles") instance=ExtResource("1_htx2q")]
+script = ExtResource("2_fxtmv")
+itemProperties = NodePath("HBoxContainer/CollapsedItem/ItemProperties")
+toggleTreeButton = NodePath("HBoxContainer/ToggleTreeButton")
+arrowRight = ExtResource("3_cdc21")
+arrowDown = ExtResource("4_2iqrm")
+subInvestmentItemScene = ExtResource("3_26g4i")
+subInvestmentsHolder = NodePath("SubInvestmentHolder")
+subInvestmentTitles = NodePath("SubItemTitles")
+
+[node name="Name" parent="HBoxContainer/CollapsedItem/ItemProperties" index="3"]
+custom_minimum_size = Vector2(333, 0)
+
+[node name="BreakEvenPrice" parent="HBoxContainer/CollapsedItem/ItemProperties" index="6"]
+visible = false
+
+[node name="BreakEvenPrice" parent="SubItemTitles" index="6"]
+visible = false

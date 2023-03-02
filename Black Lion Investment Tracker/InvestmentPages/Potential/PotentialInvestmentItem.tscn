@@ -1,0 +1,11 @@
+[gd_scene load_steps=3 format=3 uid="uid://dlbg5ektlklss"]
+
+[ext_resource type="PackedScene" uid="uid://dx4oojgad8vbx" path="res://InvestmentPages/Base/InvestmentItem.tscn" id="1_ac17s"]
+[ext_resource type="Script" path="res://InvestmentPages/Potential/PotentialInvestmentItem.cs" id="2_fte02"]
+
+[node name="PotentialInvestmentItem" node_paths=PackedStringArray("itemProperties") instance=ExtResource("1_ac17s")]
+script = ExtResource("2_fte02")
+itemProperties = NodePath("ItemProperties")
+
+[node name="SellDate" parent="ItemProperties" index="9"]
+visible = false

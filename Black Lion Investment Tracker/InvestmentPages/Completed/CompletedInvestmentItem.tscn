@@ -1,0 +1,11 @@
+[gd_scene load_steps=3 format=3 uid="uid://cuq254wmca7y7"]
+
+[ext_resource type="PackedScene" uid="uid://dx4oojgad8vbx" path="res://InvestmentPages/Base/InvestmentItem.tscn" id="1_bu16f"]
+[ext_resource type="Script" path="res://InvestmentPages/Completed/CompletedInvestmentItem.cs" id="2_yweko"]
+
+[node name="CompletedInvestmentItem" node_paths=PackedStringArray("itemProperties") instance=ExtResource("1_bu16f")]
+script = ExtResource("2_yweko")
+itemProperties = NodePath("ItemProperties")
+
+[node name="BreakEvenPrice" parent="ItemProperties" index="6"]
+visible = false

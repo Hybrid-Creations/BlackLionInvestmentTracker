@@ -1,0 +1,29 @@
+[gd_scene load_steps=6 format=3 uid="uid://c826d0vnlrybd"]
+
+[ext_resource type="PackedScene" uid="uid://gvbguuwb5rl2" path="res://InvestmentPages/Base/CollapsedInvestmentItem.tscn" id="1_wce27"]
+[ext_resource type="Script" path="res://InvestmentPages/Pending/CollapsedPendingInvestmentItem.cs" id="2_1vsdr"]
+[ext_resource type="Texture2D" uid="uid://lm5hp18ipnd" path="res://Sprites/arrow_right.png" id="3_th8jo"]
+[ext_resource type="Texture2D" uid="uid://q0n8du351q8k" path="res://Sprites/arrow_down.png" id="4_ojikx"]
+[ext_resource type="PackedScene" uid="uid://bqwy3ji8pn7ai" path="res://InvestmentPages/Pending/PendingInvestmentItem.tscn" id="5_jyi28"]
+
+[node name="CollapsedPendingInvestmentItem" node_paths=PackedStringArray("itemProperties", "toggleTreeButton", "subInvestmentsHolder", "subInvestmentTitles") instance=ExtResource("1_wce27")]
+script = ExtResource("2_1vsdr")
+itemProperties = NodePath("HBoxContainer/CollapsedItem/ItemProperties")
+toggleTreeButton = NodePath("HBoxContainer/ToggleTreeButton")
+arrowRight = ExtResource("3_th8jo")
+arrowDown = ExtResource("4_ojikx")
+subInvestmentItemScene = ExtResource("5_jyi28")
+subInvestmentsHolder = NodePath("SubInvestmentHolder")
+subInvestmentTitles = NodePath("SubItemTitles")
+
+[node name="Name" parent="HBoxContainer/CollapsedItem/ItemProperties" index="3"]
+custom_minimum_size = Vector2(275, 0)
+
+[node name="BreakEvenPrice" parent="HBoxContainer/CollapsedItem/ItemProperties" index="6"]
+visible = false
+
+[node name="BreakEvenPrice" parent="SubItemTitles" index="6"]
+visible = false
+
+[node name="DateSold" parent="SubItemTitles" index="9"]
+visible = false

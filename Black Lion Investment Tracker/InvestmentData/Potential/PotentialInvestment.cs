@@ -1,16 +1,30 @@
 using System;
-using System.Linq;
 using BLIT.ConstantVariables;
 
 namespace BLIT.Investments;
 
-public sealed class PotentialInvestment : Investment<PotentialInvestmentData, BuyData, PotentialSellData>
+public class PotentialInvestment
 {
-    public int TotalPotentialSellPrice => Data.CurrentIndividualSellPrice * Data.PostedSellDatas.Sum(p => p.Quantity);
+    internal BuyData BuyData { get; private set; }
 
-    // // The Total We Sold For Reduced By The 15% BLTP Tax Minus The Total We Bought The Items For
-    public int PotentialProfit => (int)Math.Floor((TotalPotentialSellPrice * Constants.MultiplyTax) - TotalBuyPrice);
-    public double PotentialROI => PotentialProfit / (double)TotalBuyPrice * 100;
+    private readonly Lazy<int> lazyCurrentSellPrice;
+    internal int CurrentSellPrice => lazyCurrentSellPrice.Value;
 
-    public PotentialInvestment(PotentialInvestmentData data) : base(data) { }
+    public int IndividualPotentialSellPrice => CurrentSellPrice;
+    public int TotalPotentialSellPrice => CurrentSellPrice * BuyData.Quantity;
+
+    /// <summary>
+    /// The Indivual Potential Profit We Could Sell For Reduced By The 15% BLTP Tax, Minus The Individual Price We Bought The Items For.
+    /// </summary>
+    public int IndividualPotentialProfit => (int)Math.Floor((CurrentSellPrice * Constants.MultiplyTax) - BuyData.IndividualBuyPrice);
+    /// <summary>
+    /// The Total We Could Sell For Reduced By The 15% BLTP Tax, Minus The Total We Bought The Items For.
+    /// </summary>
+    public int TotalPotentialProfit => (int)Math.Floor((TotalPotentialSellPrice * Constants.MultiplyTax) - BuyData.TotalBuyPrice);
+
+    public PotentialInvestment(BuyData buyData, Lazy<int> lazyCurrentSellPrice)
+    {
+        BuyData = buyData;
+        this.lazyCurrentSellPrice = lazyCurrentSellPrice;
+    }
 }

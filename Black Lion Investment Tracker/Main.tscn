@@ -1,16 +1,19 @@
-[gd_scene load_steps=15 format=3 uid="uid://cyp3gemcogg2j"]
+[gd_scene load_steps=19 format=3 uid="uid://cyp3gemcogg2j"]
 
 [ext_resource type="Script" path="res://Main.cs" id="1_jgrri"]
 [ext_resource type="Theme" uid="uid://dy6mo6ior0maw" path="res://Themes/MainTheme.tres" id="1_thssd"]
-[ext_resource type="Script" path="res://InvestmentPages/CompletedInvestments/CompletedInvestments.cs" id="3_xvx34"]
-[ext_resource type="PackedScene" uid="uid://c34ougp0j7qkc" path="res://InvestmentPages/CompletedInvestments/CollapsedCompletedInvestmentItem.tscn" id="4_v24ny"]
+[ext_resource type="Script" path="res://InvestmentPages/Completed/CompletedInvestmentsPage.cs" id="3_eciwu"]
+[ext_resource type="PackedScene" uid="uid://b2b0qo4lrxcpe" path="res://InvestmentPages/Completed/CollapsedCompletedInvestmentItem.tscn" id="4_j581h"]
 [ext_resource type="Texture2D" uid="uid://du668hhlqaqyd" path="res://Sprites/cycle.png" id="5_ey6tk"]
-[ext_resource type="Script" path="res://InvestmentPages/PendingInvestments/PendingInvestments.cs" id="6_5ayt2"]
 [ext_resource type="Texture2D" uid="uid://b643uuwsu0y0v" path="res://Sprites/Settings.png" id="6_8rd2r"]
-[ext_resource type="PackedScene" uid="uid://bxn1v7wpgjyvc" path="res://InvestmentPages/PendingInvestments/CollapsedPendingInvestmentItem.tscn" id="7_03m2k"]
-[ext_resource type="Script" path="res://InvestmentPages/PotentialInvestments/PotentialInvestments.cs" id="8_xfe06"]
+[ext_resource type="Script" path="res://InvestmentPages/Pending/PendingInvestmentsPage.cs" id="6_qcmjh"]
+[ext_resource type="PackedScene" uid="uid://cuq254wmca7y7" path="res://InvestmentPages/Completed/CompletedInvestmentItem.tscn" id="6_xy472"]
+[ext_resource type="PackedScene" uid="uid://c826d0vnlrybd" path="res://InvestmentPages/Pending/CollapsedPendingInvestmentItem.tscn" id="7_egmc1"]
+[ext_resource type="Script" path="res://InvestmentPages/Potential/PotentialInvestmentsPage.cs" id="8_iu3um"]
+[ext_resource type="PackedScene" uid="uid://bqwy3ji8pn7ai" path="res://InvestmentPages/Pending/PendingInvestmentItem.tscn" id="8_wkxf1"]
+[ext_resource type="PackedScene" uid="uid://c1xilgkwsf513" path="res://InvestmentPages/Potential/CollapsedPotentialInvestmentItem.tscn" id="9_bb7aw"]
 [ext_resource type="Script" path="res://AppStatusIndicator.cs" id="9_ja276"]
-[ext_resource type="PackedScene" uid="uid://bhtvty2d0yrk" path="res://InvestmentPages/PotentialInvestments/CollapsedPotentialInvestmentItem.tscn" id="9_wo1vk"]
+[ext_resource type="Script" path="res://APIStatusIndicator.cs" id="11_i4fps"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_p5u6s"]
 bg_color = Color(0.25098, 0.25098, 0.25098, 1)
@@ -18,10 +21,13 @@ bg_color = Color(0.25098, 0.25098, 0.25098, 1)
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_400td"]
 bg_color = Color(0.188235, 0.188235, 0.188235, 1)
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_6y4am"]
+bg_color = Color(0.25098, 0.25098, 0.25098, 1)
+
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_y1w62"]
 bg_color = Color(0.25098, 0.25098, 0.25098, 1)
 
-[node name="Main" type="Panel" node_paths=PackedStringArray("itemHolder", "CompletedInvestments", "PendingInvestments")]
+[node name="Main" type="Panel" node_paths=PackedStringArray("itemHolder", "CompletedInvestments", "PendingInvestments", "PoptentiaInvestments")]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -33,6 +39,7 @@ script = ExtResource("1_jgrri")
 itemHolder = NodePath("TabContainer/Pending Investments/ScrollContainer/VBoxContainer")
 CompletedInvestments = NodePath("TabContainer/Completed Investments")
 PendingInvestments = NodePath("TabContainer/Pending Investments")
+PoptentiaInvestments = NodePath("TabContainer/Potential Investments")
 
 [node name="TabsBackground" type="Panel" parent="."]
 layout_mode = 1
@@ -54,9 +61,9 @@ tab_alignment = 1
 
 [node name="Completed Investments" type="VBoxContainer" parent="TabContainer" node_paths=PackedStringArray("totals", "investmentHolder", "loadingLabel")]
 layout_mode = 2
-script = ExtResource("3_xvx34")
+script = ExtResource("3_eciwu")
 totals = NodePath("Totals")
-collapsedInvestmentScene = ExtResource("4_v24ny")
+collapsedInvestmentScene = ExtResource("4_j581h")
 investmentHolder = NodePath("ScrollContainer/VBoxContainer/InvsetmentHolder")
 loadingLabel = NodePath("ScrollContainer/VBoxContainer/VBoxContainer/Loading")
 
@@ -180,7 +187,7 @@ size_flags_horizontal = 3
 size_flags_stretch_ratio = 0.1
 
 [node name="Name" type="Label" parent="TabContainer/Completed Investments/ColumnTitles"]
-custom_minimum_size = Vector2(350, 0)
+custom_minimum_size = Vector2(333, 0)
 layout_mode = 2
 size_flags_stretch_ratio = 20.0
 text = "Name"
@@ -202,14 +209,14 @@ horizontal_alignment = 2
 vertical_alignment = 2
 
 [node name="Profit" type="Label" parent="TabContainer/Completed Investments/ColumnTitles"]
-custom_minimum_size = Vector2(115, 0)
+custom_minimum_size = Vector2(125, 0)
 layout_mode = 2
 text = "Profit "
 horizontal_alignment = 2
 vertical_alignment = 2
 
 [node name="InvestDate" type="Label" parent="TabContainer/Completed Investments/ColumnTitles"]
-custom_minimum_size = Vector2(133, 0)
+custom_minimum_size = Vector2(125, 0)
 layout_mode = 2
 text = "Date Invested"
 horizontal_alignment = 2
@@ -242,6 +249,15 @@ horizontal_scroll_mode = 0
 layout_mode = 2
 size_flags_horizontal = 3
 
+[node name="InvsetmentHolder" type="VBoxContainer" parent="TabContainer/Completed Investments/ScrollContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="CollapsedCompletedInvestmentItem" parent="TabContainer/Completed Investments/ScrollContainer/VBoxContainer/InvsetmentHolder" instance=ExtResource("4_j581h")]
+layout_mode = 2
+
+[node name="CompletedInvestmentItem" parent="TabContainer/Completed Investments/ScrollContainer/VBoxContainer/InvsetmentHolder" instance=ExtResource("6_xy472")]
+layout_mode = 2
+
 [node name="VBoxContainer" type="VBoxContainer" parent="TabContainer/Completed Investments/ScrollContainer/VBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
@@ -252,16 +268,13 @@ theme_override_font_sizes/font_size = 22
 text = "Loading Investments..."
 horizontal_alignment = 1
 
-[node name="InvsetmentHolder" type="VBoxContainer" parent="TabContainer/Completed Investments/ScrollContainer/VBoxContainer"]
-layout_mode = 2
-
 [node name="Pending Investments" type="VBoxContainer" parent="TabContainer" node_paths=PackedStringArray("investmentHolder", "loadingLabel")]
 visible = false
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
-script = ExtResource("6_5ayt2")
-collapsedInvestmentScene = ExtResource("7_03m2k")
+script = ExtResource("6_qcmjh")
+collapsedInvestmentScene = ExtResource("7_egmc1")
 investmentHolder = NodePath("ScrollContainer/VBoxContainer/InvestmentHolder")
 loadingLabel = NodePath("ScrollContainer/VBoxContainer/VBoxContainer/Loading")
 
@@ -293,7 +306,7 @@ size_flags_horizontal = 3
 size_flags_stretch_ratio = 0.1
 
 [node name="Name" type="Label" parent="TabContainer/Pending Investments/ColumnTitles"]
-custom_minimum_size = Vector2(300, 0)
+custom_minimum_size = Vector2(275, 0)
 layout_mode = 2
 size_flags_stretch_ratio = 20.0
 text = "Name"
@@ -315,6 +328,7 @@ horizontal_alignment = 2
 vertical_alignment = 2
 
 [node name="BreakEvenSellPrice" type="Label" parent="TabContainer/Pending Investments/ColumnTitles"]
+visible = false
 custom_minimum_size = Vector2(125, 0)
 layout_mode = 2
 text = "Break Even"
@@ -352,6 +366,16 @@ size_flags_vertical = 3
 layout_mode = 2
 size_flags_horizontal = 3
 
+[node name="InvestmentHolder" type="VBoxContainer" parent="TabContainer/Pending Investments/ScrollContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="CollapsedPendingInvestmentItem" parent="TabContainer/Pending Investments/ScrollContainer/VBoxContainer/InvestmentHolder" instance=ExtResource("7_egmc1")]
+layout_mode = 2
+
+[node name="PendingInvestmentItem" parent="TabContainer/Pending Investments/ScrollContainer/VBoxContainer/InvestmentHolder" instance=ExtResource("8_wkxf1")]
+layout_mode = 2
+
 [node name="VBoxContainer" type="VBoxContainer" parent="TabContainer/Pending Investments/ScrollContainer/VBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
@@ -362,17 +386,13 @@ theme_override_font_sizes/font_size = 22
 text = "Loading Investments..."
 horizontal_alignment = 1
 
-[node name="InvestmentHolder" type="VBoxContainer" parent="TabContainer/Pending Investments/ScrollContainer/VBoxContainer"]
-layout_mode = 2
-size_flags_horizontal = 3
-
 [node name="Potential Investments" type="VBoxContainer" parent="TabContainer" node_paths=PackedStringArray("investmentHolder", "loadingLabel")]
 visible = false
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
-script = ExtResource("8_xfe06")
-collapsedInvestmentScene = ExtResource("9_wo1vk")
+script = ExtResource("8_iu3um")
+collapsedInvestmentScene = ExtResource("9_bb7aw")
 investmentHolder = NodePath("ScrollContainer/VBoxContainer/InvestmentHolder")
 loadingLabel = NodePath("ScrollContainer/VBoxContainer/VBoxContainer/Loading")
 
@@ -404,7 +424,7 @@ size_flags_horizontal = 3
 size_flags_stretch_ratio = 0.1
 
 [node name="Name" type="Label" parent="TabContainer/Potential Investments/ColumnTitles"]
-custom_minimum_size = Vector2(300, 0)
+custom_minimum_size = Vector2(275, 0)
 layout_mode = 2
 size_flags_stretch_ratio = 20.0
 text = "Name"
@@ -433,9 +453,9 @@ horizontal_alignment = 2
 vertical_alignment = 2
 
 [node name="Profit" type="Label" parent="TabContainer/Potential Investments/ColumnTitles"]
-custom_minimum_size = Vector2(100, 0)
+custom_minimum_size = Vector2(125, 0)
 layout_mode = 2
-text = "Profit "
+text = "Current Profit"
 horizontal_alignment = 2
 vertical_alignment = 2
 
@@ -463,6 +483,16 @@ size_flags_vertical = 3
 layout_mode = 2
 size_flags_horizontal = 3
 
+[node name="InvestmentHolder" type="VBoxContainer" parent="TabContainer/Potential Investments/ScrollContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="CollapsedPendingInvestmentItem" parent="TabContainer/Potential Investments/ScrollContainer/VBoxContainer/InvestmentHolder" instance=ExtResource("7_egmc1")]
+layout_mode = 2
+
+[node name="PendingInvestmentItem" parent="TabContainer/Potential Investments/ScrollContainer/VBoxContainer/InvestmentHolder" instance=ExtResource("8_wkxf1")]
+layout_mode = 2
+
 [node name="VBoxContainer" type="VBoxContainer" parent="TabContainer/Potential Investments/ScrollContainer/VBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
@@ -473,10 +503,6 @@ theme_override_font_sizes/font_size = 22
 text = "Loading Investments..."
 horizontal_alignment = 1
 
-[node name="InvestmentHolder" type="VBoxContainer" parent="TabContainer/Potential Investments/ScrollContainer/VBoxContainer"]
-layout_mode = 2
-size_flags_horizontal = 3
-
 [node name="Refresh" type="Button" parent="."]
 custom_minimum_size = Vector2(40, 40)
 layout_mode = 1
@@ -486,26 +512,59 @@ icon = ExtResource("5_ey6tk")
 flat = true
 expand_icon = true
 
-[node name="AppStatusIndicator" type="Panel" parent="." node_paths=PackedStringArray("statusLabel")]
+[node name="PanelContainer" type="PanelContainer" parent="."]
 layout_mode = 1
 anchors_preset = 12
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_top = -24.0
 grow_horizontal = 2
 grow_vertical = 0
+theme_override_styles/panel = SubResource("StyleBoxFlat_6y4am")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="PanelContainer"]
+layout_mode = 2
+
+[node name="APIStatusIndicator" type="Panel" parent="PanelContainer/VBoxContainer" node_paths=PackedStringArray("statusLabel")]
+custom_minimum_size = Vector2(0, 26)
+layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_y1w62")
-script = ExtResource("9_ja276")
+script = ExtResource("11_i4fps")
 statusLabel = NodePath("Status")
 
-[node name="Status" type="RichTextLabel" parent="AppStatusIndicator"]
+[node name="Status" type="RichTextLabel" parent="PanelContainer/VBoxContainer/APIStatusIndicator"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 offset_left = 10.0
+offset_top = 2.0
 offset_right = -10.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/normal_font_size = 17
+bbcode_enabled = true
+text = "[center][right]Oh boy it looks like the API had an oopsie, gotta go chec kits status now just incase something might have happened that was bad"
+scroll_active = false
+autowrap_mode = 0
+shortcut_keys_enabled = false
+
+[node name="AppStatusIndicator" type="Panel" parent="PanelContainer/VBoxContainer" node_paths=PackedStringArray("statusLabel")]
+custom_minimum_size = Vector2(0, 28)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_y1w62")
+script = ExtResource("9_ja276")
+statusLabel = NodePath("Status")
+
+[node name="Status" type="RichTextLabel" parent="PanelContainer/VBoxContainer/AppStatusIndicator"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 10.0
+offset_top = 2.0
+offset_right = -10.0
+offset_bottom = -2.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_font_sizes/normal_font_size = 17

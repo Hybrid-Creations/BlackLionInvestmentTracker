@@ -22,7 +22,7 @@ public partial class InvestmentsDatabase
     public List<CollapsedPendingInvestment> CollapsedPendingInvestments { get; private set; } = new();
     public List<CollapsedPotentialInvestment> CollapsedPotentialInvestments { get; private set; } = new();
 
-    public long TotalInvested => CompletedInvestments.Sum(i => i.TotalBuyPrice);
+    public long TotalInvested => CompletedInvestments.Sum(i => i.BuyData.TotalBuyPrice);
     public long TotalReturn => CompletedInvestments.Sum(i => i.TotalSellPrice);
     public long TotalProfit => CompletedInvestments.Sum(i => i.Profit);
     public double ROI => TotalProfit / (double)TotalInvested * 100;
@@ -36,6 +36,8 @@ public partial class InvestmentsDatabase
         Task.Run(async () =>
         {
             AppStatusIndicator.ShowStatus("Updating Database...");
+            APIStatusIndicator.ClearStatus();
+            Cache.Prices.Clear();
             await CalculateAndUpdateInvestments();
             OnAfterUpdate?.Invoke();
             updating = false;
@@ -62,11 +64,14 @@ public partial class InvestmentsDatabase
                 // Create the Investment database from those buy and sell orders
                 await CreateInvestmentsFromOrders(buyOrders, sellOrders, postedSellOrders);
 
-                Main.Database.CollapsedCompletedInvestments.Clear();
-                Main.Database.GenerateCollapsedCompleted();
+                CollapsedCompletedInvestments.Clear();
+                GenerateCollapsedCompleted();
 
-                //Main.Database.CollapsedPendingInvestments.Clear();
-                //Main.Database.GenerateCollapsedPending();
+                CollapsedPendingInvestments.Clear();
+                GenerateCollapsedPending();
+
+                CollapsedPotentialInvestments.Clear();
+                GenerateCollapsedPotential();
 
                 AppStatusIndicator.ClearStatus();
 
@@ -183,13 +188,13 @@ public partial class InvestmentsDatabase
                     SetStatusAndPrintAmmount(status, ref i, buys.Count);
                     continue;
                 }
-                if (Main.Database.CompletedInvestments.Any(i => i.Data.BuyData.TransactionId == buyOrder.Id))
+                if (Main.Database.CompletedInvestments.Any(i => i.BuyData.TransactionId == buyOrder.Id))
                 {
                     //GD.Print($"Skipped buy order \"{buy.Id}\" as it was already in the database.");
                     SetStatusAndPrintAmmount(status, ref i, buys.Count);
                     continue;
                 }
-                if (Main.Database.PendingInvestments.Any(i => i.Data.BuyData.TransactionId == buyOrder.Id))
+                if (Main.Database.PendingInvestments.Any(i => i.BuyData.TransactionId == buyOrder.Id))
                 {
                     //GD.Print($"Skipped buy order \"{buy.Id}\" as it was already in the database.");
                     SetStatusAndPrintAmmount(status, ref i, buys.Count);
@@ -213,19 +218,25 @@ public partial class InvestmentsDatabase
                             buyData.Quantity -= buyAmmountLeft;
                         }
 
-                        var investment = new CompletedInvestment(new CompletedInvestmentData(buyData, sellDatas));
+                        var investment = new CompletedInvestment(buyData, sellDatas);
                         //GD.Print($"New Investment -> {buyOrder.ItemId}, Bought {investment.Quantity} for {investment.TotalBuyPrice}, Sold {investment.SellQuantity}/{investment.Data.SellDatas.Count} for {investment.TotalSellPrice}, for a Profit of {investment.Profit}");
                         CompletedInvestments.Add(investment);
                     }
                     // This means we did buy the item, but we have not sold any yet, so it is pending
                     else
                     {
-
                         // Make sure the sell transactions we look at are for the same item and only after the date the buy was purchase
-                        var pendingSellDatas = CheckPostedSellOrdersForMatches(buyOrder, ref buyAmmountLeft, sortedPostedSellOrders);
-                        var pendingInvestmentData = new PendingInvestmentData(buyData, pendingSellDatas, new Lazy<int>(() => Cache.Prices.GetPrice(buyOrder.ItemId)));
-
-                        PendingInvestments.Add(new PendingInvestment(pendingInvestmentData));
+                        var postedSellOrders = CheckPostedSellOrdersForMatches(buyOrder, ref buyAmmountLeft, sortedPostedSellOrders);
+                        if (postedSellOrders.Count > 0)
+                        {
+                            var pendingInvestment = new PendingInvestment(buyData, postedSellOrders);
+                            PendingInvestments.Add(pendingInvestment);
+                        }
+                        else
+                        {
+                            var potentialInvsetment = new PotentialInvestment(buyData, new Lazy<int>(() => Cache.Prices.GetPrice(buyOrder.ItemId)));
+                            PotentialInvestments.Add(potentialInvsetment);
+                        }
                     }
                 }
                 catch (System.Exception e)
@@ -254,7 +265,7 @@ public partial class InvestmentsDatabase
             if (buyAmmountLeft > 0)
             {
                 // Get all the other partial uses of this sell order
-                var databasePartials = CompletedInvestments.SelectMany(i => i.Data.SellDatas).Where(s => s.TransactionId == sellOrder.Id);
+                var databasePartials = CompletedInvestments.SelectMany(i => i.SellDatas).Where(s => s.TransactionId == sellOrder.Id);
 
                 // If is in the database
                 if (databasePartials.Any())
@@ -308,16 +319,16 @@ public partial class InvestmentsDatabase
         return sellDataList;
     }
 
-    private List<PendingSellData> CheckPostedSellOrdersForMatches(CommerceTransactionHistory buyOrder, ref int buyAmmountLeft, IOrderedEnumerable<CommerceTransactionCurrent> sortedPostedSellOrders)
+    private List<SellData> CheckPostedSellOrdersForMatches(CommerceTransactionHistory buyOrder, ref int buyAmmountLeft, IOrderedEnumerable<CommerceTransactionCurrent> sortedPostedSellOrders)
     {
-        var pendingSellDataList = new List<PendingSellData>();
+        var pendingSellDataList = new List<SellData>();
         foreach (var postedSellOrder in sortedPostedSellOrders.Where(s => s.ItemId == buyOrder.ItemId && s.Created > buyOrder.Purchased))
         {
-            var pendingSellData = new PendingSellData(postedSellOrder);
+            var pendingSellData = new SellData(postedSellOrder);
             if (buyAmmountLeft > 0)
             {
                 // Get all the other partial uses of this sell order
-                var databasePartials = PendingInvestments.SelectMany(i => i.Data.PostedSellDatas).Where(s => s.TransactionId == postedSellOrder.Id);
+                var databasePartials = PendingInvestments.SelectMany(i => i.PostedSellDatas).Where(s => s.TransactionId == postedSellOrder.Id);
 
                 // If is in the database
                 if (databasePartials.Any())
@@ -377,7 +388,7 @@ public partial class InvestmentsDatabase
 
         foreach (var investment in CompletedInvestments)
         {
-            var readyGroup = groups.FirstOrDefault(ci => ci.ItemId == investment.Data.BuyData.ItemId && ci.IndividualBuyPrice == investment.IndividualBuyPrice && ci.Quantity + investment.Quantity <= Constants.MaxItemStack);
+            var readyGroup = groups.FirstOrDefault(ci => ci.ItemId == investment.BuyData.ItemId && ci.IndividualBuyPrice == investment.BuyData.IndividualBuyPrice && ci.Quantity + investment.BuyData.Quantity <= Constants.MaxItemStack);
             if (readyGroup is not null)
             {
                 readyGroup.SubInvestments.Add(investment);
@@ -392,46 +403,62 @@ public partial class InvestmentsDatabase
         groups.ForEach(c => CollapsedCompletedInvestments.Add(c));
     }
 
-    // public void GenerateCollapsedPending()
-    // {
-    //     List<CollapsedPendingInvestment> groups = new();
+    public void GenerateCollapsedPending()
+    {
+        List<CollapsedPendingInvestment> groups = new();
 
-    //     foreach (var investment in PendingInvestments.Where(p => p.Data.PostedSellDatas.Count == 0))
-    //     {
-    //         var readyGroup = groups.FirstOrDefault(ci => ci.ItemId == investment.Data.BuyData.ItemId && ci.IndividualBuyPrice == investment.IndividualBuyPrice && ci.Quantity + investment.Quantity <= Constants.MaxItemStack);
-    //         if (readyGroup is not null)
-    //         {
-    //             readyGroup.SubInvestments.Add(investment);
-    //         }
-    //         else
-    //         {
-    //             var newCollapsedInvestment = new CollapsedPendingInvestment(investment);
-    //             groups.Add(newCollapsedInvestment);
-    //         }
-    //     }
+        foreach (var investment in PendingInvestments)
+        {
+            var readyGroup = groups.FirstOrDefault(ci => ci.ItemId == investment.BuyData.ItemId && ci.IndividualBuyPrice == investment.BuyData.IndividualBuyPrice && ci.Quantity + investment.BuyData.Quantity <= Constants.MaxItemStack);
+            if (readyGroup is not null)
+            {
+                readyGroup.SubInvestments.Add(investment);
+            }
+            else
+            {
+                var newCollapsedInvestment = new CollapsedPendingInvestment(investment);
+                groups.Add(newCollapsedInvestment);
+            }
+        }
 
-    //     groups.ForEach(c => CollapsedPendingInvestments.Add(c));
-    // }
+        groups.ForEach(c => CollapsedPendingInvestments.Add(c));
+    }
+
+    public void GenerateCollapsedPotential()
+    {
+        List<CollapsedPotentialInvestment> groups = new();
+
+        foreach (var investment in PotentialInvestments)
+        {
+            var readyGroup = groups.FirstOrDefault(ci => ci.ItemId == investment.BuyData.ItemId && ci.IndividualBuyPrice == investment.BuyData.IndividualBuyPrice && ci.Quantity + investment.BuyData.Quantity <= Constants.MaxItemStack);
+            if (readyGroup is not null)
+            {
+                readyGroup.SubInvestments.Add(investment);
+            }
+            else
+            {
+                var newCollapsedInvestment = new CollapsedPotentialInvestment(investment);
+                groups.Add(newCollapsedInvestment);
+            }
+        }
+
+        groups.ForEach(c => CollapsedPotentialInvestments.Add(c));
+    }
 
     [DataContract]
     public class CompletedInvestmentsData
     {
-        [DataMember] public List<CompletedInvestmentData> Investments { get; internal set; } = new();
+        [DataMember] public List<CompletedInvestment> CompletedInvestments { get; internal set; } = new();
         [DataMember] public List<long> NotInvestments { get; internal set; } = new();
     }
 
-    [DataContract]
-    public class PendingInvestmentsData
-    {
-        [DataMember] public List<PendingInvestmentData> PendingInvestments { get; private set; } = new();
-    }
 
     // ---------- Saving
     const string databasePath = "user://database.completed";
     public void Save()
     {
         var savedData = new CompletedInvestmentsData();
-        savedData.Investments = CompletedInvestments.Select(c => c.Data).ToList();
+        savedData.CompletedInvestments = CompletedInvestments;
         savedData.NotInvestments = NotInvestments;
         SaveSystem.SaveToFile(databasePath, savedData);
     }
@@ -441,7 +468,7 @@ public partial class InvestmentsDatabase
     {
         if (SaveSystem.TryLoadFromFile(databasePath, out CompletedInvestmentsData newData))
         {
-            CompletedInvestments = newData.Investments.Select(i => new CompletedInvestment(i)).ToList() ?? new();
+            CompletedInvestments = newData.CompletedInvestments ?? new();
             NotInvestments = newData.NotInvestments ?? new();
         }
         GD.Print($"Loaded Investment Database: i:{CompletedInvestments.Count}, n:{NotInvestments.Count}");

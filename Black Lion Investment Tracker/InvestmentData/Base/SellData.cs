@@ -23,4 +23,13 @@ public class SellData
         IndividualSellPrice = sellTransaction.Price;
         Quantity = sellTransaction.Quantity;
     }
+
+    public SellData(CommerceTransactionCurrent currentSellTransaction)
+    {
+        TransactionId = currentSellTransaction.Id;
+        ItemId = currentSellTransaction.ItemId;
+        Date = currentSellTransaction.Created;
+        IndividualSellPrice = currentSellTransaction.Price;
+        Quantity = currentSellTransaction.Quantity;
+    }
 }

@@ -1,16 +1,30 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using BLIT.ConstantVariables;
 
 namespace BLIT.Investments;
 
-public class PendingInvestment : Investment<PendingInvestmentData, BuyData, PendingSellData>
+public class PendingInvestment
 {
-    public int TotalPotentialSellPrice => Data.CurrentIndividualSellPrice * Data.PostedSellDatas.Sum(p => p.Quantity);
+    internal BuyData BuyData { get; private set; }
+    internal List<SellData> PostedSellDatas { get; private set; } = new();
 
-    // // The Total We Sold For Reduced By The 15% BLTP Tax Minus The Total We Bought The Items For
-    public int PotentialProfit => (int)Math.Floor((TotalPotentialSellPrice * Constants.MultiplyTax) - TotalBuyPrice);
-    public double PotentialROI => PotentialProfit / (double)TotalBuyPrice * 100;
+    public int IndividualPostedSellPrice => PostedSellDatas.First().IndividualSellPrice;
+    public int TotalPostedSellPrice => PostedSellDatas.Sum(s => s.IndividualSellPrice * s.Quantity);
 
-    public PendingInvestment(PendingInvestmentData data) : base(data) { }
+    /// <summary>
+    /// The Indivual Profit We Got From Selling Reduced By The 15% BLTP Tax, Minus The Individual Price We Bought The Items For.
+    /// </summary>
+    public int IndividualPotentialProfit => (int)Math.Floor((PostedSellDatas.First().IndividualSellPrice * Constants.MultiplyTax) - BuyData.IndividualBuyPrice);
+    /// <summary>
+    /// The Total Profit We Got From Selling Reduced By The 15% BLTP Tax, Minus The Total We Bought The Items For.
+    /// </summary>
+    public int TotalPotentialProfit => (int)Math.Floor((TotalPostedSellPrice * Constants.MultiplyTax) - BuyData.TotalBuyPrice);
+
+    public PendingInvestment(BuyData buyData, List<SellData> sellDatas)
+    {
+        BuyData = buyData;
+        PostedSellDatas = sellDatas;
+    }
 }

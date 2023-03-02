@@ -10,9 +10,11 @@ public partial class Main : Node
     VBoxContainer itemHolder;
 
     [Export]
-    CompletedInvestments CompletedInvestments;
+    CompletedInvestmentsPage CompletedInvestments;
     [Export]
-    PendingInvestments PendingInvestments;
+    PendingInvestmentsPage PendingInvestments;
+    [Export]
+    PotentialInvestmentsPage PoptentiaInvestments;
 
     public static Gw2Client MyClient { get; private set; }
 
@@ -24,7 +26,7 @@ public partial class Main : Node
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
     {
-        Database.Load();
+        // Database.Load();
         Cache.Items.Load();
 
         MyClient = new Gw2Client(new Connection(Settings.Data.APIKey));
@@ -44,8 +46,9 @@ public partial class Main : Node
     {
         Database.Update(() =>
         {
-            CompletedInvestments.ListInvestments();
-            //PendingInvestments.ListInvestments();
+            CompletedInvestments.ListInvestmentDatas(Database.CollapsedCompletedInvestments, "Listing Completed Investments... ");
+            PendingInvestments.ListInvestmentDatas(Database.CollapsedPendingInvestments, "Listing Pending Investments... ");
+            PoptentiaInvestments.ListInvestmentDatas(Database.CollapsedPotentialInvestments, "Listing Potential Investments... ");
         });
     }
 

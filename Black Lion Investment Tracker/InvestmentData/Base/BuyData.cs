@@ -11,7 +11,8 @@ public class BuyData
     public int IndividualBuyPrice { get; protected set; }
     public DateTimeOffset DatePurchased { get; protected set; }
 
-    public BuyData() { }
+    public int TotalBuyPrice => IndividualBuyPrice * Quantity;
+
     public BuyData(CommerceTransactionHistory buyTransaction)
     {
         TransactionId = buyTransaction.Id;
