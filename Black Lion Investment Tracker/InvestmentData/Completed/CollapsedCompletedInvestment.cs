@@ -1,7 +1,6 @@
 using System;
 using System.Linq;
 using BLIT.ConstantVariables;
-using BLIT.Extensions;
 
 namespace BLIT.Investments;
 
@@ -34,18 +33,4 @@ public class CollapsedCompletedInvestment : CollapsedInvestment<CompletedInvestm
     }
 
     public CollapsedCompletedInvestment() { }
-
-    public string GetSellPriceStringFromInvestment(bool includeIndividualPrice, RichStringAlignment alignment)
-    {
-        var individualPrefix = AllSellDatasAreTheSame ? "each" : "avg";
-        string sellPrice = (AllSellDatasAreTheSame ? IndividualSellPrice : AverageIndividualSellPrice).ToCurrencyString(true);
-        return $"{$"[{alignment}]".ToLower()}{TotalSellPrice.ToCurrencyString(true)}{(includeIndividualPrice ? $"\n[color=gray]{individualPrefix}[/color] {sellPrice}" : "")}";
-    }
-
-    public string GetProfitStringFromInvestment(bool includeIndividualProfit, RichStringAlignment alignment)
-    {
-        var individualPrefix = AllSellDatasAreTheSame ? "each" : "avg";
-        string profit = (AllSellDatasAreTheSame ? IndividualProfit : AverageIndividualProfit).ToCurrencyString(true);
-        return $"{$"[{alignment}]".ToLower()}{TotalProfit.ToCurrencyString(true)}{(includeIndividualProfit ? $"\n[color=gray]{individualPrefix}[/color] {profit}" : "")}";
-    }
 }

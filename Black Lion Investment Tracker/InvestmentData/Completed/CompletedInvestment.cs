@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
 using BLIT.ConstantVariables;
-using BLIT.Extensions;
-using Godot;
 
 namespace BLIT.Investments;
 
@@ -36,24 +34,11 @@ public class CompletedInvestment : Investment
     /// The Total Profit We Got From Selling Reduced By The 15% BLTP Tax, Minus The Total We Bought The Items For.
     /// </summary>
     public double TotalProfit => (TotalSellPrice * Constants.MultiplyTax) - BuyData.TotalBuyPrice;
+
     public CompletedInvestment(BuyData buyData, List<SellData> sellDatas) : base(buyData)
     {
         SellDatas = sellDatas;
     }
 
     public CompletedInvestment() { }
-
-    public string GetSellPriceStringFromInvestment(bool includeIndividualPrice, RichStringAlignment alignment)
-    {
-        var individualPrefix = AllSellDatasAreTheSame ? "each" : "avg";
-        string sellPrice = (AllSellDatasAreTheSame ? IndividualSellPrice : AverageIndividualSellPrice).ToCurrencyString(true);
-        return $"{$"[{alignment}]".ToLower()}{TotalSellPrice.ToCurrencyString(true)}{(includeIndividualPrice ? $"\n[color=gray]{individualPrefix}[/color] {sellPrice}" : "")}";
-    }
-
-    public string GetProfitStringFromInvestment(bool includeIndividualProfit, RichStringAlignment alignment)
-    {
-        var individualPrefix = AllSellDatasAreTheSame ? "each" : "avg";
-        string profit = (AllSellDatasAreTheSame ? IndividualProfit : AverageIndividualProfit).ToCurrencyString(true);
-        return $"{$"[{alignment}]".ToLower()}{TotalProfit.ToCurrencyString(true)}{(includeIndividualProfit ? $"\n[color=gray]{individualPrefix}[/color] {profit}" : "")}";
-    }
 }

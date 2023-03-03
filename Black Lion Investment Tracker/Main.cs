@@ -14,7 +14,7 @@ public partial class Main : Node
     [Export]
     PendingInvestmentsPage PendingInvestments;
     [Export]
-    PotentialInvestmentsPage PoptentiaInvestments;
+    PotentialInvestmentsPage PotentialInvestments;
 
     public static Gw2Client MyClient { get; private set; }
 
@@ -47,8 +47,8 @@ public partial class Main : Node
         Database.Update(() =>
         {
             CompletedInvestments.ListInvestmentDatas(Database.CollapsedCompletedInvestments, "Listing Completed Investments... ");
-            // PendingInvestments.ListInvestmentDatas(Database.CollapsedPendingInvestments, "Listing Pending Investments... ");
-            // PoptentiaInvestments.ListInvestmentDatas(Database.CollapsedPotentialInvestments, "Listing Potential Investments... ");
+            PendingInvestments.ListInvestmentDatas(Database.CollapsedPendingInvestments, "Listing Pending Investments... ");
+            PotentialInvestments.ListInvestmentDatas(Database.CollapsedPotentialInvestments, "Listing Potential Investments... ");
         });
     }
 
