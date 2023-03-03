@@ -35,6 +35,7 @@ public partial class RightClickMenu : PanelContainer
                 btnContainer.AddChild(rect);
             }
         }
+
         var closeBtn = new Button();
         closeBtn.Text = "Close";
         closeBtn.Flat = true;
@@ -42,13 +43,13 @@ public partial class RightClickMenu : PanelContainer
         btnContainer.AddChild(closeBtn);
         rootNode.AddChild(instance);
 
-        if (MainInstance.IsQueuedForDeletion() == false)
-            MainInstance?.QueueFree();
+        CloseInstance();
         MainInstance = instance;
     }
 
     public static void CloseInstance()
     {
-        MainInstance?.QueueFree();
+        if (MainInstance?.IsQueuedForDeletion() == false)
+            MainInstance?.QueueFree();
     }
 }

@@ -50,7 +50,26 @@ public static partial class StringExtensions
         return sb.ToString();
     }
 
+    /// [02]
+    /// <summary>
+    /// Same as <see cref="ToCurrencyString(long, bool)"/> except that it rounds the double first
+    /// </summary>
+    /// <param name="amount"></param>
+    /// <param name="richColoring"></param>
+    /// <returns></returns>
+    public static string ToCurrencyString(this double amount, bool richColoring) => ToCurrencyString((long)Math.Round(amount), richColoring);
+
+    /// [01]
+    ///<inheritdoc cref="ToCurrencyString(long,bool)"/>
     public static string ToCurrencyString(this int amount, bool richColoring) => ToCurrencyString((long)amount, richColoring);
+
+    ///[00]
+    /// <summary>
+    /// Returns a string in the format of "XXXg XXs XXc", e.g. 1345 => "13s 45c", e.g. 1232453 => "123g 24s 53c"
+    /// </summary>
+    /// <param name="amount">The number to convert</param>
+    /// <param name="richColoring">Will color the g gold, the s silver, and the c copper.</param>
+    /// <returns></returns>
     public static string ToCurrencyString(this long amount, bool richColoring)
     {
         var positive = amount >= 0;

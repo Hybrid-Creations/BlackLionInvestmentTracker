@@ -22,10 +22,10 @@ public partial class InvestmentsDatabase
     public List<CollapsedPendingInvestment> CollapsedPendingInvestments { get; private set; } = new();
     public List<CollapsedPotentialInvestment> CollapsedPotentialInvestments { get; private set; } = new();
 
-    public long TotalInvested => CompletedInvestments.Sum(i => i.BuyData.TotalBuyPrice);
-    public long TotalReturn => CompletedInvestments.Sum(i => i.TotalSellPrice);
-    public long TotalProfit => CompletedInvestments.Sum(i => i.TotalProfit);
-    public double ROI => TotalProfit / (double)TotalInvested * 100;
+    public double TotalInvested => CompletedInvestments.Sum(i => i.BuyData.TotalBuyPrice);
+    public double TotalReturn => CompletedInvestments.Sum(i => i.TotalSellPrice);
+    public double TotalProfit => CompletedInvestments.Sum(i => i.TotalProfit);
+    public double ROI => TotalProfit / TotalInvested * 100;
 
     bool updating;
 
