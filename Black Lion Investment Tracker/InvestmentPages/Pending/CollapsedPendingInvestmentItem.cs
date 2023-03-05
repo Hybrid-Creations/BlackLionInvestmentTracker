@@ -1,5 +1,3 @@
-
-using System;
 using System.Linq;
 using BLIT.ConstantVariables;
 using BLIT.Extensions;
@@ -26,8 +24,15 @@ public sealed partial class CollapsedPendingInvestmentItem : CollapsedInvestment
         itemProperties.GetNode<Label>("Name").Text = _item.Name;
         itemProperties.GetNode<RichTextLabel>("BuyPrice").Text = _collapsedInvestment.GetBuyPriceStringFromInvestment(true, RichStringAlignment.RIGHT);
         itemProperties.GetNode<RichTextLabel>("SellPrice").Text = _collapsedInvestment.GetSellPriceStringFromInvestment(true, RichStringAlignment.RIGHT);
+        itemProperties.GetNode<RichTextLabel>("BreakEvenPrice").Text = GetCurrentListedPrice(_collapsedInvestment);
         itemProperties.GetNode<RichTextLabel>("Profit").Text = _collapsedInvestment.GetProfitStringFromInvestment(true, RichStringAlignment.RIGHT);
         itemProperties.GetNode<Label>("BuyDate").Text = _collapsedInvestment.OldestPurchaseDate.ToTimeSinceString();
+    }
+
+    private string GetCurrentListedPrice(CollapsedPendingInvestment investment)
+    {
+        var listedIsHigher = investment.CurrentSellPrice < investment.LowestIndividualSellPrice;
+        return $"{(listedIsHigher ? $"[right][color=#FF5A00]{investment.CurrentSellPrice.ToCurrencyString(RichImageType.PX32)}" : Constants.EmptyItemPropertyEntry)}";
     }
 
     public void TreeButtonToggled(bool enabled)

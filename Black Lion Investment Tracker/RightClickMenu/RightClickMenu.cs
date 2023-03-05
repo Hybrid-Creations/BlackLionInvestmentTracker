@@ -8,7 +8,6 @@ public partial class RightClickMenu : PanelContainer
 
     public static void OpenMenu(Node rootNode, Vector2 mousePosition, string[] buttons, Action<string> onButtonPress)
     {
-        GD.Print($"{mousePosition}");
         var scene = GD.Load<PackedScene>("res://RightClickMenu/RightClickMenu.tscn");
         var instance = scene.Instantiate<RightClickMenu>();
         instance.Position = mousePosition;
@@ -23,7 +22,7 @@ public partial class RightClickMenu : PanelContainer
             btn.Connect(Button.SignalName.Pressed, Callable.From(() =>
             {
                 onButtonPress.Invoke(btnText);
-                instance.QueueFree();
+                CloseInstance();
             }));
             btnContainer.AddChild(btn);
 
@@ -39,7 +38,7 @@ public partial class RightClickMenu : PanelContainer
         var closeBtn = new Button();
         closeBtn.Text = "Close";
         closeBtn.Flat = true;
-        closeBtn.Connect(Button.SignalName.Pressed, Callable.From(() => { CloseInstance(); }));
+        closeBtn.Connect(Button.SignalName.Pressed, Callable.From(() => CloseInstance()));
         btnContainer.AddChild(closeBtn);
         rootNode.AddChild(instance);
 
@@ -50,6 +49,9 @@ public partial class RightClickMenu : PanelContainer
     public static void CloseInstance()
     {
         if (MainInstance?.IsQueuedForDeletion() == false)
+        {
             MainInstance?.QueueFree();
+            MainInstance = null;
+        }
     }
 }

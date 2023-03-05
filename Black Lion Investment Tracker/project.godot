@@ -12,8 +12,11 @@ config_version=5
 
 config/name="Black Lion Investment Tracker"
 run/main_scene="res://Settings/Settings.tscn"
+config/use_custom_user_dir=true
+config/custom_user_dir_name="BLIT"
 config/features=PackedStringArray("4.0", "C#", "Forward Plus")
-run/max_fps=30
+run/max_fps=20
+run/low_processor_mode=true
 config/icon="res://icon.png"
 config/windows_native_icon="res://icon.ico"
 
@@ -21,7 +24,7 @@ config/windows_native_icon="res://icon.ico"
 
 window/size/viewport_width=1080
 window/size/viewport_height=900
-window/size/extend_to_title=true
+window/energy_saving/keep_screen_on=false
 window/stretch/aspect="expand"
 
 [dotnet]

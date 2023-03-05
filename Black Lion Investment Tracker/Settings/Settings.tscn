@@ -4,7 +4,7 @@
 [ext_resource type="Script" path="res://Settings/Settings.cs" id="2_x88c0"]
 [ext_resource type="PackedScene" uid="uid://cyp3gemcogg2j" path="res://Main.tscn" id="3_ceqxv"]
 
-[node name="Settings" type="Panel"]
+[node name="Settings" type="Panel" node_paths=PackedStringArray("apiKeyField")]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -12,6 +12,7 @@ grow_horizontal = 2
 grow_vertical = 2
 theme = ExtResource("1_ihyau")
 script = ExtResource("2_x88c0")
+apiKeyField = NodePath("API Key/API Key Field")
 mainScene = ExtResource("3_ceqxv")
 
 [node name="Label" type="Label" parent="."]

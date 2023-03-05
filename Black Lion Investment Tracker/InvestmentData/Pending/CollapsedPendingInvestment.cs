@@ -7,6 +7,9 @@ namespace BLIT.Investments;
 
 public class CollapsedPendingInvestment : CollapsedInvestment<PendingInvestment>
 {
+    public int CurrentSellPrice => SubInvestments.First().CurrentSellPrice;
+    public int LowestIndividualSellPrice => SubInvestments.SelectMany(i => i.PostedSellDatas).OrderBy(s => s.IndividualSellPrice).First().IndividualSellPrice;
+
     public bool AllSellDatasAreTheSame
     {
         get
@@ -19,7 +22,7 @@ public class CollapsedPendingInvestment : CollapsedInvestment<PendingInvestment>
 
     public int IndividualSellPrice => SubInvestments.First().PostedSellDatas.First().IndividualSellPrice;
     public double AverageIndividualSellPrice => SubInvestments.SelectMany(i => i.PostedSellDatas).Average(s => s.IndividualSellPrice);
-    public int TotalSellPrice => SubInvestments.Sum(si => si.TotalSellPrice);
+    public int TotalSellPrice => SubInvestments.Sum(si => si.TotalListedSellPrice);
 
     public double IndividualProfit => (SubInvestments.First().PostedSellDatas.First().IndividualSellPrice * Constants.MultiplyTax) - SubInvestments.First().BuyData.IndividualBuyPrice;
     public double AverageIndividualProfit => SubInvestments.Average(i => i.AverageIndividualProfit);
@@ -31,19 +34,4 @@ public class CollapsedPendingInvestment : CollapsedInvestment<PendingInvestment>
     {
         SubInvestments = subInvestments.ToList();
     }
-
-    public string GetSellPriceStringFromInvestment(bool includeIndividualPrice, RichStringAlignment alignment)
-    {
-        var individualPrefix = AllSellDatasAreTheSame ? "each" : "avg";
-        string sellPrice = (AllSellDatasAreTheSame ? IndividualSellPrice : AverageIndividualSellPrice).ToCurrencyString(true);
-        return $"{$"[{alignment}]".ToLower()}{TotalSellPrice.ToCurrencyString(true)}{(includeIndividualPrice ? $"\n[color=gray]{individualPrefix}[/color] {sellPrice}" : "")}";
-    }
-
-    public string GetProfitStringFromInvestment(bool includeIndividualProfit, RichStringAlignment alignment)
-    {
-        var individualPrefix = AllSellDatasAreTheSame ? "each" : "avg";
-        string profit = (AllSellDatasAreTheSame ? IndividualProfit : AverageIndividualProfit).ToCurrencyString(true);
-        return $"{$"[{alignment}]".ToLower()}{TotalProfit.ToCurrencyString(true)}{(includeIndividualProfit ? $"\n[color=gray]{individualPrefix}[/color] {profit}" : "")}";
-    }
-
 }

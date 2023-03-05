@@ -1,5 +1,6 @@
 using System;
 using System.Text;
+using BLIT.ConstantVariables;
 using Godot;
 
 namespace BLIT.Extensions;
@@ -55,22 +56,22 @@ public static partial class StringExtensions
     /// Same as <see cref="ToCurrencyString(long, bool)"/> except that it rounds the double first
     /// </summary>
     /// <param name="amount"></param>
-    /// <param name="richColoring"></param>
+    /// <param name="richImage"></param>
     /// <returns></returns>
-    public static string ToCurrencyString(this double amount, bool richColoring) => ToCurrencyString((long)Math.Round(amount), richColoring);
+    public static string ToCurrencyString(this double amount, RichImageType richImage, int imageSize = 16) => ToCurrencyString((long)Math.Round(amount), richImage, imageSize);
 
     /// [01]
     ///<inheritdoc cref="ToCurrencyString(long,bool)"/>
-    public static string ToCurrencyString(this int amount, bool richColoring) => ToCurrencyString((long)amount, richColoring);
+    public static string ToCurrencyString(this int amount, RichImageType richImage, int imageSize = 16) => ToCurrencyString((long)amount, richImage, imageSize);
 
     ///[00]
     /// <summary>
     /// Returns a string in the format of "XXXg XXs XXc", e.g. 1345 => "13s 45c", e.g. 1232453 => "123g 24s 53c"
     /// </summary>
     /// <param name="amount">The number to convert</param>
-    /// <param name="richColoring">Will color the g gold, the s silver, and the c copper.</param>
+    /// <param name="richImage">Will color the g gold, the s silver, and the c copper.</param>
     /// <returns></returns>
-    public static string ToCurrencyString(this long amount, bool richColoring)
+    public static string ToCurrencyString(this long amount, RichImageType richImage, int imageSize = 16)
     {
         var positive = amount >= 0;
         var asStr = Mathf.Abs(amount).ToString();
@@ -79,9 +80,9 @@ public static partial class StringExtensions
         var silver = $"{(asStr.Length > 3 ? asStr[^4] : "0")}{(asStr.Length > 2 ? asStr[^3] : "0")}";
         var gold = $"{(asStr.Length > 6 ? asStr[..^6] : "")}{(asStr.Length > 5 ? asStr[^6] : "0")}{(asStr.Length > 4 ? asStr[^5] : "0")}";
 
-        var goldSuffix = $"{(richColoring ? "[color=gold]" : "")}g{(richColoring ? "[/color]" : "")}";
-        var silverSuffix = $"{(richColoring ? "[color=silver]" : "")}s{(richColoring ? "[/color]" : "")}";
-        var copperSuffix = $"{(richColoring ? "[color=orange]" : "")}c{(richColoring ? "[/color]" : "")}";
+        var goldSuffix = $"{(richImage == RichImageType.NONE ? "" : $"[img={imageSize}]Sprites/gold_{richImage.ToString().Replace("PX", "")}.png[/img]")}";
+        var silverSuffix = $"{(richImage == RichImageType.NONE ? "" : $"[img={imageSize}]Sprites/silver_{richImage.ToString().Replace("PX", "")}.png[/img]")}";
+        var copperSuffix = $"{(richImage == RichImageType.NONE ? "" : $"[img={imageSize}]Sprites/copper_{richImage.ToString().Replace("PX", "")}.png[/img]")}";
 
         // Show gold if there is any
         if (gold != "00")
@@ -116,5 +117,16 @@ public static partial class StringExtensions
             sb.Insert(0, "-");
             return sb.ToString();
         }
+    }
+
+    /// <summary>
+    /// Wraps the given string in the Alignment BBCode, with choice of alignment.
+    /// </summary>
+    /// <param name="str">The string to modify.</param>
+    /// <param name="alignment">The alignment to use.</param>
+    /// <returns></returns>
+    public static string AlignRichString(this string str, RichStringAlignment alignment)
+    {
+        return $"{$"[{alignment}]".ToLower()}{str}{$"[{alignment}]".ToLower()}";
     }
 }

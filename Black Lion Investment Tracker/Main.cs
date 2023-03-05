@@ -7,9 +7,6 @@ namespace BLIT.UI;
 public partial class Main : Node
 {
     [Export]
-    VBoxContainer itemHolder;
-
-    [Export]
     CompletedInvestmentsPage CompletedInvestments;
     [Export]
     PendingInvestmentsPage PendingInvestments;

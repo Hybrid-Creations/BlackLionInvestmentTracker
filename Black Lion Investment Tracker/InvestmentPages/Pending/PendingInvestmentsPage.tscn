@@ -1,0 +1,26 @@
+[gd_scene load_steps=5 format=3 uid="uid://bgj2jtb2jgf2w"]
+
+[ext_resource type="PackedScene" uid="uid://c02stipmtyb45" path="res://InvestmentPages/Base/InvestmentsPage.tscn" id="1_sd70k"]
+[ext_resource type="Script" path="res://InvestmentPages/Pending/PendingInvestmentsPage.cs" id="2_hauhd"]
+[ext_resource type="PackedScene" uid="uid://c826d0vnlrybd" path="res://InvestmentPages/Pending/CollapsedPendingInvestmentItem.tscn" id="3_4bwlr"]
+[ext_resource type="PackedScene" uid="uid://bqwy3ji8pn7ai" path="res://InvestmentPages/Pending/PendingInvestmentItem.tscn" id="4_ilfbb"]
+
+[node name="PendingInvestmentsPage" instance=ExtResource("1_sd70k")]
+script = ExtResource("2_hauhd")
+collapsedInvestmentScene = ExtResource("3_4bwlr")
+
+[node name="Name" parent="ColumnTitles" index="4"]
+custom_minimum_size = Vector2(275, 0)
+
+[node name="SellPrice" parent="ColumnTitles" index="6"]
+text = "List Sell Price "
+
+[node name="BreakEvenSellPrice" parent="ColumnTitles" index="7"]
+visible = true
+text = "Cur Sell Price "
+
+[node name="CollapsedPendingInvestmentItem" parent="ScrollContainer/VBoxContainer/InvsetmentHolder" index="0" instance=ExtResource("3_4bwlr")]
+layout_mode = 2
+
+[node name="PendingInvestmentItem" parent="ScrollContainer/VBoxContainer/InvsetmentHolder" index="1" instance=ExtResource("4_ilfbb")]
+layout_mode = 2

@@ -1,10 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using BLIT.Extensions;
-using BLIT.Investments;
 using Godot;
-using Gw2Sharp.WebApi.Exceptions;
 
 namespace BLIT.UI;
 

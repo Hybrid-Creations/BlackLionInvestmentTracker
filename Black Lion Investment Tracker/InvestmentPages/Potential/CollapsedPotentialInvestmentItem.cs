@@ -31,16 +31,16 @@ public sealed partial class CollapsedPotentialInvestmentItem : CollapsedInvestme
         itemProperties.GetNode<Label>("BuyDate").Text = _collapsedInvestment.OldestPurchaseDate.ToTimeSinceString();
     }
 
-    private string GetNeededPriceForAnyProfit(CollapsedPotentialInvestment PotentialInvestment)
+    private string GetNeededPriceForAnyProfit(CollapsedPotentialInvestment collapsedInvestment)
     {
         // If you are making profit, it looks good
-        if (PotentialInvestment.TotalPotentialProfit > 0)
-            return "[center]-----[/center]";
+        if (collapsedInvestment.TotalPotentialProfit > 0)
+            return Constants.EmptyItemPropertyEntry;
         // We know we arent making profit so calculate what you would have to sell it at to break even
         else
         {
-            var idealPrice = Mathf.CeilToInt(PotentialInvestment.IndividualPotentialSellPrice * Constants.MultiplyInverseTax);
-            return $"[right]{(PotentialInvestment.Quantity * idealPrice).ToCurrencyString(true)}\n [color=gray]each[/color] {idealPrice.ToCurrencyString(true)}[/right]";
+            var idealPrice = Mathf.CeilToInt(collapsedInvestment.IndividualBuyPrice * Constants.MultiplyInverseTax);
+            return DataExtentions.CombineTotalAndIndividual(collapsedInvestment.Quantity * idealPrice, idealPrice).AlignRichString(RichStringAlignment.RIGHT);
         }
     }
 

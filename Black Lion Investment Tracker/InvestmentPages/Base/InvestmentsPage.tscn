@@ -1,0 +1,139 @@
+[gd_scene load_steps=5 format=3 uid="uid://c02stipmtyb45"]
+
+[ext_resource type="Theme" uid="uid://dy6mo6ior0maw" path="res://Themes/MainTheme.tres" id="1_bu83u"]
+[ext_resource type="Script" path="res://InvestmentPages/Base/InvestmentsPage.cs" id="2_oi2ei"]
+[ext_resource type="PackedScene" uid="uid://gvbguuwb5rl2" path="res://InvestmentPages/Base/CollapsedInvestmentItem.tscn" id="3_e17e6"]
+[ext_resource type="PackedScene" uid="uid://dx4oojgad8vbx" path="res://InvestmentPages/Base/InvestmentItem.tscn" id="4_b6arg"]
+
+[node name="InvestmentsPage" type="VBoxContainer" node_paths=PackedStringArray("investmentHolder", "loadingLabel")]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("1_bu83u")
+script = ExtResource("2_oi2ei")
+investmentHolder = NodePath("ScrollContainer/VBoxContainer/InvsetmentHolder")
+loadingLabel = NodePath("ScrollContainer/VBoxContainer/VBoxContainer/Loading")
+
+[node name="TotalsBorder" type="ColorRect" parent="."]
+custom_minimum_size = Vector2(0, 2)
+layout_mode = 2
+color = Color(0.501961, 0.501961, 0.501961, 1)
+
+[node name="ColumnTitles" type="HBoxContainer" parent="."]
+custom_minimum_size = Vector2(0, 25)
+layout_mode = 2
+
+[node name="SpacerBtn" type="Control" parent="ColumnTitles"]
+custom_minimum_size = Vector2(32, 0)
+layout_mode = 2
+
+[node name="SpacerL" type="Control" parent="ColumnTitles"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.25
+
+[node name="Item" type="Label" parent="ColumnTitles"]
+custom_minimum_size = Vector2(64, 0)
+layout_mode = 2
+size_flags_stretch_ratio = 20.0
+text = "Item"
+horizontal_alignment = 1
+vertical_alignment = 2
+
+[node name="SpacerL2" type="Control" parent="ColumnTitles"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.1
+
+[node name="Name" type="Label" parent="ColumnTitles"]
+custom_minimum_size = Vector2(250, 0)
+layout_mode = 2
+text = "Name"
+horizontal_alignment = 1
+vertical_alignment = 2
+
+[node name="BuyPrice" type="Label" parent="ColumnTitles"]
+custom_minimum_size = Vector2(130, 0)
+layout_mode = 2
+text = "Buy Price "
+horizontal_alignment = 2
+vertical_alignment = 2
+
+[node name="SellPrice" type="Label" parent="ColumnTitles"]
+custom_minimum_size = Vector2(130, 0)
+layout_mode = 2
+text = "Sell Price "
+horizontal_alignment = 2
+vertical_alignment = 2
+
+[node name="BreakEvenSellPrice" type="Label" parent="ColumnTitles"]
+visible = false
+custom_minimum_size = Vector2(130, 0)
+layout_mode = 2
+text = "Break Even "
+horizontal_alignment = 2
+vertical_alignment = 2
+
+[node name="Profit" type="Label" parent="ColumnTitles"]
+custom_minimum_size = Vector2(130, 0)
+layout_mode = 2
+text = "Profit "
+horizontal_alignment = 2
+vertical_alignment = 2
+
+[node name="BuyDate" type="Label" parent="ColumnTitles"]
+custom_minimum_size = Vector2(120, 0)
+layout_mode = 2
+text = "Date Bought "
+horizontal_alignment = 2
+vertical_alignment = 2
+
+[node name="SellDate" type="Label" parent="ColumnTitles"]
+visible = false
+custom_minimum_size = Vector2(120, 0)
+layout_mode = 2
+text = "Date Sold "
+horizontal_alignment = 2
+vertical_alignment = 2
+
+[node name="SpacerR" type="Control" parent="ColumnTitles"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="TitlesBorder" type="ColorRect" parent="."]
+custom_minimum_size = Vector2(0, 2)
+layout_mode = 2
+color = Color(0.501961, 0.501961, 0.501961, 1)
+
+[node name="ScrollContainer" type="ScrollContainer" parent="."]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="ScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="InvsetmentHolder" type="VBoxContainer" parent="ScrollContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="CollapsedInvestmentItem" parent="ScrollContainer/VBoxContainer/InvsetmentHolder" instance=ExtResource("3_e17e6")]
+visible = false
+layout_mode = 2
+
+[node name="InvestmentItem" parent="ScrollContainer/VBoxContainer/InvsetmentHolder" instance=ExtResource("4_b6arg")]
+visible = false
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="ScrollContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Loading" type="Label" parent="ScrollContainer/VBoxContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "Loading Investments..."
+horizontal_alignment = 1

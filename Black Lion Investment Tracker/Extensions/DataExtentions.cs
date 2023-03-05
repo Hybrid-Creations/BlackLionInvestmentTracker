@@ -21,9 +21,9 @@ public static class DataExtentions
         return GetBuyPriceString(collapsedInvestment.TotalBuyPrice, collapsedInvestment.IndividualBuyPrice, includeIndividualPrice, alignment);
     }
 
-    public static string GetBuyPriceStringFromInvestment(this PendingInvestment investment, bool includeIndividualPrice, RichStringAlignment alignment)
+    public static string GetBuyPriceStringFromInvestment(this PendingInvestment investment, RichStringAlignment alignment)
     {
-        return GetBuyPriceString(investment.BuyData.TotalBuyPrice, investment.BuyData.IndividualBuyPrice, includeIndividualPrice, alignment);
+        return CombineTotalAndIndividual(investment.TotalListedSellPrice, investment.BuyData.IndividualBuyPrice).AlignRichString(alignment);
     }
 
     public static string GetBuyPriceStringFromInvestment(this CollapsedPotentialInvestment collapsedInvestment, bool includeIndividualPrice, RichStringAlignment alignment)
@@ -38,9 +38,8 @@ public static class DataExtentions
 
     private static string GetBuyPriceString(int totalBuyPrice, int individualBuyPrice, bool includeIndividualPrice, RichStringAlignment alignment)
     {
-        return $"{$"[{alignment}]".ToLower()}{totalBuyPrice.ToCurrencyString(true)}{(includeIndividualPrice ? $"\n[color=gray]each[/color] {individualBuyPrice.ToCurrencyString(true)}" : "")}";
+        return $"{(includeIndividualPrice ? CombineTotalAndIndividual(totalBuyPrice, individualBuyPrice) : $"{totalBuyPrice.ToCurrencyString(RichImageType.PX32)}")}".AlignRichString(alignment);
     }
-
 
     // //Sell
     public static string GetSellPriceStringFromInvestment(this CollapsedCompletedInvestment collapsedInvestment, bool includeIndividualPrice, RichStringAlignment alignment)
@@ -64,11 +63,11 @@ public static class DataExtentions
         return GetSellPriceString(collapsedInvestment.TotalSellPrice, sellPrice, includeIndividualPrice, individualPrefix, alignment);
     }
 
-    public static string GetSellPriceStringFromInvestment(this PendingInvestment investment, bool includeIndividualPrice, RichStringAlignment alignment)
+    public static string GetSellPriceStringFromInvestment(this PendingInvestment investment, RichStringAlignment alignment)
     {
         var individualPrefix = investment.AllSellDatasAreTheSame ? "each" : "avg";
-        var sellPrice = investment.AllSellDatasAreTheSame ? investment.IndividualSellPrice : investment.AverageIndividualSellPrice;
-        return GetSellPriceString(investment.TotalSellPrice, sellPrice, includeIndividualPrice, individualPrefix, alignment);
+        var individualsellPrice = investment.AllSellDatasAreTheSame ? investment.IndividualListedSellPrice : investment.AverageIndividualListedSellPrice;
+        return CombineTotalAndIndividual(investment.TotalListedSellPrice, individualsellPrice, individualPrefix).AlignRichString(alignment);
     }
 
     public static string GetSellPriceStringFromInvestment(this CollapsedPotentialInvestment collapsedInvestment, bool includeIndividualPrice, RichStringAlignment alignment)
@@ -83,9 +82,8 @@ public static class DataExtentions
 
     private static string GetSellPriceString(int totalSellPrice, double individualSellPrice, bool includeIndividualPrice, string individualPrefix, RichStringAlignment alignment)
     {
-        return $"{$"[{alignment}]".ToLower()}{totalSellPrice.ToCurrencyString(true)}{(includeIndividualPrice ? $"\n[color=gray]{individualPrefix}[/color] {individualSellPrice.ToCurrencyString(true)}" : "")}";
+        return $"{(includeIndividualPrice ? CombineTotalAndIndividual(totalSellPrice, individualSellPrice, individualPrefix) : $"{totalSellPrice.ToCurrencyString(RichImageType.PX32)}")}".AlignRichString(alignment);
     }
-
 
     // //Profit
     public static string GetProfitStringFromInvestment(this CollapsedCompletedInvestment collapsedInvestment, bool includeIndividualProfit, RichStringAlignment alignment)
@@ -109,11 +107,11 @@ public static class DataExtentions
         return GetProfitString(collapsedInvestment.TotalProfit, profit, includeIndividualProfit, individualPrefix, alignment);
     }
 
-    public static string GetProfitStringFromInvestment(this PendingInvestment investment, bool includeIndividualProfit, RichStringAlignment alignment)
+    public static string GetProfitStringFromInvestment(this PendingInvestment investment, RichStringAlignment alignment)
     {
         var individualPrefix = investment.AllSellDatasAreTheSame ? "each" : "avg";
-        var profit = investment.AllSellDatasAreTheSame ? investment.IndividualProfit : investment.AverageIndividualProfit;
-        return GetProfitString(investment.TotalProfit, profit, includeIndividualProfit, individualPrefix, alignment);
+        var individualProfit = investment.AllSellDatasAreTheSame ? investment.IndividualProfit : investment.AverageIndividualProfit;
+        return CombineTotalAndIndividual(investment.TotalProfit, individualProfit, individualPrefix).AlignRichString(alignment);
     }
 
     public static string GetProfitStringFromInvestment(this CollapsedPotentialInvestment collapsedInvestment, bool includeIndividualPrice, RichStringAlignment alignment)
@@ -128,6 +126,11 @@ public static class DataExtentions
 
     private static string GetProfitString(double totalProfit, double individualProfit, bool includeIndividualPrice, string individualPrefix, RichStringAlignment alignment)
     {
-        return $"{$"[{alignment}]".ToLower()}{totalProfit.ToCurrencyString(true)}{(includeIndividualPrice ? $"\n[color=gray]{individualPrefix}[/color] {individualProfit.ToCurrencyString(true)}" : "")}";
+        return $"{(includeIndividualPrice ? CombineTotalAndIndividual(totalProfit, individualProfit, individualPrefix) : $"{totalProfit.ToCurrencyString(RichImageType.PX32)}")}".AlignRichString(alignment);
+    }
+
+    public static string CombineTotalAndIndividual(double total, double individual, string individualPrefix = "ea")
+    {
+        return $"{total.ToCurrencyString(RichImageType.PX32)} \n {$"[color=gray]{individualPrefix}[/color] {individual.ToCurrencyString(RichImageType.PX32)}"}";
     }
 }

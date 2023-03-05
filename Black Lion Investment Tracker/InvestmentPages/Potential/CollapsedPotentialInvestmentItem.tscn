@@ -16,8 +16,21 @@ subInvestmentItemScene = ExtResource("5_7y5pk")
 subInvestmentsHolder = NodePath("SubInvestmentHolder")
 subInvestmentTitles = NodePath("SubItemTitles")
 
-[node name="Profit" parent="SubItemTitles" index="7"]
-text = "Current Profit"
+[node name="Name" parent="HBoxContainer/CollapsedItem/ItemProperties" index="3"]
+custom_minimum_size = Vector2(275, 0)
 
-[node name="DateSold" parent="SubItemTitles" index="9"]
-visible = false
+[node name="BuyPrice" parent="HBoxContainer/CollapsedItem/ItemProperties" index="4"]
+text = "[right]999[color=gold]g[/color] 99[color=silver]s[/color] 99[color=orange]c[/color]
+[color=gray]ea[/color] 9[color=gold]g[/color] 99[color=silver]s[/color] 99[color=orange]c[/color]"
+
+[node name="BreakEvenPrice" parent="HBoxContainer/CollapsedItem/ItemProperties" index="6"]
+visible = true
+
+[node name="Name" parent="SubItemTitles" index="4"]
+custom_minimum_size = Vector2(300, 0)
+
+[node name="BreakEvenPrice" parent="SubItemTitles" index="7"]
+visible = true
+
+[node name="Profit" parent="SubItemTitles" index="8"]
+text = "Cur Profit"

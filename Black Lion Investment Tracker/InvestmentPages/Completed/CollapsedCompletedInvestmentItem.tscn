@@ -17,10 +17,16 @@ subInvestmentsHolder = NodePath("SubInvestmentHolder")
 subInvestmentTitles = NodePath("SubItemTitles")
 
 [node name="Name" parent="HBoxContainer/CollapsedItem/ItemProperties" index="3"]
-custom_minimum_size = Vector2(333, 0)
+custom_minimum_size = Vector2(275, 0)
 
-[node name="BreakEvenPrice" parent="HBoxContainer/CollapsedItem/ItemProperties" index="6"]
+[node name="SellDate" parent="HBoxContainer/CollapsedItem/ItemProperties" index="9"]
+visible = true
+
+[node name="SapcerButton" parent="SubItemTitles" index="0"]
 visible = false
 
-[node name="BreakEvenPrice" parent="SubItemTitles" index="6"]
-visible = false
+[node name="Name" parent="SubItemTitles" index="4"]
+custom_minimum_size = Vector2(275, 0)
+
+[node name="DateSold" parent="SubItemTitles" index="10"]
+visible = true

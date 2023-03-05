@@ -26,6 +26,7 @@ public class CollapsedCompletedInvestment : CollapsedInvestment<CompletedInvestm
     // Already has tax calculated
     public double TotalProfit => SubInvestments.Sum(si => si.TotalProfit);
     public DateTimeOffset OldestPurchaseDate => SubInvestments.OrderBy(i => i.BuyData.DatePurchased).First().BuyData.DatePurchased;
+    public DateTimeOffset NewestSellDate => SubInvestments.SelectMany(i => i.SellDatas).OrderByDescending(s => s.Date).First().Date;
 
     public CollapsedCompletedInvestment(params CompletedInvestment[] subInvestments)
     {

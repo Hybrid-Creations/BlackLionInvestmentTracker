@@ -15,7 +15,6 @@ theme = ExtResource("1_etpwm")
 [node name="HBoxContainer" type="HBoxContainer" parent="."]
 layout_mode = 2
 mouse_filter = 0
-theme_override_constants/separation = 5
 
 [node name="ToggleTreeButton" type="Button" parent="HBoxContainer"]
 custom_minimum_size = Vector2(32, 0)
@@ -42,7 +41,7 @@ layout_mode = 2
 [node name="SpacerL" type="Control" parent="HBoxContainer/CollapsedItem/ItemProperties"]
 layout_mode = 2
 size_flags_horizontal = 3
-size_flags_stretch_ratio = 0.5
+size_flags_stretch_ratio = 0.25
 
 [node name="Icon" type="TextureRect" parent="HBoxContainer/CollapsedItem/ItemProperties"]
 custom_minimum_size = Vector2(64, 64)
@@ -69,19 +68,19 @@ size_flags_horizontal = 3
 size_flags_stretch_ratio = 0.1
 
 [node name="Name" type="Label" parent="HBoxContainer/CollapsedItem/ItemProperties"]
-custom_minimum_size = Vector2(300, 0)
+custom_minimum_size = Vector2(250, 0)
 layout_mode = 2
 text = " Unopened Endless Bottle Of Batwing Brew And Swim Speed Infusion +10"
 vertical_alignment = 1
 clip_text = true
 
 [node name="BuyPrice" type="RichTextLabel" parent="HBoxContainer/CollapsedItem/ItemProperties"]
-custom_minimum_size = Vector2(125, 0)
+custom_minimum_size = Vector2(130, 0)
 layout_mode = 2
 size_flags_vertical = 4
 bbcode_enabled = true
-text = "[right]999[color=gold]g[/color] 99[color=silver]s[/color] 99[color=orange]c[/color]
-[color=gray]each[/color] 9[color=gold]g[/color] 99[color=silver]s[/color] 99[color=orange]c[/color]"
+text = "[right]999[img=16d]Sprites/gold_32.png[/img] 99[img=16d]Sprites/silver_32.png[/img] 99[img=16d]Sprites/copper_32.png[/img]
+[color=gray]ea[/color] 9[img=16d]Sprites/gold_32.png[/img]99[img=16d]Sprites/silver_32.png[/img] 99[img=16d]Sprites/copper_32.png[/img]"
 fit_content = true
 scroll_active = false
 autowrap_mode = 0
@@ -104,12 +103,12 @@ step = 1.0
 page = 23.0
 
 [node name="SellPrice" type="RichTextLabel" parent="HBoxContainer/CollapsedItem/ItemProperties"]
-custom_minimum_size = Vector2(125, 0)
+custom_minimum_size = Vector2(130, 0)
 layout_mode = 2
 size_flags_vertical = 4
 bbcode_enabled = true
-text = "[right]999[color=gold]g[/color] 99[color=silver]s[/color] 99[color=orange]c[/color]
-[color=gray]avg[/color] 9[color=gold]g[/color] 99[color=silver]s[/color] 99[color=orange]c[/color]"
+text = "[right]999[img=16d]Sprites/gold_32.png[/img] 99[img=16d]Sprites/silver_32.png[/img] 99[img=16d]Sprites/copper_32.png[/img]
+[color=gray]ea[/color] 9[img=16d]Sprites/gold_32.png[/img]99[img=16d]Sprites/silver_32.png[/img] 99[img=16d]Sprites/copper_32.png[/img]"
 fit_content = true
 scroll_active = false
 autowrap_mode = 0
@@ -132,12 +131,13 @@ step = 1.0
 page = 23.0
 
 [node name="BreakEvenPrice" type="RichTextLabel" parent="HBoxContainer/CollapsedItem/ItemProperties"]
-custom_minimum_size = Vector2(125, 0)
+visible = false
+custom_minimum_size = Vector2(130, 0)
 layout_mode = 2
 size_flags_vertical = 4
 bbcode_enabled = true
-text = "[right]999[color=gold]g[/color] 99[color=silver]s[/color] 99[color=orange]c[/color]
-[color=gray]each[/color] 9[color=gold]g[/color] 99[color=silver]s[/color] 99[color=orange]c[/color]"
+text = "[right]999[img=16d]Sprites/gold_32.png[/img] 99[img=16d]Sprites/silver_32.png[/img] 99[img=16d]Sprites/copper_32.png[/img]
+[color=gray]ea[/color] 9[img=16d]Sprites/gold_32.png[/img]99[img=16d]Sprites/silver_32.png[/img] 99[img=16d]Sprites/copper_32.png[/img]"
 fit_content = true
 scroll_active = false
 autowrap_mode = 0
@@ -160,12 +160,12 @@ step = 1.0
 page = 23.0
 
 [node name="Profit" type="RichTextLabel" parent="HBoxContainer/CollapsedItem/ItemProperties"]
-custom_minimum_size = Vector2(125, 0)
+custom_minimum_size = Vector2(130, 0)
 layout_mode = 2
 size_flags_vertical = 4
 bbcode_enabled = true
-text = "[right]999[color=gold]g[/color] 99[color=silver]s[/color] 99[color=orange]c[/color]
-[color=gray]avg[/color] 9[color=gold]g[/color] 99[color=silver]s[/color] 99[color=orange]c[/color]"
+text = "[right]999[img=16d]Sprites/gold_32.png[/img] 99[img=16d]Sprites/silver_32.png[/img] 99[img=16d]Sprites/copper_32.png[/img]
+[color=gray]ea[/color] 9[img=16d]Sprites/gold_32.png[/img]99[img=16d]Sprites/silver_32.png[/img] 99[img=16d]Sprites/copper_32.png[/img]"
 fit_content = true
 scroll_active = false
 autowrap_mode = 0
@@ -188,7 +188,15 @@ step = 1.0
 page = 23.0
 
 [node name="BuyDate" type="Label" parent="HBoxContainer/CollapsedItem/ItemProperties"]
-custom_minimum_size = Vector2(125, 0)
+custom_minimum_size = Vector2(120, 0)
+layout_mode = 2
+text = "59 minutes ago"
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="SellDate" type="Label" parent="HBoxContainer/CollapsedItem/ItemProperties"]
+visible = false
+custom_minimum_size = Vector2(120, 0)
 layout_mode = 2
 text = "29 months ago"
 horizontal_alignment = 2
@@ -209,19 +217,21 @@ layout_mode = 2
 color = Color(0.377919, 0.377919, 0.377919, 1)
 
 [node name="SubItemTitles" type="HBoxContainer" parent="."]
-custom_minimum_size = Vector2(0, 25)
 layout_mode = 2
-theme_override_constants/separation = 5
+
+[node name="SapcerButton" type="Control" parent="SubItemTitles"]
+visible = false
+custom_minimum_size = Vector2(32, 0)
+layout_mode = 2
 
 [node name="SpacerL" type="Control" parent="SubItemTitles"]
 layout_mode = 2
 size_flags_horizontal = 3
-size_flags_stretch_ratio = 0.1
+size_flags_stretch_ratio = 0.25
 
 [node name="Item" type="Label" parent="SubItemTitles"]
 custom_minimum_size = Vector2(64, 0)
 layout_mode = 2
-size_flags_stretch_ratio = 20.0
 text = "Item"
 horizontal_alignment = 1
 vertical_alignment = 2
@@ -229,62 +239,62 @@ vertical_alignment = 2
 [node name="SpacerL2" type="Control" parent="SubItemTitles"]
 layout_mode = 2
 size_flags_horizontal = 3
-size_flags_stretch_ratio = 0.05
+size_flags_stretch_ratio = 0.1
 
 [node name="Name" type="Label" parent="SubItemTitles"]
 custom_minimum_size = Vector2(250, 0)
 layout_mode = 2
-size_flags_stretch_ratio = 20.0
 text = "Name"
 horizontal_alignment = 1
 vertical_alignment = 2
 
 [node name="BuyPrice" type="Label" parent="SubItemTitles"]
-custom_minimum_size = Vector2(125, 0)
+custom_minimum_size = Vector2(130, 0)
 layout_mode = 2
-text = "Buy Price"
+text = "Buy Price "
 horizontal_alignment = 2
 vertical_alignment = 2
 
 [node name="SellPrice" type="Label" parent="SubItemTitles"]
-custom_minimum_size = Vector2(125, 0)
+custom_minimum_size = Vector2(130, 0)
 layout_mode = 2
-text = "Sell Price"
+text = "Sell Price "
 horizontal_alignment = 2
 vertical_alignment = 2
 
 [node name="BreakEvenPrice" type="Label" parent="SubItemTitles"]
-custom_minimum_size = Vector2(125, 0)
+visible = false
+custom_minimum_size = Vector2(130, 0)
 layout_mode = 2
-text = "Break Even"
+text = "Break Even "
 horizontal_alignment = 2
 vertical_alignment = 2
 
 [node name="Profit" type="Label" parent="SubItemTitles"]
-custom_minimum_size = Vector2(125, 0)
+custom_minimum_size = Vector2(130, 0)
 layout_mode = 2
-text = "Profit"
+text = "Profit "
 horizontal_alignment = 2
 vertical_alignment = 2
 
 [node name="DateBought" type="Label" parent="SubItemTitles"]
-custom_minimum_size = Vector2(125, 0)
+custom_minimum_size = Vector2(120, 0)
 layout_mode = 2
-text = "Date Bought"
+text = "Date Bought "
 horizontal_alignment = 2
 vertical_alignment = 2
 
 [node name="DateSold" type="Label" parent="SubItemTitles"]
-custom_minimum_size = Vector2(125, 0)
+visible = false
+custom_minimum_size = Vector2(120, 0)
 layout_mode = 2
-text = "Date Sold"
+text = "Date Sold "
 horizontal_alignment = 2
 vertical_alignment = 2
 
 [node name="SpacerR" type="Control" parent="SubItemTitles"]
 layout_mode = 2
 size_flags_horizontal = 3
-size_flags_stretch_ratio = 0.1
 
 [node name="TitlesBorder2" type="ColorRect" parent="."]
 custom_minimum_size = Vector2(0, 1)

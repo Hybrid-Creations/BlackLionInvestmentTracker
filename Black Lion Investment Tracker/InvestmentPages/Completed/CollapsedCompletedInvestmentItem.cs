@@ -27,6 +27,7 @@ public sealed partial class CollapsedCompletedInvestmentItem : CollapsedInvestme
         itemProperties.GetNode<RichTextLabel>("SellPrice").Text = _collapsedInvestment.GetSellPriceStringFromInvestment(true, RichStringAlignment.RIGHT);
         itemProperties.GetNode<RichTextLabel>("Profit").Text = _collapsedInvestment.GetProfitStringFromInvestment(true, RichStringAlignment.RIGHT);
         itemProperties.GetNode<Label>("BuyDate").Text = _collapsedInvestment.OldestPurchaseDate.ToTimeSinceString();
+        itemProperties.GetNode<Label>("SellDate").Text = _collapsedInvestment.NewestSellDate.ToTimeSinceString();
     }
 
     public void TreeButtonToggled(bool enabled)

@@ -1,0 +1,25 @@
+[gd_scene load_steps=5 format=3 uid="uid://4maprnmh3gii"]
+
+[ext_resource type="PackedScene" uid="uid://c02stipmtyb45" path="res://InvestmentPages/Base/InvestmentsPage.tscn" id="1_tcgkk"]
+[ext_resource type="Script" path="res://InvestmentPages/Potential/PotentialInvestmentsPage.cs" id="2_t8uf5"]
+[ext_resource type="PackedScene" uid="uid://c1xilgkwsf513" path="res://InvestmentPages/Potential/CollapsedPotentialInvestmentItem.tscn" id="3_xupfe"]
+[ext_resource type="PackedScene" uid="uid://dlbg5ektlklss" path="res://InvestmentPages/Potential/PotentialInvestmentItem.tscn" id="4_3ihqo"]
+
+[node name="PotentialInvestmentsPage" instance=ExtResource("1_tcgkk")]
+script = ExtResource("2_t8uf5")
+collapsedInvestmentScene = ExtResource("3_xupfe")
+
+[node name="Name" parent="ColumnTitles" index="4"]
+custom_minimum_size = Vector2(275, 0)
+
+[node name="BreakEvenSellPrice" parent="ColumnTitles" index="7"]
+visible = true
+
+[node name="Profit" parent="ColumnTitles" index="8"]
+text = "Cur Profit"
+
+[node name="CollapsedPotentialInvestmentItem" parent="ScrollContainer/VBoxContainer/InvsetmentHolder" index="0" instance=ExtResource("3_xupfe")]
+layout_mode = 2
+
+[node name="PotentialInvestmentItem" parent="ScrollContainer/VBoxContainer/InvsetmentHolder" index="1" instance=ExtResource("4_3ihqo")]
+layout_mode = 2

@@ -7,8 +7,8 @@
 script = ExtResource("2_q1med")
 itemProperties = NodePath("ItemProperties")
 
-[node name="BreakEvenPrice" parent="ItemProperties" index="6"]
-visible = false
+[node name="Name" parent="ItemProperties" index="4"]
+custom_minimum_size = Vector2(275, 0)
 
-[node name="SellDate" parent="ItemProperties" index="9"]
-visible = false
+[node name="BreakEvenPrice" parent="ItemProperties" index="7"]
+visible = true

@@ -74,8 +74,6 @@ public partial class InvestmentsDatabase
                 GenerateCollapsedPotential();
 
                 AppStatusIndicator.ClearStatus();
-
-                //GD.Print($"Buy Listings:{buyOrders.Count}, Sell Listings:{sellOrders.Count}, Similar Items:{buyOrders.Select(b => b.ItemId).Where(i => sellOrders.Select(s => s.ItemId).Contains(i)).Count()}");
             }
             catch (System.Exception e)
             {
@@ -184,19 +182,16 @@ public partial class InvestmentsDatabase
                 //Skip if we already have the transaction in the database, that means we have used it already
                 if (Main.Database.NotInvestments.Any(l => l == buyOrder.Id))
                 {
-                    //GD.Print($"Skipped buy order \"{buy.Id}\" as it was marked as not an investment.");
                     SetStatusAndPrintAmmount(status, ref i, buys.Count);
                     continue;
                 }
                 if (Main.Database.CompletedInvestments.Any(i => i.BuyData.TransactionId == buyOrder.Id))
                 {
-                    //GD.Print($"Skipped buy order \"{buy.Id}\" as it was already in the database.");
                     SetStatusAndPrintAmmount(status, ref i, buys.Count);
                     continue;
                 }
                 if (Main.Database.PendingInvestments.Any(i => i.BuyData.TransactionId == buyOrder.Id))
                 {
-                    //GD.Print($"Skipped buy order \"{buy.Id}\" as it was already in the database.");
                     SetStatusAndPrintAmmount(status, ref i, buys.Count);
                     continue;
                 }
@@ -220,16 +215,17 @@ public partial class InvestmentsDatabase
                     // If there are not any previous sell orders ascociated with this buy order that means it is either a pending investment or potential investment
                     else
                     {
+                        Lazy<int> lazyCurrentSellPrice = new Lazy<int>(() => Cache.Prices.GetPrice(buyOrder.ItemId));
                         // Make sure the sell transactions we look at are for the same item and only after the date the buy was purchase
                         var postedSellOrders = CheckPostedSellOrdersForMatches(buyOrder, ref buyAmmountLeft, sortedPostedSellOrders);
                         if (postedSellOrders.Count > 0)
                         {
-                            var pendingInvestment = new PendingInvestment(buyData, postedSellOrders);
+                            var pendingInvestment = new PendingInvestment(buyData, postedSellOrders, lazyCurrentSellPrice);
                             PendingInvestments.Add(pendingInvestment);
                         }
                         else
                         {
-                            var potentialInvsetment = new PotentialInvestment(buyData, new Lazy<int>(() => Cache.Prices.GetPrice(buyOrder.ItemId)));
+                            var potentialInvsetment = new PotentialInvestment(buyData, lazyCurrentSellPrice);
                             PotentialInvestments.Add(potentialInvsetment);
                         }
                     }
@@ -253,7 +249,7 @@ public partial class InvestmentsDatabase
 
     private List<SellData> CheckHistorySellOrdersForCompleteInvestmentMatches(CommerceTransactionHistory buyOrder, ref int buyAmmountLeft, IOrderedEnumerable<CommerceTransactionHistory> sortedSellOrders)
     {
-        var sellDataDictionary = new List<SellData>();
+        var sellDatasList = new List<SellData>();
         foreach (var sellOrder in sortedSellOrders.Where(s => s.ItemId == buyOrder.ItemId && s.Purchased > buyOrder.Purchased))
         {
             var sellData = new SellData(sellOrder);
@@ -286,10 +282,7 @@ public partial class InvestmentsDatabase
                     }
                     // If there are no items left to use in this sell order, skip it
                     else
-                    {
-                        //GD.Print($"Skipped sell order \"{sellOrder.Id}\" as it was already in the database and fully used.");
                         continue;
-                    }
                 }
                 // Was not in the database
                 else
@@ -307,20 +300,12 @@ public partial class InvestmentsDatabase
                     }
                 }
 
-                // If the hey does exists add the item to the list
-                //if (sellDataDictionary.TryGetValue(sellData.IndividualSellPrice, out var list))
-                sellDataDictionary.Add(sellData);
-                // Othersie create a new list for this key
-                // else
-                //     sellDataDictionary[sellData.IndividualSellPrice] = new List<SellData>
-                //     {
-                //         sellData
-                //     };
+                sellDatasList.Add(sellData);
             }
             // We made sure all the buys are accounted for so we don't need to check any more sells
             else break;
         }
-        return sellDataDictionary;
+        return sellDatasList;
     }
 
     private List<SellData> CheckPostedSellOrdersForMatches(CommerceTransactionHistory buyOrder, ref int buyAmmountLeft, IOrderedEnumerable<CommerceTransactionCurrent> sortedPostedSellOrders)
@@ -358,10 +343,7 @@ public partial class InvestmentsDatabase
                     }
                     // If there are no items left to use in this sell order, skip it
                     else
-                    {
-                        //GD.Print($"Skipped sell posting \"{postedSellOrder.Id}\" as it was already in the database and fully used.");
                         continue;
-                    }
                 }
                 // Was not in the database
                 else
@@ -474,6 +456,6 @@ public partial class InvestmentsDatabase
             CompletedInvestments = newData.CompletedInvestments ?? new();
             NotInvestments = newData.NotInvestments ?? new();
         }
-        GD.Print($"Loaded Investment Database: i:{CompletedInvestments.Count}, n:{NotInvestments.Count}");
+        GD.Print($"Loaded Investment Database => investments: {CompletedInvestments.Count}, not investments: {NotInvestments.Count}");
     }
 }

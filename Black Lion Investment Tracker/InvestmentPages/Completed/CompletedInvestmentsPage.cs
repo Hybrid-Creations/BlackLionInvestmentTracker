@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using BLIT.ConstantVariables;
 using BLIT.Extensions;
 using BLIT.Investments;
 using Godot;
-using Gw2Sharp.WebApi.Exceptions;
 
 namespace BLIT.UI;
 
@@ -30,9 +30,9 @@ public partial class CompletedInvestmentsPage : InvestmentsPage
 
     private void SetTotals()
     {
-        totals.GetNode<RichTextLabel>("Invested").Text = $"Invested:  {Main.Database.TotalInvested.ToCurrencyString(true)}";
-        totals.GetNode<RichTextLabel>("Return").Text = $"Return:  {Main.Database.TotalReturn.ToCurrencyString(true)}";
-        totals.GetNode<RichTextLabel>("Profit").Text = $"Profit:  {Main.Database.TotalProfit.ToCurrencyString(true)}";
+        totals.GetNode<RichTextLabel>("Invested").Text = $"Invested:   {Main.Database.TotalInvested.ToCurrencyString(RichImageType.PX32, 24)}";
+        totals.GetNode<RichTextLabel>("Return").Text = $"Return:   {Main.Database.TotalReturn.ToCurrencyString(RichImageType.PX32, 24)}";
+        totals.GetNode<RichTextLabel>("Profit").Text = $"Profit:   {Main.Database.TotalProfit.ToCurrencyString(RichImageType.PX32, 24)}";
         totals.GetNode<Label>("ROI").Text = $"ROI:  {Main.Database.ROI:00}%";
     }
 
@@ -86,7 +86,7 @@ public partial class CompletedInvestmentsPage : InvestmentsPage
         var totalInvested = Main.Database.TotalInvested;
         var totalReturn = Main.Database.TotalReturn;
         var totalProfit = Main.Database.TotalProfit;
-        GD.Print($"Total Invested: {totalInvested.ToCurrencyString(false)}, Total Return: {totalReturn.ToCurrencyString(false)},  Total Profit With Tax Removed: {totalProfit.ToCurrencyString(false)}, ROI: {Main.Database.ROI}");
+        GD.Print($"Total Invested: {totalInvested.ToCurrencyString(RichImageType.NONE)}, Total Return: {totalReturn.ToCurrencyString(RichImageType.NONE)},  Total Profit With Tax Removed: {totalProfit.ToCurrencyString(RichImageType.NONE)}, ROI: {Main.Database.ROI}");
         SetTotals();
 
         AppStatusIndicator.ClearStatus();

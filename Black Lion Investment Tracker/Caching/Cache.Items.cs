@@ -39,7 +39,7 @@ public static partial class Cache
         {
             if (SaveSystem.TryLoadFromFile(pathToItems, out SavedItems saved))
                 itemDB = new ConcurrentDictionary<int, ItemData>(saved.itemDB);
-            GD.Print($"Loaded Item Database: i:{itemDB.Count}");
+            GD.Print($"Loaded Item Database => items: {itemDB.Count}");
         }
     }
 
