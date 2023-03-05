@@ -1,5 +1,4 @@
 
-using System;
 using System.Linq;
 using BLIT.ConstantVariables;
 using BLIT.Extensions;
@@ -40,7 +39,7 @@ public sealed partial class CollapsedPotentialInvestmentItem : CollapsedInvestme
         else
         {
             var idealPrice = Mathf.CeilToInt(collapsedInvestment.IndividualBuyPrice * Constants.MultiplyInverseTax);
-            return DataExtentions.CombineTotalAndIndividual(collapsedInvestment.Quantity * idealPrice, idealPrice).AlignRichString(RichStringAlignment.RIGHT);
+            return DataExtentions.CombineTotalAndIndividual(collapsedInvestment.Quantity * idealPrice, idealPrice).ColorRichString("#ffd500").AlignRichString(RichStringAlignment.RIGHT);
         }
     }
 

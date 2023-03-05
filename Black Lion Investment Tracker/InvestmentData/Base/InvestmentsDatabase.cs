@@ -58,6 +58,9 @@ public partial class InvestmentsDatabase
                 List<CommerceTransactionHistory> sellOrders = new();
                 List<CommerceTransactionCurrent> postedSellOrders = new();
 
+                PendingInvestments.Clear();
+                PotentialInvestments.Clear();
+
                 // Get all the buy and sell orders from the API
                 await GetBuyAndSellHistory(buyOrders, sellOrders, postedSellOrders);
 
@@ -191,6 +194,11 @@ public partial class InvestmentsDatabase
                     continue;
                 }
                 if (Main.Database.PendingInvestments.Any(i => i.BuyData.TransactionId == buyOrder.Id))
+                {
+                    SetStatusAndPrintAmmount(status, ref i, buys.Count);
+                    continue;
+                }
+                if (Main.Database.PotentialInvestments.Any(i => i.BuyData.TransactionId == buyOrder.Id))
                 {
                     SetStatusAndPrintAmmount(status, ref i, buys.Count);
                     continue;

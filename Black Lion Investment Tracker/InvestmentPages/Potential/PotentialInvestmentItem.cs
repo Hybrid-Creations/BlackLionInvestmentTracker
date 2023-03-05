@@ -1,4 +1,3 @@
-using System;
 using BLIT.ConstantVariables;
 using BLIT.Extensions;
 using BLIT.Investments;
@@ -30,7 +29,7 @@ public partial class PotentialInvestmentItem : InvestmentItem
         else
         {
             var idealPrice = Mathf.CeilToInt(investment.BuyData.IndividualBuyPrice * Constants.MultiplyInverseTax);
-            return DataExtentions.CombineTotalAndIndividual(investment.BuyData.Quantity * idealPrice, idealPrice).AlignRichString(RichStringAlignment.RIGHT);
+            return DataExtentions.CombineTotalAndIndividual(investment.BuyData.Quantity * idealPrice, idealPrice).ColorRichString("#ffd500").AlignRichString(RichStringAlignment.RIGHT);
         }
     }
 }

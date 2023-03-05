@@ -22,6 +22,6 @@ public partial class PendingInvestmentItem : InvestmentItem
     private string GetCurrentListedPrice(PendingInvestment investment)
     {
         var listedIsHigher = investment.CurrentSellPrice < investment.LowestIndividualSellPrice;
-        return $"{(listedIsHigher ? $"[right][color=#FF5A00]{investment.CurrentSellPrice.ToCurrencyString(RichImageType.PX32)}" : Constants.EmptyItemPropertyEntry)}";
+        return $"{(listedIsHigher ? $"[right][color=#ff9200]{investment.CurrentSellPrice.ToCurrencyString(RichImageType.PX32)}" : Constants.EmptyItemPropertyEntry)}";
     }
 }

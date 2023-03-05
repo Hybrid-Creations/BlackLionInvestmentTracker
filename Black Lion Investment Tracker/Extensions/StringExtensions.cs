@@ -129,4 +129,17 @@ public static partial class StringExtensions
     {
         return $"{$"[{alignment}]".ToLower()}{str}{$"[{alignment}]".ToLower()}";
     }
+
+    /// <summary>
+    /// Wraps a string in the BBCode for coloring the text.
+    /// </summary>
+    /// <param name="str">The string to modify.</param>
+    /// <param name="htmlColorString">The color in html format, i.e. #FFF821.</param>
+    /// <returns></returns>
+    public static string ColorRichString(this string str, string htmlColorString)
+    {
+        if (htmlColorString.StartsWith("#") == false)
+            throw new NotImplementedException();
+        return $"[color={htmlColorString}]{str}[/color]";
+    }
 }
