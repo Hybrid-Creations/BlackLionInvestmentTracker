@@ -1,0 +1,12 @@
+[gd_scene load_steps=3 format=3 uid="uid://bn4e2gtbmufdo"]
+
+[ext_resource type="PackedScene" uid="uid://drklel2kqapip" path="res://Main/DeliveryBoxItemIcon.tscn" id="1_1jitu"]
+[ext_resource type="Script" path="res://Main/DeliveryBoxItem.cs" id="1_oae8k"]
+
+[node name="DeliveryBoxItem" type="Panel" node_paths=PackedStringArray("icon")]
+custom_minimum_size = Vector2(56, 56)
+script = ExtResource("1_oae8k")
+icon = NodePath("DeliveryBoxItemIcon")
+
+[node name="DeliveryBoxItemIcon" parent="." instance=ExtResource("1_1jitu")]
+layout_mode = 0

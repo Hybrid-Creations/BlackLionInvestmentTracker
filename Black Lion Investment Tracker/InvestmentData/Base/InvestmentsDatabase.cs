@@ -29,7 +29,7 @@ public partial class InvestmentsDatabase
 
     bool updating;
 
-    public void Update(Action OnAfterUpdate)
+    public void RefreshData(Action OnAfterUpdate)
     {
         if (updating == true) return;
         updating = true;

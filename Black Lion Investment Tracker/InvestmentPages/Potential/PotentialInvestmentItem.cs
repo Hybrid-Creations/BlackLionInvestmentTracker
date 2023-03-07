@@ -29,7 +29,7 @@ public partial class PotentialInvestmentItem : InvestmentItem
         else
         {
             var idealPrice = Mathf.CeilToInt(investment.BuyData.IndividualBuyPrice * Constants.MultiplyInverseTax);
-            return DataExtentions.CombineTotalAndIndividual(investment.BuyData.Quantity * idealPrice, idealPrice).ColorRichString("#ffd500").AlignRichString(RichStringAlignment.RIGHT);
+            return DataExtensions.CombineTotalAndIndividual(investment.BuyData.Quantity * idealPrice, idealPrice).ColorRichString("#ffd500").AlignRichString(RichStringAlignment.RIGHT);
         }
     }
 }

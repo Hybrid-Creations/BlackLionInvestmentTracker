@@ -39,7 +39,7 @@ public sealed partial class CollapsedPotentialInvestmentItem : CollapsedInvestme
         else
         {
             var idealPrice = Mathf.CeilToInt(collapsedInvestment.IndividualBuyPrice * Constants.MultiplyInverseTax);
-            return DataExtentions.CombineTotalAndIndividual(collapsedInvestment.Quantity * idealPrice, idealPrice).ColorRichString("#ffd500").AlignRichString(RichStringAlignment.RIGHT);
+            return DataExtensions.CombineTotalAndIndividual(collapsedInvestment.Quantity * idealPrice, idealPrice).ColorRichString("#ffd500").AlignRichString(RichStringAlignment.RIGHT);
         }
     }
 

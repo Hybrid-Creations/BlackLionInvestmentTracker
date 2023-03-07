@@ -1,0 +1,53 @@
+[gd_scene load_steps=6 format=3 uid="uid://b4bjldmmdor6m"]
+
+[ext_resource type="Theme" uid="uid://dy6mo6ior0maw" path="res://Themes/MainTheme.tres" id="1_lgew3"]
+[ext_resource type="Script" path="res://Main/DeliveryBoxPreview.cs" id="2_2ebke"]
+[ext_resource type="PackedScene" uid="uid://bn4e2gtbmufdo" path="res://Main/DeliveryBoxItem.tscn" id="3_4uc1n"]
+[ext_resource type="PackedScene" uid="uid://drklel2kqapip" path="res://Main/DeliveryBoxItemIcon.tscn" id="4_nusq5"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_p3hsb"]
+content_margin_left = 7.0
+content_margin_top = 7.0
+content_margin_right = 7.0
+content_margin_bottom = 7.0
+bg_color = Color(0.25098, 0.25098, 0.25098, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[node name="DeliveryBoxPreview" type="PanelContainer" node_paths=PackedStringArray("coinsLabel", "itemsContainer")]
+offset_right = 14.0
+offset_bottom = 14.0
+theme = ExtResource("1_lgew3")
+theme_override_styles/panel = SubResource("StyleBoxFlat_p3hsb")
+script = ExtResource("2_2ebke")
+coinsLabel = NodePath("VBoxContainer/CoinsLabel")
+itemsContainer = NodePath("VBoxContainer/GridContainer")
+itemPreview = ExtResource("3_4uc1n")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="CoinsLabel" type="RichTextLabel" parent="VBoxContainer"]
+custom_minimum_size = Vector2(0, 24)
+layout_mode = 2
+bbcode_enabled = true
+text = "[center]999[img=16d]Sprites/gold_32.png[/img] 99[img=16d]Sprites/silver_32.png[/img] 99[img=16d]Sprites/copper_32.png[/img]"
+scroll_active = false
+
+[node name="GridContainer" type="GridContainer" parent="VBoxContainer"]
+layout_mode = 2
+columns = 3
+
+[node name="DeliveryBoxItemIcon" parent="VBoxContainer/GridContainer" instance=ExtResource("4_nusq5")]
+layout_mode = 2
+
+[node name="DeliveryBoxItemIcon2" parent="VBoxContainer/GridContainer" instance=ExtResource("4_nusq5")]
+visible = false
+layout_mode = 2
+
+[node name="DeliveryBoxItemIcon3" parent="VBoxContainer/GridContainer" node_paths=PackedStringArray("quantity") instance=ExtResource("4_nusq5")]
+visible = false
+layout_mode = 2
+quantity = NodePath("../DeliveryBoxItemIcon2/Quantity")

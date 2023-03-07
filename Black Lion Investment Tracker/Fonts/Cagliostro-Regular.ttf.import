@@ -14,7 +14,7 @@ dest_files=["res://.godot/imported/Cagliostro-Regular.ttf-5abe7225fa06859b61b39a
 
 Rendering=null
 antialiasing=1
-generate_mipmaps=false
+generate_mipmaps=true
 multichannel_signed_distance_field=false
 msdf_pixel_range=8
 msdf_size=48
@@ -22,7 +22,7 @@ allow_system_fallback=true
 force_autohinter=false
 hinting=1
 subpixel_positioning=1
-oversampling=0.0
+oversampling=2.0
 Fallbacks=null
 fallbacks=[]
 Compress=null

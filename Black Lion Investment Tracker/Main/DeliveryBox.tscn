@@ -1,0 +1,106 @@
+[gd_scene load_steps=12 format=3 uid="uid://y0xcfolok7rs"]
+
+[ext_resource type="Theme" uid="uid://dy6mo6ior0maw" path="res://Themes/MainTheme.tres" id="1_13c7d"]
+[ext_resource type="Texture2D" uid="uid://bsl8f80xnsea" path="res://Sprites/delivery_box_empty.png" id="1_yer8e"]
+[ext_resource type="Script" path="res://Main/DeliveryBox.cs" id="2_yr17c"]
+[ext_resource type="Texture2D" uid="uid://onnos0i8b00d" path="res://Sprites/gold_64.png" id="3_8kmhj"]
+[ext_resource type="Texture2D" uid="uid://e3m84mv8teyg" path="res://Sprites/delivery_box_full.png" id="3_c42s0"]
+[ext_resource type="Texture2D" uid="uid://clr3da7nypicv" path="res://Sprites/gold_32.png" id="4_6b51j"]
+[ext_resource type="Texture2D" uid="uid://py6qsykngs4j" path="res://Sprites/silver_32.png" id="5_ymx57"]
+[ext_resource type="Texture2D" uid="uid://7xdrk6lpl0h6" path="res://Sprites/copper_32.png" id="6_ilsqf"]
+[ext_resource type="Texture2D" uid="uid://cagb4omlf5j04" path="res://Sprites/plus.png" id="8_m5o0g"]
+[ext_resource type="PackedScene" uid="uid://b4bjldmmdor6m" path="res://Main/DeliveryBoxPreview.tscn" id="10_7vu1f"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_qjh4a"]
+bg_color = Color(0.12549, 0.12549, 0.12549, 1)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+
+[node name="DeliveryBox" type="Button" node_paths=PackedStringArray("coinsIcon", "itemsBackground", "itemsCountLabel", "tooManyItemsIcon", "deliveryBoxPreview")]
+offset_right = 38.0
+offset_bottom = 38.0
+theme = ExtResource("1_13c7d")
+icon = ExtResource("1_yer8e")
+flat = true
+expand_icon = true
+script = ExtResource("2_yr17c")
+deliveryBoxEmpty = ExtResource("1_yer8e")
+deliveryBoxFull = ExtResource("3_c42s0")
+coinsIcon = NodePath("Coins")
+goldIcon = ExtResource("4_6b51j")
+silverIcon = ExtResource("5_ymx57")
+copperIcon = ExtResource("6_ilsqf")
+itemsBackground = NodePath("Items")
+itemsCountLabel = NodePath("Items/ItemsLabel")
+tooManyItemsIcon = NodePath("Items/TooManyItems")
+deliveryBoxPreview = NodePath("Preview")
+centeredPosition = Vector2(-16, 42)
+offsetPosition = Vector2(-38, 42)
+
+[node name="Coins" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = -1.0
+offset_top = -17.0
+offset_right = 18.0
+offset_bottom = 2.0
+grow_vertical = 0
+texture = ExtResource("3_8kmhj")
+expand_mode = 1
+
+[node name="Items" type="Panel" parent="."]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -16.0
+offset_top = -16.0
+offset_right = 1.0
+offset_bottom = 1.0
+grow_horizontal = 0
+grow_vertical = 0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_qjh4a")
+
+[node name="ItemsLabel" type="Label" parent="Items"]
+clip_contents = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -4.0
+offset_bottom = 5.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 16
+text = "99"
+horizontal_alignment = 1
+vertical_alignment = 1
+clip_text = true
+
+[node name="TooManyItems" type="TextureRect" parent="Items"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("8_m5o0g")
+expand_mode = 1
+
+[node name="Preview" parent="." instance=ExtResource("10_7vu1f")]
+layout_mode = 0
+offset_left = -16.0
+offset_top = 42.0
+offset_right = 54.0
+offset_bottom = 138.0
+
+[connection signal="mouse_entered" from="." to="." method="OnMouseEntered"]
+[connection signal="mouse_exited" from="." to="." method="OnMouseExited"]

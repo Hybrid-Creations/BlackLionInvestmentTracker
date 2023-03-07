@@ -1,13 +1,17 @@
-[gd_scene load_steps=13 format=3 uid="uid://5kqsjt7wu25w"]
+[gd_scene load_steps=17 format=3 uid="uid://bijs1mco726lc"]
 
-[ext_resource type="Script" path="res://Main.cs" id="1_jgrri"]
+[ext_resource type="Script" path="res://Main/Main.cs" id="1_jgrri"]
 [ext_resource type="Theme" uid="uid://dy6mo6ior0maw" path="res://Themes/MainTheme.tres" id="1_thssd"]
 [ext_resource type="PackedScene" uid="uid://cq7juw3fbidra" path="res://InvestmentPages/Completed/CompletedInvestmentsPage.tscn" id="3_1ftuo"]
+[ext_resource type="Script" path="res://Main/TitleBar.cs" id="3_8yt58"]
 [ext_resource type="PackedScene" uid="uid://bgj2jtb2jgf2w" path="res://InvestmentPages/Pending/PendingInvestmentsPage.tscn" id="4_1yk28"]
 [ext_resource type="PackedScene" uid="uid://4maprnmh3gii" path="res://InvestmentPages/Potential/PotentialInvestmentsPage.tscn" id="5_7qvtw"]
 [ext_resource type="Texture2D" uid="uid://du668hhlqaqyd" path="res://Sprites/cycle.png" id="5_ey6tk"]
-[ext_resource type="Script" path="res://AppStatusIndicator.cs" id="9_ja276"]
-[ext_resource type="Script" path="res://APIStatusIndicator.cs" id="11_i4fps"]
+[ext_resource type="Texture2D" uid="uid://0psyksa17uch" path="res://Sprites/close.png" id="6_6qvig"]
+[ext_resource type="PackedScene" uid="uid://y0xcfolok7rs" path="res://Main/DeliveryBox.tscn" id="8_fiy3i"]
+[ext_resource type="Texture2D" uid="uid://7u3gqytdg2tg" path="res://Sprites/minimize.png" id="8_lpu3k"]
+[ext_resource type="Script" path="res://Main/AppStatusIndicator.cs" id="9_ja276"]
+[ext_resource type="Script" path="res://Main/APIStatusIndicator.cs" id="11_i4fps"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_p5u6s"]
 bg_color = Color(0.25098, 0.25098, 0.25098, 1)
@@ -21,7 +25,7 @@ bg_color = Color(0.25098, 0.25098, 0.25098, 1)
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_y1w62"]
 bg_color = Color(0.25098, 0.25098, 0.25098, 1)
 
-[node name="Main" type="Panel" node_paths=PackedStringArray("CompletedInvestments", "PendingInvestments", "PotentialInvestments")]
+[node name="Main" type="Panel" node_paths=PackedStringArray("CompletedInvestments", "PendingInvestments", "PotentialInvestments", "DeliveryBox")]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -33,6 +37,7 @@ script = ExtResource("1_jgrri")
 CompletedInvestments = NodePath("TabContainer/Completed Investments")
 PendingInvestments = NodePath("TabContainer/Pending Investments")
 PotentialInvestments = NodePath("TabContainer/Potential Investments")
+DeliveryBox = NodePath("TitleBar/DeliveryBox")
 
 [node name="TabsBackground" type="Panel" parent="."]
 layout_mode = 1
@@ -63,12 +68,69 @@ layout_mode = 2
 visible = false
 layout_mode = 2
 
-[node name="Refresh" type="Button" parent="."]
-custom_minimum_size = Vector2(40, 40)
+[node name="TitleBar" type="Control" parent="."]
 layout_mode = 1
-offset_right = 40.0
-offset_bottom = 40.0
+anchors_preset = 10
+anchor_right = 1.0
+grow_horizontal = 2
+script = ExtResource("3_8yt58")
+
+[node name="Refresh" type="Button" parent="TitleBar"]
+layout_mode = 1
+offset_right = 38.0
+offset_bottom = 38.0
 icon = ExtResource("5_ey6tk")
+flat = true
+expand_icon = true
+
+[node name="DeliveryBox" parent="TitleBar" instance=ExtResource("8_fiy3i")]
+layout_mode = 0
+offset_left = 38.0
+offset_right = 76.0
+
+[node name="DragRegion" type="Control" parent="TitleBar"]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_left = 76.0
+offset_right = -878.0
+offset_bottom = 38.0
+grow_horizontal = 2
+
+[node name="DragRegion2" type="Control" parent="TitleBar"]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_left = 876.0
+offset_right = -76.0
+offset_bottom = 38.0
+grow_horizontal = 2
+
+[node name="Minimize" type="Button" parent="TitleBar"]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -76.0
+offset_top = 3.0
+offset_right = -44.0
+offset_bottom = 41.0
+grow_horizontal = 0
+icon = ExtResource("8_lpu3k")
+flat = true
+expand_icon = true
+
+[node name="Close" type="Button" parent="TitleBar"]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -38.0
+offset_top = 3.0
+offset_right = -6.0
+offset_bottom = 41.0
+grow_horizontal = 0
+icon = ExtResource("6_6qvig")
 flat = true
 expand_icon = true
 
@@ -104,7 +166,7 @@ grow_horizontal = 2
 grow_vertical = 2
 theme_override_font_sizes/normal_font_size = 17
 bbcode_enabled = true
-text = "[center][right]Oh boy it looks like the API had an oopsie, gotta go chec kits status now just incase something might have happened that was bad"
+text = "[center][right]Oh boy it looks like the API had an oopsie, gotta go check its status now just incase something might have happened that was bad"
 scroll_active = false
 autowrap_mode = 0
 shortcut_keys_enabled = false
@@ -134,4 +196,8 @@ scroll_active = false
 autowrap_mode = 0
 shortcut_keys_enabled = false
 
-[connection signal="pressed" from="Refresh" to="." method="RefreshDatabase"]
+[connection signal="pressed" from="TitleBar/Refresh" to="." method="RefreshDatabase"]
+[connection signal="gui_input" from="TitleBar/DragRegion" to="TitleBar" method="GUIInput"]
+[connection signal="gui_input" from="TitleBar/DragRegion2" to="TitleBar" method="GUIInput"]
+[connection signal="pressed" from="TitleBar/Minimize" to="." method="MinimizeApp"]
+[connection signal="pressed" from="TitleBar/Close" to="." method="CloseApp"]

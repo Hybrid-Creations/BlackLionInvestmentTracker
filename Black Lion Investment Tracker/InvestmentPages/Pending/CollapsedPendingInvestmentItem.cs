@@ -32,7 +32,7 @@ public sealed partial class CollapsedPendingInvestmentItem : CollapsedInvestment
     private string GetCurrentListedPrice(CollapsedPendingInvestment investment)
     {
         var listedIsHigher = investment.CurrentSellPrice < investment.LowestIndividualSellPrice;
-        return $"{(listedIsHigher ? $"[right][color=#ff9200]{investment.CurrentSellPrice.ToCurrencyString(RichImageType.PX32)}" : Constants.EmptyItemPropertyEntry)}";
+        return $"{(listedIsHigher ? $"\n[right][color=gray]ea[/color] [color=#ff9200]{investment.CurrentSellPrice.ToCurrencyString(RichImageType.PX32)}" : Constants.EmptyItemPropertyEntry)}";
     }
 
     public void TreeButtonToggled(bool enabled)

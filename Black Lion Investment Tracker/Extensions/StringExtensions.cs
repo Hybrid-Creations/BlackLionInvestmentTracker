@@ -66,10 +66,11 @@ public static partial class StringExtensions
 
     ///[00]
     /// <summary>
-    /// Returns a string in the format of "XXXg XXs XXc", e.g. 1345 => "13s 45c", e.g. 1232453 => "123g 24s 53c"
+    /// Returns a string in the format of "XXXg XXs XXc", e.g. 1345 => "13s 45c", e.g. 1232453 => "123g 24s 53c", it also insterts images where the "g, s, c" are representing gold, silver, and copper.
     /// </summary>
     /// <param name="amount">The number to convert</param>
-    /// <param name="richImage">Will color the g gold, the s silver, and the c copper.</param>
+    /// <param name="richImage">The size of image to use, i.e. 16x16, 64x64.</param>
+    /// <param name="imageSize">The size of the images when inlined in the text.</param>
     /// <returns></returns>
     public static string ToCurrencyString(this long amount, RichImageType richImage, int imageSize = 16)
     {

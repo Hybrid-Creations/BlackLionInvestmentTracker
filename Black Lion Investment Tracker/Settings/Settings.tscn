@@ -1,8 +1,8 @@
-[gd_scene load_steps=4 format=3 uid="uid://cmjk1fju2jai1"]
+[gd_scene load_steps=4 format=3 uid="uid://b5putwswq03ay"]
 
 [ext_resource type="Theme" uid="uid://dy6mo6ior0maw" path="res://Themes/MainTheme.tres" id="1_ihyau"]
 [ext_resource type="Script" path="res://Settings/Settings.cs" id="2_x88c0"]
-[ext_resource type="PackedScene" uid="uid://cyp3gemcogg2j" path="res://Main.tscn" id="3_ceqxv"]
+[ext_resource type="PackedScene" uid="uid://5vj41wufg4ni" path="res://Main/Main.tscn" id="3_apj5j"]
 
 [node name="Settings" type="Panel" node_paths=PackedStringArray("apiKeyField")]
 anchors_preset = 15
@@ -13,7 +13,7 @@ grow_vertical = 2
 theme = ExtResource("1_ihyau")
 script = ExtResource("2_x88c0")
 apiKeyField = NodePath("API Key/API Key Field")
-mainScene = ExtResource("3_ceqxv")
+mainScene = ExtResource("3_apj5j")
 
 [node name="Label" type="Label" parent="."]
 layout_mode = 1

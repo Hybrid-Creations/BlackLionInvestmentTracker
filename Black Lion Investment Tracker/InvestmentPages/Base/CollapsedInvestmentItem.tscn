@@ -1,9 +1,8 @@
-[gd_scene load_steps=5 format=3 uid="uid://gvbguuwb5rl2"]
+[gd_scene load_steps=4 format=3 uid="uid://gvbguuwb5rl2"]
 
 [ext_resource type="Theme" uid="uid://dy6mo6ior0maw" path="res://Themes/MainTheme.tres" id="1_etpwm"]
 [ext_resource type="Texture2D" uid="uid://lm5hp18ipnd" path="res://Sprites/arrow_right.png" id="3_gcdpq"]
-[ext_resource type="Texture2D" uid="uid://dlbpcw8rui0ri" path="res://test.png" id="4_y4kh7"]
-[ext_resource type="LabelSettings" uid="uid://cohsxdtkacnpa" path="res://Themes/IconQuantityLabelSettings.tres" id="5_obt30"]
+[ext_resource type="PackedScene" uid="uid://bfdrutohf5ob3" path="res://Main/ItemIcon.tscn" id="3_xr32t"]
 
 [node name="CollapsedInvestmentItem" type="VBoxContainer"]
 anchors_preset = 10
@@ -43,24 +42,8 @@ layout_mode = 2
 size_flags_horizontal = 3
 size_flags_stretch_ratio = 0.25
 
-[node name="Icon" type="TextureRect" parent="HBoxContainer/CollapsedItem/ItemProperties"]
-custom_minimum_size = Vector2(64, 64)
+[node name="Icon" parent="HBoxContainer/CollapsedItem/ItemProperties" instance=ExtResource("3_xr32t")]
 layout_mode = 2
-texture = ExtResource("4_y4kh7")
-
-[node name="Quantity" type="Label" parent="HBoxContainer/CollapsedItem/ItemProperties/Icon"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_right = -6.0
-offset_bottom = -2.0
-grow_horizontal = 2
-grow_vertical = 2
-text = "250"
-label_settings = ExtResource("5_obt30")
-horizontal_alignment = 2
-vertical_alignment = 2
 
 [node name="SpacerL2" type="Control" parent="HBoxContainer/CollapsedItem/ItemProperties"]
 layout_mode = 2
