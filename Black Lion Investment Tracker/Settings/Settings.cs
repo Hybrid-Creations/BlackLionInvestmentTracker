@@ -69,17 +69,23 @@ public partial class Settings : Panel
         config.Save(settingsPath);
     }
 
-    public static bool Load()
+    public static void Load()
     {
         var config = new ConfigFile();
 
         if (config.Load(settingsPath) == Error.Ok)
         {
             Data.APIKey = config.GetValue("Settings", nameof(Settings.SettingsData.APIKey)).AsString();
-            Data.databaseInterval = config.GetValue("Settings", nameof(Settings.SettingsData.databaseInterval), 15).AsInt32();
-            Data.deliveryBoxInterval = config.GetValue("Settings", nameof(Settings.SettingsData.deliveryBoxInterval), 300).AsInt32();
-            return true;
+            Data.databaseInterval = config.GetValue("Settings", nameof(Settings.SettingsData.databaseInterval), 300).AsInt32();
+            Data.deliveryBoxInterval = config.GetValue("Settings", nameof(Settings.SettingsData.deliveryBoxInterval), 15).AsInt32();
         }
-        return false;
+        else
+        {
+            Data.APIKey = "";
+            Data.databaseInterval = 300;
+            Data.deliveryBoxInterval = 15;
+        }
+
+        GD.Print($"Loaded Settings => API Key Exists: {string.IsNullOrWhiteSpace(Data.APIKey) == false} Database Interval: {Data.databaseInterval} Delivery Box Interval: {Data.deliveryBoxInterval}");
     }
 }

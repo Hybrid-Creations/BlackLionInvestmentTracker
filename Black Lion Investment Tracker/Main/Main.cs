@@ -1,3 +1,4 @@
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using BLIT.Investments;
@@ -54,10 +55,18 @@ public partial class Main : Node
                    break;
 
                await Database.RefreshDataAsync(refreshCancelSource.Token);
-               CompletedInvestments.ListInvestmentDatasAsync(Database.CollapsedCompletedInvestments, "Listing Completed Investments... ", refreshCancelSource.Token);
-               PendingInvestments.ListInvestmentDatasAsync(Database.CollapsedPendingInvestments, "Listing Pending Investments... ", refreshCancelSource.Token);
-               PotentialInvestments.ListInvestmentDatasAsync(Database.CollapsedPotentialInvestments, "Listing Potential Investments... ", refreshCancelSource.Token);
+               var completeListTask = CompletedInvestments.ListInvestmentDatasAsync(Database.CollapsedCompletedInvestments, "Listing Completed Investments... ", refreshCancelSource.Token);
+               var pendingListTask = PendingInvestments.ListInvestmentDatasAsync(Database.CollapsedPendingInvestments, "Listing Pending Investments... ", refreshCancelSource.Token);
+               var potentialListTask = PotentialInvestments.ListInvestmentDatasAsync(Database.CollapsedPotentialInvestments, "Listing Potential Investments... ", refreshCancelSource.Token);
 
+               try
+               {
+                   Task.WaitAll(completeListTask, pendingListTask, potentialListTask);
+               }
+               catch (Exception e)
+               {
+                   GD.PushError(e);
+               }
                await Task.Delay(Settings.Data.databaseInterval * 1000);
            }
            while (true);
@@ -73,7 +82,9 @@ public partial class Main : Node
            {
                if (refreshCancelSource.IsCancellationRequested)
                    break;
+
                DeliveryBox.RefreshData(refreshCancelSource.Token);
+
                await Task.Delay(Settings.Data.deliveryBoxInterval * 1000);
            }
            while (true);

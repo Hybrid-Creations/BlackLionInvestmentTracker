@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using BLIT.Extensions;
 using BLIT.Investments;
 using Godot;
@@ -23,49 +24,60 @@ public partial class PendingInvestmentsPage : InvestmentsPage
         loadingLabel.Show();
     }
 
-    public void ListInvestmentDatasAsync(List<CollapsedPendingInvestment> investmentDatas, string baseStatusMessage, CancellationToken cancelToken)
+    public Task ListInvestmentDatasAsync(List<CollapsedPendingInvestment> investmentDatas, string baseStatusMessage, CancellationToken cancelToken)
     {
-        ClearList();
-
-        loadingLabel.Hide();
-
-        int index = 0;
-        AppStatusIndicator.ShowStatus($"{baseStatusMessage} ({index}/{investmentDatas.Count})");
-        // Add New Investment Items To UI
-        foreach (var investment in investmentDatas.OrderBy(ci => ci.OldestPurchaseDate))
+        return Task.Run(() =>
         {
-            try
-            {
-                var instance = collapsedInvestmentScene.Instantiate<CollapsedPendingInvestmentItem>();
-                instance.Init(Cache.Items.GetItemData(investment.ItemId), investment);
 
-                if (cancelToken.IsCancellationRequested)
-                    break;
+            ClearList();
 
-                investmentHolder.AddChildSafe(instance, 0);
-            }
-            catch (AggregateException ag)
-            {
-                if (ag.ToString().Contains("Unsupported type") && ag.ToString().Contains("GW2Sharp"))
-                {
-                    // Most likely a new item that Gw2Sharp doesn't understand so we'll just skip it
-                    GD.PushWarning($"Failed to retreive info on item {investment.ItemId}, most likely Gw2Sharp has not been updated yet to handle the item");
-                }
-                else
-                {
-                    ProbablyRealException(ag);
-                }
-            }
-            catch (Exception e)
-            {
-                ProbablyRealException(e);
-            }
+            loadingLabel.Hide();
+
+            int index = 0;
             AppStatusIndicator.ShowStatus($"{baseStatusMessage} ({index}/{investmentDatas.Count})");
-            index++;
-        }
-        AppStatusIndicator.ShowStatus($"{baseStatusMessage} ({investmentDatas.Count}/{investmentDatas.Count})");
+            // Add New Investment Items To UI
+            foreach (var investment in investmentDatas.OrderByDescending(ci => ci.OldestPurchaseDate))
+            {
+                try
+                {
+                    var instance = collapsedInvestmentScene.Instantiate<CollapsedPendingInvestmentItem>();
+                    instance.Init(Cache.Items.GetItemData(investment.ItemId), investment);
 
-        AppStatusIndicator.ClearStatus();
+                    if (cancelToken.IsCancellationRequested)
+                        break;
+
+                    investmentHolder.AddChildSafe(instance);
+                }
+                catch (AggregateException ag)
+                {
+                    if (ag.ToString().Contains("Unsupported type") && ag.ToString().Contains("GW2Sharp"))
+                    {
+                        // Most likely a new item that Gw2Sharp doesn't understand so we'll just skip it
+                        GD.PushWarning($"Failed to retreive info on item {investment.ItemId}, most likely Gw2Sharp has not been updated yet to handle the item");
+                    }
+                    else
+                    {
+                        ProbablyRealException(ag);
+                    }
+                }
+                catch (Exception e)
+                {
+                    ProbablyRealException(e);
+                }
+                AppStatusIndicator.ShowStatus($"{baseStatusMessage} ({index}/{investmentDatas.Count})");
+                index++;
+            }
+            AppStatusIndicator.ShowStatus($"{baseStatusMessage} ({investmentDatas.Count}/{investmentDatas.Count})");
+
+            if (cancelToken.IsCancellationRequested)
+            {
+                ClearList();
+                AppStatusIndicator.ClearStatus();
+                return;
+            }
+
+            AppStatusIndicator.ClearStatus();
+        }, cancelToken);
     }
 
 

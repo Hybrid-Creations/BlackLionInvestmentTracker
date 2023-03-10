@@ -57,7 +57,7 @@ public partial class CompletedInvestmentsPage : InvestmentsPage
             int index = 0;
             AppStatusIndicator.ShowStatus($"{baseStatusMessage} ({index}/{investmentDatas.Count})");
             // Add New Investment Items To UI
-            foreach (var investment in investmentDatas.OrderBy(ci => ci.OldestPurchaseDate))
+            foreach (var investment in investmentDatas.OrderByDescending(ci => ci.OldestPurchaseDate))
             {
                 try
                 {
@@ -67,7 +67,7 @@ public partial class CompletedInvestmentsPage : InvestmentsPage
                     if (cancelToken.IsCancellationRequested)
                         break;
 
-                    investmentHolder.AddChildSafe(instance, 0);
+                    investmentHolder.AddChildSafe(instance);
                 }
                 catch (AggregateException ag)
                 {
@@ -97,7 +97,12 @@ public partial class CompletedInvestmentsPage : InvestmentsPage
             GD.Print($"Total Invested: {totalInvested.ToCurrencyString(RichImageType.NONE)}, Total Return: {totalReturn.ToCurrencyString(RichImageType.NONE)},  Total Profit With Tax Removed: {totalProfit.ToCurrencyString(RichImageType.NONE)}, ROI: {Main.Database.ROI}");
 
             if (cancelToken.IsCancellationRequested)
+            {
+                ClearTotals();
+                ClearList();
+                AppStatusIndicator.ClearStatus();
                 return;
+            }
 
             SetTotals();
 

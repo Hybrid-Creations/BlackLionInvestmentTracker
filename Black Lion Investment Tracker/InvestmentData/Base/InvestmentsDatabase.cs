@@ -184,33 +184,33 @@ public partial class InvestmentsDatabase
 
     private void CreateInvestmentsFromOrders(List<CommerceTransactionHistory> buys, List<CommerceTransactionHistory> sells, List<CommerceTransactionCurrent> postedSells)
     {
+        var sortedSells = sells.OrderBy(s => s.Purchased).ToList();
+        var sortedPostedSellOrders = postedSells.OrderBy(p => p.Created).ToList();
+
         string status = $"Checking for investments in transactions...";
         AppStatusIndicator.ShowStatus($"{status} (0/{buys.Count})");
-        var sortedBuys = buys.OrderBy(b => b.Purchased);
-        var sortedSells = sells.OrderBy(s => s.Purchased);
-        var sortedPostedSellOrders = postedSells.OrderBy(p => p.Created);
 
         // Go through all buys and check if any are investments
         int i = 0;
-        foreach (var buyOrder in sortedBuys)
+        foreach (var buyOrder in buys.OrderBy(b => b.Purchased))
         {
             //Skip if we already have the transaction in the database, that means we have used it already
-            if (Main.Database.NotInvestments.Any(l => l == buyOrder.Id))
+            if (NotInvestments.Any(l => l == buyOrder.Id))
             {
                 SetStatusAndPrintAmmount(status, ref i, buys.Count);
                 continue;
             }
-            if (Main.Database.CompletedInvestments.Any(i => i.BuyData.TransactionId == buyOrder.Id))
+            if (CompletedInvestments.Any(i => i.BuyData.TransactionId == buyOrder.Id))
             {
                 SetStatusAndPrintAmmount(status, ref i, buys.Count);
                 continue;
             }
-            if (Main.Database.PendingInvestments.Any(i => i.BuyData.TransactionId == buyOrder.Id))
+            if (PendingInvestments.Any(i => i.BuyData.TransactionId == buyOrder.Id))
             {
                 SetStatusAndPrintAmmount(status, ref i, buys.Count);
                 continue;
             }
-            if (Main.Database.PotentialInvestments.Any(i => i.BuyData.TransactionId == buyOrder.Id))
+            if (PotentialInvestments.Any(i => i.BuyData.TransactionId == buyOrder.Id))
             {
                 SetStatusAndPrintAmmount(status, ref i, buys.Count);
                 continue;
@@ -235,7 +235,7 @@ public partial class InvestmentsDatabase
                 // If there are not any previous sell orders ascociated with this buy order that means it is either a pending investment or potential investment
                 else
                 {
-                    Lazy<int> lazyCurrentSellPrice = new Lazy<int>(() => Cache.Prices.GetPrice(buyOrder.ItemId));
+                    Lazy<int> lazyCurrentSellPrice = new(() => Cache.Prices.GetPrice(buyOrder.ItemId));
                     // Make sure the sell transactions we look at are for the same item and only after the date the buy was purchase
                     var postedSellOrders = CheckPostedSellOrdersForMatches(buyOrder, ref buyAmmountLeft, sortedPostedSellOrders);
                     if (postedSellOrders.Count > 0)
@@ -266,9 +266,10 @@ public partial class InvestmentsDatabase
         i++;
     }
 
-    private List<SellData> CheckHistorySellOrdersForCompleteInvestmentMatches(CommerceTransactionHistory buyOrder, ref int buyAmmountLeft, IOrderedEnumerable<CommerceTransactionHistory> sortedSellOrders)
+    private List<SellData> CheckHistorySellOrdersForCompleteInvestmentMatches(CommerceTransactionHistory buyOrder, ref int buyAmmountLeft, List<CommerceTransactionHistory> sortedSellOrders)
     {
         var sellDatasList = new List<SellData>();
+        // Look through sell orders that are of the same type of item, and was purchased at a later date from the buyOrder
         foreach (var sellOrder in sortedSellOrders.Where(s => s.ItemId == buyOrder.ItemId && s.Purchased > buyOrder.Purchased))
         {
             var sellData = new SellData(sellOrder);
@@ -327,9 +328,10 @@ public partial class InvestmentsDatabase
         return sellDatasList;
     }
 
-    private List<SellData> CheckPostedSellOrdersForMatches(CommerceTransactionHistory buyOrder, ref int buyAmmountLeft, IOrderedEnumerable<CommerceTransactionCurrent> sortedPostedSellOrders)
+    private List<SellData> CheckPostedSellOrdersForMatches(CommerceTransactionHistory buyOrder, ref int buyAmmountLeft, List<CommerceTransactionCurrent> sortedPostedSellOrders)
     {
         var pendingSellDataList = new List<SellData>();
+        // Look through sell orders that are of the same type of item, and was created at a later date from the buyOrder
         foreach (var postedSellOrder in sortedPostedSellOrders.Where(s => s.ItemId == buyOrder.ItemId && s.Created > buyOrder.Purchased))
         {
             var pendingSellData = new SellData(postedSellOrder);
