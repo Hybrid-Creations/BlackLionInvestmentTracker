@@ -1,4 +1,4 @@
-[gd_scene load_steps=18 format=3 uid="uid://bijs1mco726lc"]
+[gd_scene load_steps=19 format=3 uid="uid://bijs1mco726lc"]
 
 [ext_resource type="Script" path="res://Main/Main.cs" id="1_jgrri"]
 [ext_resource type="Theme" uid="uid://dy6mo6ior0maw" path="res://Themes/MainTheme.tres" id="1_thssd"]
@@ -11,8 +11,9 @@
 [ext_resource type="PackedScene" uid="uid://y0xcfolok7rs" path="res://Main/DeliveryBox.tscn" id="8_fiy3i"]
 [ext_resource type="Texture2D" uid="uid://7u3gqytdg2tg" path="res://Sprites/minimize.png" id="8_lpu3k"]
 [ext_resource type="Texture2D" uid="uid://cx0d6ygxqqg3v" path="res://Sprites/cog.png" id="9_dr5gm"]
-[ext_resource type="Script" path="res://Main/AppStatusIndicator.cs" id="9_ja276"]
 [ext_resource type="Script" path="res://Main/APIStatusIndicator.cs" id="11_i4fps"]
+[ext_resource type="Script" path="res://Main/AppStatusManager.cs" id="13_6ed4a"]
+[ext_resource type="PackedScene" uid="uid://67s08cs1pip" path="res://Main/AppStatus/AppStatusEntry.tscn" id="14_cvc7m"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_p5u6s"]
 bg_color = Color(0.25098, 0.25098, 0.25098, 1)
@@ -23,8 +24,8 @@ bg_color = Color(0.188235, 0.188235, 0.188235, 1)
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_6y4am"]
 bg_color = Color(0.25098, 0.25098, 0.25098, 1)
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_y1w62"]
-bg_color = Color(0.25098, 0.25098, 0.25098, 1)
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_we8m1"]
+bg_color = Color(0.25098, 0, 0.25098, 1)
 
 [node name="Main" type="Panel" node_paths=PackedStringArray("CompletedInvestments", "PendingInvestments", "PotentialInvestments", "DeliveryBox")]
 anchors_preset = 15
@@ -166,7 +167,7 @@ layout_mode = 2
 [node name="APIStatusIndicator" type="Panel" parent="PanelContainer/VBoxContainer" node_paths=PackedStringArray("statusLabel")]
 custom_minimum_size = Vector2(0, 26)
 layout_mode = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_y1w62")
+theme_override_styles/panel = SubResource("StyleBoxFlat_we8m1")
 script = ExtResource("11_i4fps")
 statusLabel = NodePath("Status")
 
@@ -187,30 +188,10 @@ scroll_active = false
 autowrap_mode = 0
 shortcut_keys_enabled = false
 
-[node name="AppStatusIndicator" type="Panel" parent="PanelContainer/VBoxContainer" node_paths=PackedStringArray("statusLabel")]
-custom_minimum_size = Vector2(0, 28)
+[node name="AppStatusManager" type="VBoxContainer" parent="PanelContainer/VBoxContainer"]
 layout_mode = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_y1w62")
-script = ExtResource("9_ja276")
-statusLabel = NodePath("Status")
-
-[node name="Status" type="RichTextLabel" parent="PanelContainer/VBoxContainer/AppStatusIndicator"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = 10.0
-offset_top = 2.0
-offset_right = -10.0
-offset_bottom = -2.0
-grow_horizontal = 2
-grow_vertical = 2
-theme_override_font_sizes/normal_font_size = 17
-bbcode_enabled = true
-text = "[center][right]Calculating Investments and downloading from the web and doing something else that is really cool this thing will take a lot of characters which is very important ... (345/693)"
-scroll_active = false
-autowrap_mode = 0
-shortcut_keys_enabled = false
+script = ExtResource("13_6ed4a")
+appStatusScene = ExtResource("14_cvc7m")
 
 [connection signal="pressed" from="TitleBar/Refresh" to="." method="RefreshDatabase"]
 [connection signal="gui_input" from="TitleBar/DragRegion" to="TitleBar" method="GUIInput"]

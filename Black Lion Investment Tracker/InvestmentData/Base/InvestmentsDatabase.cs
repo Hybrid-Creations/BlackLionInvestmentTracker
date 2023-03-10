@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using BLIT.ConstantVariables;
 using BLIT.Saving;
+using BLIT.Status;
 using BLIT.UI;
 using Godot;
 using Gw2Sharp.WebApi.Exceptions;
@@ -37,7 +38,6 @@ public partial class InvestmentsDatabase
         updating = true;
         Task.Run(async () =>
         {
-            AppStatusIndicator.ShowStatus("Updating Database...");
             APIStatusIndicator.ClearStatus();
             Cache.Prices.Clear();
 
@@ -60,7 +60,6 @@ public partial class InvestmentsDatabase
         updating = true;
         return Task.Run(async () =>
         {
-            AppStatusIndicator.ShowStatus("Updating Database...");
             Cache.Prices.Clear();
 
             await CalculateAndUpdateInvestments(cancelToken);
@@ -107,8 +106,6 @@ public partial class InvestmentsDatabase
 
             CollapsedPotentialInvestments.Clear();
             GenerateCollapsedPotential();
-
-            AppStatusIndicator.ClearStatus();
         }
         catch (System.Exception e)
         {
@@ -120,20 +117,25 @@ public partial class InvestmentsDatabase
     {
         try
         {
-            AppStatusIndicator.ShowStatus("Downloading buy orders from GW2 server...");
+            AppStatusManager.ShowStatus(nameof(GetBuyOrdersAsync), "Downloading buy orders from GW2 server...");
+
             var pageBuys = await Main.MyClient.WebApi.V2.Commerce.Transactions.History.Buys.PageAsync(pageIndex, cancelToken);
 
             GD.Print($"num items in page {pageIndex} => {pageBuys.Count}");
+            AppStatusManager.ClearStatus(nameof(GetBuyOrdersAsync));
+
             return pageBuys.Concat(await GetBuyOrdersAsync(pageIndex + 1, cancelToken));
         }
         catch (PageOutOfRangeException)
         {
             GD.Print("End of pages for buy orders.");
+            AppStatusManager.ClearStatus(nameof(GetBuyOrdersAsync));
             return new List<CommerceTransactionHistory>();
         }
         catch (Exception e)
         {
             GD.PrintErr(e);
+            AppStatusManager.ClearStatus(nameof(GetBuyOrdersAsync));
             return new List<CommerceTransactionHistory>();
         }
     }
@@ -142,20 +144,25 @@ public partial class InvestmentsDatabase
     {
         try
         {
-            AppStatusIndicator.ShowStatus("Downloading sell orders from GW2 server...");
+            AppStatusManager.ShowStatus(nameof(GetSellOrdersAsync), "Downloading sell orders from GW2 server...");
+
             var pageBuys = await Main.MyClient.WebApi.V2.Commerce.Transactions.History.Sells.PageAsync(pageIndex, cancelToken);
 
             GD.Print($"num items in page {pageIndex} => {pageBuys.Count}");
+            AppStatusManager.ClearStatus(nameof(GetSellOrdersAsync));
+
             return pageBuys.Concat(await GetSellOrdersAsync(pageIndex + 1, cancelToken));
         }
         catch (PageOutOfRangeException)
         {
             GD.Print("End of pages for sell orders.");
+            AppStatusManager.ClearStatus(nameof(GetSellOrdersAsync));
             return Enumerable.Empty<CommerceTransactionHistory>();
         }
         catch (Exception e)
         {
             GD.PrintErr(e);
+            AppStatusManager.ClearStatus(nameof(GetSellOrdersAsync));
             return Enumerable.Empty<CommerceTransactionHistory>();
         }
     }
@@ -164,20 +171,24 @@ public partial class InvestmentsDatabase
     {
         try
         {
-            AppStatusIndicator.ShowStatus("Downloading posted sell orders from GW2 server...");
+            AppStatusManager.ShowStatus(nameof(GetPostedSellOrdersAsync), "Downloading posted sell orders from GW2 server...");
             var pageBuys = await Main.MyClient.WebApi.V2.Commerce.Transactions.Current.Sells.PageAsync(pageIndex, cancelToken);
 
             GD.Print($"num items in page {pageIndex} => {pageBuys.Count}");
+            AppStatusManager.ClearStatus(nameof(GetPostedSellOrdersAsync));
+
             return pageBuys.Concat(await GetPostedSellOrdersAsync(pageIndex + 1, cancelToken));
         }
         catch (PageOutOfRangeException)
         {
             GD.Print("End of pages for sell orders.");
+            AppStatusManager.ClearStatus(nameof(GetPostedSellOrdersAsync));
             return Enumerable.Empty<CommerceTransactionCurrent>();
         }
         catch (Exception e)
         {
             GD.PrintErr(e);
+            AppStatusManager.ClearStatus(nameof(GetPostedSellOrdersAsync));
             return Enumerable.Empty<CommerceTransactionCurrent>();
         }
     }
@@ -188,7 +199,7 @@ public partial class InvestmentsDatabase
         var sortedPostedSellOrders = postedSells.OrderBy(p => p.Created).ToList();
 
         string status = $"Checking for investments in transactions...";
-        AppStatusIndicator.ShowStatus($"{status} (0/{buys.Count})");
+        AppStatusManager.ShowStatus(nameof(CreateInvestmentsFromOrders), $"{status} (0/{buys.Count})");
 
         // Go through all buys and check if any are investments
         int i = 0;
@@ -197,22 +208,22 @@ public partial class InvestmentsDatabase
             //Skip if we already have the transaction in the database, that means we have used it already
             if (NotInvestments.Any(l => l == buyOrder.Id))
             {
-                SetStatusAndPrintAmmount(status, ref i, buys.Count);
+                AppStatusManager.ShowStatus(nameof(CreateInvestmentsFromOrders), $"{status} ({i}/{buys.Count})");
                 continue;
             }
             if (CompletedInvestments.Any(i => i.BuyData.TransactionId == buyOrder.Id))
             {
-                SetStatusAndPrintAmmount(status, ref i, buys.Count);
+                AppStatusManager.ShowStatus(nameof(CreateInvestmentsFromOrders), $"{status} ({i}/{buys.Count})");
                 continue;
             }
             if (PendingInvestments.Any(i => i.BuyData.TransactionId == buyOrder.Id))
             {
-                SetStatusAndPrintAmmount(status, ref i, buys.Count);
+                AppStatusManager.ShowStatus(nameof(CreateInvestmentsFromOrders), $"{status} ({i}/{buys.Count})");
                 continue;
             }
             if (PotentialInvestments.Any(i => i.BuyData.TransactionId == buyOrder.Id))
             {
-                SetStatusAndPrintAmmount(status, ref i, buys.Count);
+                AppStatusManager.ShowStatus(nameof(CreateInvestmentsFromOrders), $"{status} ({i}/{buys.Count})");
                 continue;
             }
 
@@ -255,15 +266,9 @@ public partial class InvestmentsDatabase
                 GD.PushError(e);
             }
 
-            SetStatusAndPrintAmmount(status, ref i, buys.Count);
+            AppStatusManager.ShowStatus(nameof(CreateInvestmentsFromOrders), $"{status} ({i}/{buys.Count})");
         }
-        AppStatusIndicator.ShowStatus($"{status} ({buys.Count}/{buys.Count})");
-    }
-
-    private static void SetStatusAndPrintAmmount(string status, ref int i, int buysCount)
-    {
-        AppStatusIndicator.ShowStatus($"{status} ({i}/{buysCount})");
-        i++;
+        AppStatusManager.ClearStatus(nameof(CreateInvestmentsFromOrders));
     }
 
     private List<SellData> CheckHistorySellOrdersForCompleteInvestmentMatches(CommerceTransactionHistory buyOrder, ref int buyAmmountLeft, List<CommerceTransactionHistory> sortedSellOrders)

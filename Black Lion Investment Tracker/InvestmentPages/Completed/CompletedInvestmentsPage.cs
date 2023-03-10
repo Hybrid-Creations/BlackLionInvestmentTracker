@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using BLIT.ConstantVariables;
 using BLIT.Extensions;
 using BLIT.Investments;
+using BLIT.Status;
 using Godot;
 
 namespace BLIT.UI;
@@ -55,7 +56,7 @@ public partial class CompletedInvestmentsPage : InvestmentsPage
             loadingLabel.Hide();
 
             int index = 0;
-            AppStatusIndicator.ShowStatus($"{baseStatusMessage} ({index}/{investmentDatas.Count})");
+            AppStatusManager.ShowStatus($"{nameof(CompletedInvestmentsPage)}{nameof(ListInvestmentDatasAsync)}", $"{baseStatusMessage} ({index}/{investmentDatas.Count})");
             // Add New Investment Items To UI
             foreach (var investment in investmentDatas.OrderByDescending(ci => ci.OldestPurchaseDate))
             {
@@ -85,10 +86,10 @@ public partial class CompletedInvestmentsPage : InvestmentsPage
                 {
                     ProbablyRealException(e);
                 }
-                AppStatusIndicator.ShowStatus($"{baseStatusMessage} ({index}/{investmentDatas.Count})");
+                AppStatusManager.ShowStatus($"{nameof(CompletedInvestmentsPage)}{nameof(ListInvestmentDatasAsync)}", $"{baseStatusMessage} ({index}/{investmentDatas.Count})");
                 index++;
             }
-            AppStatusIndicator.ShowStatus($"{baseStatusMessage} ({investmentDatas.Count}/{investmentDatas.Count})");
+            AppStatusManager.ShowStatus($"{nameof(CompletedInvestmentsPage)}{nameof(ListInvestmentDatasAsync)}", $"{baseStatusMessage} ({index}/{investmentDatas.Count})");
 
             // Calculate Profit
             var totalInvested = Main.Database.TotalInvested;
@@ -100,13 +101,13 @@ public partial class CompletedInvestmentsPage : InvestmentsPage
             {
                 ClearTotals();
                 ClearList();
-                AppStatusIndicator.ClearStatus();
+                AppStatusManager.ClearStatus($"{nameof(CompletedInvestmentsPage)}{nameof(ListInvestmentDatasAsync)}");
                 return;
             }
 
             SetTotals();
 
-            AppStatusIndicator.ClearStatus();
+            AppStatusManager.ClearStatus($"{nameof(CompletedInvestmentsPage)}{nameof(ListInvestmentDatasAsync)}");
         }, cancelToken);
     }
 

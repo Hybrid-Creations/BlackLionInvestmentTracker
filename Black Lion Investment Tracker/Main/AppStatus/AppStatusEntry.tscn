@@ -1,0 +1,30 @@
+[gd_scene load_steps=3 format=3 uid="uid://67s08cs1pip"]
+
+[ext_resource type="Script" path="res://Main/AppStatus/AppStatusEntry.cs" id="1_ybt2f"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_y1w62"]
+bg_color = Color(0.25098, 0.25098, 0.25098, 1)
+
+[node name="AppStatusEntry" type="Panel" node_paths=PackedStringArray("statusLabel")]
+custom_minimum_size = Vector2(0, 28)
+theme_override_styles/panel = SubResource("StyleBoxFlat_y1w62")
+script = ExtResource("1_ybt2f")
+statusLabel = NodePath("Status")
+
+[node name="Status" type="RichTextLabel" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 10.0
+offset_top = 2.0
+offset_right = -10.0
+offset_bottom = -2.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/normal_font_size = 17
+bbcode_enabled = true
+text = "[center][right]Calculating Investments and downloading from the web and doing something else that is really cool this thing will take a lot of characters which is very important ... (345/693)"
+scroll_active = false
+autowrap_mode = 0
+shortcut_keys_enabled = false

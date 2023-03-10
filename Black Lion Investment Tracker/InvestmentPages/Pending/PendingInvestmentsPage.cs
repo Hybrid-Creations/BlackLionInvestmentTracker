@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using BLIT.Extensions;
 using BLIT.Investments;
+using BLIT.Status;
 using Godot;
 
 namespace BLIT.UI;
@@ -34,7 +35,7 @@ public partial class PendingInvestmentsPage : InvestmentsPage
             loadingLabel.Hide();
 
             int index = 0;
-            AppStatusIndicator.ShowStatus($"{baseStatusMessage} ({index}/{investmentDatas.Count})");
+            AppStatusManager.ShowStatus($"{nameof(PendingInvestmentsPage)}{nameof(ListInvestmentDatasAsync)}", $"{baseStatusMessage} ({index}/{investmentDatas.Count})");
             // Add New Investment Items To UI
             foreach (var investment in investmentDatas.OrderByDescending(ci => ci.OldestPurchaseDate))
             {
@@ -64,19 +65,19 @@ public partial class PendingInvestmentsPage : InvestmentsPage
                 {
                     ProbablyRealException(e);
                 }
-                AppStatusIndicator.ShowStatus($"{baseStatusMessage} ({index}/{investmentDatas.Count})");
+                AppStatusManager.ShowStatus($"{nameof(PendingInvestmentsPage)}{nameof(ListInvestmentDatasAsync)}", $"{baseStatusMessage} ({index}/{investmentDatas.Count})");
                 index++;
             }
-            AppStatusIndicator.ShowStatus($"{baseStatusMessage} ({investmentDatas.Count}/{investmentDatas.Count})");
+            AppStatusManager.ShowStatus($"{nameof(PendingInvestmentsPage)}{nameof(ListInvestmentDatasAsync)}", $"{baseStatusMessage} ({index}/{investmentDatas.Count})");
 
             if (cancelToken.IsCancellationRequested)
             {
                 ClearList();
-                AppStatusIndicator.ClearStatus();
+                AppStatusManager.ClearStatus($"{nameof(PendingInvestmentsPage)}{nameof(ListInvestmentDatasAsync)}");
                 return;
             }
 
-            AppStatusIndicator.ClearStatus();
+            AppStatusManager.ClearStatus($"{nameof(PendingInvestmentsPage)}{nameof(ListInvestmentDatasAsync)}");
         }, cancelToken);
     }
 

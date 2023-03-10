@@ -94,10 +94,7 @@ public partial class Main : Node
 
     public void RefreshDatabase()
     {
-        Task.Run(async () =>
-        {
-
-        });
+        throw new NotImplementedException();
     }
 
     public void RefreshDeliveryBox()
