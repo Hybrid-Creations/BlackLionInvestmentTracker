@@ -1,3 +1,4 @@
+using System.Threading;
 using System.Threading.Tasks;
 using Godot;
 
@@ -46,7 +47,7 @@ public partial class DeliveryBox : Button
         deliveryBoxPreview.Hide();
     }
 
-    public void RefreshData()
+    public void RefreshData(CancellationToken cancelToken)
     {
         if (updating == true) return;
         updating = true;
@@ -56,6 +57,8 @@ public partial class DeliveryBox : Button
             var deliveryBox = Main.MyClient.WebApi.V2.Commerce.Delivery.GetAsync().Result;
             var coins = deliveryBox.Coins;
             var items = deliveryBox.Items;
+
+            if (cancelToken.IsCancellationRequested) return;
 
             Icon = items.Count > 0 || coins > 0 ? deliveryBoxFull : deliveryBoxEmpty;
 
@@ -80,7 +83,7 @@ public partial class DeliveryBox : Button
             deliveryBoxPreview.Position = items.Count < 2 ? centeredPosition : offsetPosition;
             deliveryBoxPreview.Refresh(coins, items);
             updating = false;
-        });
+        }, cancelToken);
     }
 
     void ClearVisuals()

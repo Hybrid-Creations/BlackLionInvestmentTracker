@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
+using System.Threading;
 using System.Threading.Tasks;
 using BLIT.ConstantVariables;
 using BLIT.Saving;
@@ -29,7 +30,7 @@ public partial class InvestmentsDatabase
 
     bool updating;
 
-    public void RefreshData(Action OnAfterUpdate)
+    public void RefreshDataAsync(Action OnAfterUpdate, CancellationToken cancelSource)
     {
         if (updating == true) return;
         updating = true;
@@ -38,14 +39,22 @@ public partial class InvestmentsDatabase
             AppStatusIndicator.ShowStatus("Updating Database...");
             APIStatusIndicator.ClearStatus();
             Cache.Prices.Clear();
-            await CalculateAndUpdateInvestments();
+
+            await CalculateAndUpdateInvestments(cancelSource);
+
+            if (cancelSource.IsCancellationRequested)
+            {
+                updating = false;
+                return;
+            }
+
             OnAfterUpdate?.Invoke();
             updating = false;
         });
     }
 
     // Do Calculations On History For Investments
-    Task CalculateAndUpdateInvestments()
+    Task CalculateAndUpdateInvestments(CancellationToken cancelSource)
     {
         return Task.Run(async () =>
         {
@@ -62,17 +71,22 @@ public partial class InvestmentsDatabase
                 PotentialInvestments.Clear();
 
                 // Get all the buy and sell orders from the API
+                if (cancelSource.IsCancellationRequested) return;
                 await GetBuyAndSellHistory(buyOrders, sellOrders, postedSellOrders);
 
                 // Create the Investment database from those buy and sell orders
+                if (cancelSource.IsCancellationRequested) return;
                 await CreateInvestmentsFromOrders(buyOrders, sellOrders, postedSellOrders);
 
+                if (cancelSource.IsCancellationRequested) return;
                 CollapsedCompletedInvestments.Clear();
                 GenerateCollapsedCompleted();
 
+                if (cancelSource.IsCancellationRequested) return;
                 CollapsedPendingInvestments.Clear();
                 GenerateCollapsedPending();
 
+                if (cancelSource.IsCancellationRequested) return;
                 CollapsedPotentialInvestments.Clear();
                 GenerateCollapsedPotential();
 

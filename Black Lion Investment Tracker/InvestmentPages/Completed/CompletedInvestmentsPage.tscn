@@ -1,9 +1,8 @@
-[gd_scene load_steps=6 format=3 uid="uid://cq7juw3fbidra"]
+[gd_scene load_steps=5 format=3 uid="uid://cq7juw3fbidra"]
 
 [ext_resource type="PackedScene" uid="uid://c02stipmtyb45" path="res://InvestmentPages/Base/InvestmentsPage.tscn" id="1_sps4j"]
 [ext_resource type="Script" path="res://InvestmentPages/Completed/CompletedInvestmentsPage.cs" id="2_mup2n"]
 [ext_resource type="PackedScene" uid="uid://b2b0qo4lrxcpe" path="res://InvestmentPages/Completed/CollapsedCompletedInvestmentItem.tscn" id="3_4trgs"]
-[ext_resource type="Texture2D" uid="uid://b643uuwsu0y0v" path="res://Sprites/Settings.png" id="4_tcupb"]
 [ext_resource type="PackedScene" uid="uid://cuq254wmca7y7" path="res://InvestmentPages/Completed/CompletedInvestmentItem.tscn" id="5_tq33u"]
 
 [node name="CompletedInvestmentsPage" node_paths=PackedStringArray("totals") instance=ExtResource("1_sps4j")]
@@ -22,15 +21,7 @@ layout_mode = 2
 size_flags_horizontal = 3
 size_flags_stretch_ratio = 0.1
 
-[node name="Settings" type="Button" parent="Totals" index="1"]
-visible = false
-custom_minimum_size = Vector2(40, 40)
-layout_mode = 2
-icon = ExtResource("4_tcupb")
-flat = true
-expand_icon = true
-
-[node name="Item" type="Label" parent="Totals" index="2"]
+[node name="Item" type="Label" parent="Totals" index="1"]
 visible = false
 custom_minimum_size = Vector2(64, 0)
 layout_mode = 2
@@ -39,7 +30,7 @@ text = "Item"
 horizontal_alignment = 1
 vertical_alignment = 2
 
-[node name="Total" type="Label" parent="Totals" index="3"]
+[node name="Total" type="Label" parent="Totals" index="2"]
 custom_minimum_size = Vector2(80, 0)
 layout_mode = 2
 size_flags_vertical = 1
@@ -49,7 +40,7 @@ text = "Totals:"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="Invested" type="RichTextLabel" parent="Totals" index="4"]
+[node name="Invested" type="RichTextLabel" parent="Totals" index="3"]
 custom_minimum_size = Vector2(250, 0)
 layout_mode = 2
 size_flags_vertical = 4
@@ -61,7 +52,7 @@ scroll_active = false
 autowrap_mode = 0
 shortcut_keys_enabled = false
 
-[node name="Return" type="RichTextLabel" parent="Totals" index="5"]
+[node name="Return" type="RichTextLabel" parent="Totals" index="4"]
 custom_minimum_size = Vector2(250, 0)
 layout_mode = 2
 size_flags_vertical = 4
@@ -73,7 +64,7 @@ scroll_active = false
 autowrap_mode = 0
 shortcut_keys_enabled = false
 
-[node name="Profit" type="RichTextLabel" parent="Totals" index="6"]
+[node name="Profit" type="RichTextLabel" parent="Totals" index="5"]
 custom_minimum_size = Vector2(250, 0)
 layout_mode = 2
 size_flags_vertical = 4
@@ -85,7 +76,7 @@ scroll_active = false
 autowrap_mode = 0
 shortcut_keys_enabled = false
 
-[node name="ROI" type="Label" parent="Totals" index="7"]
+[node name="ROI" type="Label" parent="Totals" index="6"]
 custom_minimum_size = Vector2(95, 0)
 layout_mode = 2
 theme_override_font_sizes/font_size = 20
@@ -93,7 +84,7 @@ text = "ROI: 69%"
 horizontal_alignment = 1
 vertical_alignment = 2
 
-[node name="SpacerR" type="Control" parent="Totals" index="8"]
+[node name="SpacerR" type="Control" parent="Totals" index="7"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_stretch_ratio = 0.1

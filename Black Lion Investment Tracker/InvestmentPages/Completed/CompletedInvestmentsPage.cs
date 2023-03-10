@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using BLIT.ConstantVariables;
 using BLIT.Extensions;
 using BLIT.Investments;
@@ -43,7 +44,7 @@ public partial class CompletedInvestmentsPage : InvestmentsPage
         loadingLabel.Show();
     }
 
-    public void ListInvestmentDatas(List<CollapsedCompletedInvestment> investmentDatas, string baseStatusMessage)
+    public void ListInvestmentDatasAsync(List<CollapsedCompletedInvestment> investmentDatas, string baseStatusMessage, CancellationToken cancelToken)
     {
         ClearTotals();
         ClearList();
@@ -59,6 +60,10 @@ public partial class CompletedInvestmentsPage : InvestmentsPage
             {
                 var instance = collapsedInvestmentScene.Instantiate<CollapsedCompletedInvestmentItem>();
                 instance.Init(Cache.Items.GetItemData(investment.ItemId), investment);
+
+                if (cancelToken.IsCancellationRequested)
+                    break;
+
                 investmentHolder.AddChildSafe(instance, 0);
             }
             catch (AggregateException ag)
@@ -87,6 +92,10 @@ public partial class CompletedInvestmentsPage : InvestmentsPage
         var totalReturn = Main.Database.TotalReturn;
         var totalProfit = Main.Database.TotalProfit;
         GD.Print($"Total Invested: {totalInvested.ToCurrencyString(RichImageType.NONE)}, Total Return: {totalReturn.ToCurrencyString(RichImageType.NONE)},  Total Profit With Tax Removed: {totalProfit.ToCurrencyString(RichImageType.NONE)}, ROI: {Main.Database.ROI}");
+
+        if (cancelToken.IsCancellationRequested)
+            return;
+
         SetTotals();
 
         AppStatusIndicator.ClearStatus();

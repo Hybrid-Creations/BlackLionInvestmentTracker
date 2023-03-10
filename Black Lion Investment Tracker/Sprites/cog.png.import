@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://b643uuwsu0y0v"
-path="res://.godot/imported/Settings.png-283238878a3907ae558596b301e19abe.ctex"
+uid="uid://cx0d6ygxqqg3v"
+path="res://.godot/imported/cog.png-14a3ed423fb0bac4468d8c789b617dfc.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Sprites/Settings.png"
-dest_files=["res://.godot/imported/Settings.png-283238878a3907ae558596b301e19abe.ctex"]
+source_file="res://Sprites/cog.png"
+dest_files=["res://.godot/imported/cog.png-14a3ed423fb0bac4468d8c789b617dfc.ctex"]
 
 [params]
 
@@ -21,7 +21,7 @@ compress/lossy_quality=0.7
 compress/hdr_compression=1
 compress/normal_map=0
 compress/channel_pack=0
-mipmaps/generate=true
+mipmaps/generate=false
 mipmaps/limit=-1
 roughness/mode=0
 roughness/src_normal=""

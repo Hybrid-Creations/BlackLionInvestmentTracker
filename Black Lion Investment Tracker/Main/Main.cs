@@ -8,6 +8,10 @@ namespace BLIT.UI;
 
 public partial class Main : Node
 {
+    [ExportCategory("Settings")]
+    [Export(PropertyHint.File, "*.tscn")]
+    string settingsScene;
+
     [ExportCategory("Pages")]
     [Export]
     CompletedInvestmentsPage CompletedInvestments;
@@ -24,9 +28,7 @@ public partial class Main : Node
 
     public static InvestmentsDatabase Database { get; private set; } = new();
 
-    readonly int refreshDatabaseTimeSeconds = 300;
-    readonly int refreshDeliveryBoxTimeSeconds = 30;
-    CancellationTokenSource refreshTaskSource;
+    CancellationTokenSource refreshCancelSource;
 
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
@@ -34,9 +36,10 @@ public partial class Main : Node
         Database.Load();
         Cache.Items.Load();
 
+        MyClient?.Dispose();
         MyClient = new Gw2Client(new Connection(Settings.Data.APIKey));
 
-        refreshTaskSource = new CancellationTokenSource();
+        refreshCancelSource = new CancellationTokenSource();
         RefreshDatabaseOnInterval();
         RefreshDeliveryBoxOnInverval();
     }
@@ -47,14 +50,14 @@ public partial class Main : Node
        {
            do
            {
-               if (refreshTaskSource.IsCancellationRequested)
+               if (refreshCancelSource.IsCancellationRequested)
                    break;
                RefreshDatabase();
-               await Task.Delay(refreshDatabaseTimeSeconds * 1000);
+               await Task.Delay(Settings.Data.databaseInterval * 1000);
            }
            while (true);
 
-       }, refreshTaskSource.Token);
+       }, refreshCancelSource.Token);
     }
 
     void RefreshDeliveryBoxOnInverval()
@@ -63,29 +66,35 @@ public partial class Main : Node
        {
            do
            {
-               if (refreshTaskSource.IsCancellationRequested)
+               if (refreshCancelSource.IsCancellationRequested)
                    break;
-               DeliveryBox.RefreshData();
-               await Task.Delay(refreshDeliveryBoxTimeSeconds * 1000);
+               DeliveryBox.RefreshData(refreshCancelSource.Token);
+               await Task.Delay(Settings.Data.deliveryBoxInterval * 1000);
            }
            while (true);
 
-       }, refreshTaskSource.Token);
+       }, refreshCancelSource.Token);
     }
 
     public void RefreshDatabase()
     {
-        Database.RefreshData(() =>
+        Database.RefreshDataAsync(() =>
         {
-            CompletedInvestments.ListInvestmentDatas(Database.CollapsedCompletedInvestments, "Listing Completed Investments... ");
-            PendingInvestments.ListInvestmentDatas(Database.CollapsedPendingInvestments, "Listing Pending Investments... ");
-            PotentialInvestments.ListInvestmentDatas(Database.CollapsedPotentialInvestments, "Listing Potential Investments... ");
-        });
+            CompletedInvestments.ListInvestmentDatasAsync(Database.CollapsedCompletedInvestments, "Listing Completed Investments... ", refreshCancelSource.Token);
+            PendingInvestments.ListInvestmentDatasAsync(Database.CollapsedPendingInvestments, "Listing Pending Investments... ", refreshCancelSource.Token);
+            PotentialInvestments.ListInvestmentDatasAsync(Database.CollapsedPotentialInvestments, "Listing Potential Investments... ", refreshCancelSource.Token);
+        }, refreshCancelSource.Token);
     }
 
     public void RefreshDeliveryBox()
     {
-        DeliveryBox.RefreshData();
+        DeliveryBox.RefreshData(refreshCancelSource.Token);
+    }
+
+    public void OpenSettings()
+    {
+        GetTree().ChangeSceneToFile(settingsScene);
+        refreshCancelSource.Cancel();
     }
 
     public void MinimizeApp()
@@ -95,19 +104,19 @@ public partial class Main : Node
 
     public void CloseApp()
     {
+        GD.Print("Quitting");
+        Database.Save();
+        Settings.Save();
+        Cache.Items.Save();
+        MyClient.Dispose();
         GetTree().Quit();
     }
 
     public override void _Notification(int what)
     {
-        if (what == NotificationWMCloseRequest)
+        if (what == NotificationWMCloseRequest || what == NotificationCrash)
         {
-            GD.Print("Quitting");
-            Database.Save();
-            Settings.Save();
-            Cache.Items.Save();
-            MyClient.Dispose();
-            GetTree().Quit(); // default behavior
+            // CloseApp();
         }
     }
 }

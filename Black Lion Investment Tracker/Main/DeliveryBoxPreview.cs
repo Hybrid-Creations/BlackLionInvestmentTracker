@@ -28,7 +28,7 @@ public partial class DeliveryBoxPreview : PanelContainer
         coinsLabel.Text = coins.ToCurrencyString(RichImageType.PX32).AlignRichString(RichStringAlignment.CENTER);
 
         itemsContainer.ClearChildren();
-        itemsContainer.Columns = Mathf.CeilToInt(Mathf.Sqrt(items.Count()));
+        itemsContainer.Columns = Mathf.Max(1, Mathf.CeilToInt(Mathf.Sqrt(items.Count())));
         foreach (var item in items)
         {
             var instance = itemPreview.Instantiate<DeliveryBoxItem>();

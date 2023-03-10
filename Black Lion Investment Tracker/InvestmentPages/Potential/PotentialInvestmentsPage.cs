@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using BLIT.Extensions;
 using BLIT.Investments;
 using Godot;
@@ -23,7 +24,7 @@ public partial class PotentialInvestmentsPage : InvestmentsPage
         loadingLabel.Show();
     }
 
-    public void ListInvestmentDatas(List<CollapsedPotentialInvestment> investmentDatas, string baseStatusMessage)
+    public void ListInvestmentDatasAsync(List<CollapsedPotentialInvestment> investmentDatas, string baseStatusMessage, CancellationToken cancelToken)
     {
         ClearList();
 
@@ -38,6 +39,10 @@ public partial class PotentialInvestmentsPage : InvestmentsPage
             {
                 var instance = collapsedInvestmentScene.Instantiate<CollapsedPotentialInvestmentItem>();
                 instance.Init(Cache.Items.GetItemData(investment.ItemId), investment);
+
+                if (cancelToken.IsCancellationRequested)
+                    break;
+
                 investmentHolder.AddChildSafe(instance, 0);
             }
             catch (AggregateException ag)
