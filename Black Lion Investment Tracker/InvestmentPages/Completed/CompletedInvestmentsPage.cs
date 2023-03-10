@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using BLIT.ConstantVariables;
 using BLIT.Extensions;
 using BLIT.Investments;
@@ -44,61 +45,64 @@ public partial class CompletedInvestmentsPage : InvestmentsPage
         loadingLabel.Show();
     }
 
-    public void ListInvestmentDatasAsync(List<CollapsedCompletedInvestment> investmentDatas, string baseStatusMessage, CancellationToken cancelToken)
+    public Task ListInvestmentDatasAsync(List<CollapsedCompletedInvestment> investmentDatas, string baseStatusMessage, CancellationToken cancelToken)
     {
-        ClearTotals();
-        ClearList();
-
-        loadingLabel.Hide();
-
-        int index = 0;
-        AppStatusIndicator.ShowStatus($"{baseStatusMessage} ({index}/{investmentDatas.Count})");
-        // Add New Investment Items To UI
-        foreach (var investment in investmentDatas.OrderBy(ci => ci.OldestPurchaseDate))
+        return Task.Run(() =>
         {
-            try
-            {
-                var instance = collapsedInvestmentScene.Instantiate<CollapsedCompletedInvestmentItem>();
-                instance.Init(Cache.Items.GetItemData(investment.ItemId), investment);
+            ClearTotals();
+            ClearList();
 
-                if (cancelToken.IsCancellationRequested)
-                    break;
+            loadingLabel.Hide();
 
-                investmentHolder.AddChildSafe(instance, 0);
-            }
-            catch (AggregateException ag)
-            {
-                if (ag.ToString().Contains("Unsupported type") && ag.ToString().Contains("GW2Sharp"))
-                {
-                    // Most likely a new item that Gw2Sharp doesn't understand so we'll just skip it
-                    GD.PushWarning($"Failed to retreive info on item {investment.ItemId}, most likely Gw2Sharp has not been updated yet to handle the item");
-                }
-                else
-                {
-                    ProbablyRealException(ag);
-                }
-            }
-            catch (Exception e)
-            {
-                ProbablyRealException(e);
-            }
+            int index = 0;
             AppStatusIndicator.ShowStatus($"{baseStatusMessage} ({index}/{investmentDatas.Count})");
-            index++;
-        }
-        AppStatusIndicator.ShowStatus($"{baseStatusMessage} ({investmentDatas.Count}/{investmentDatas.Count})");
+            // Add New Investment Items To UI
+            foreach (var investment in investmentDatas.OrderBy(ci => ci.OldestPurchaseDate))
+            {
+                try
+                {
+                    var instance = collapsedInvestmentScene.Instantiate<CollapsedCompletedInvestmentItem>();
+                    instance.Init(Cache.Items.GetItemData(investment.ItemId), investment);
 
-        // Calculate Profit
-        var totalInvested = Main.Database.TotalInvested;
-        var totalReturn = Main.Database.TotalReturn;
-        var totalProfit = Main.Database.TotalProfit;
-        GD.Print($"Total Invested: {totalInvested.ToCurrencyString(RichImageType.NONE)}, Total Return: {totalReturn.ToCurrencyString(RichImageType.NONE)},  Total Profit With Tax Removed: {totalProfit.ToCurrencyString(RichImageType.NONE)}, ROI: {Main.Database.ROI}");
+                    if (cancelToken.IsCancellationRequested)
+                        break;
 
-        if (cancelToken.IsCancellationRequested)
-            return;
+                    investmentHolder.AddChildSafe(instance, 0);
+                }
+                catch (AggregateException ag)
+                {
+                    if (ag.ToString().Contains("Unsupported type") && ag.ToString().Contains("GW2Sharp"))
+                    {
+                        // Most likely a new item that Gw2Sharp doesn't understand so we'll just skip it
+                        GD.PushWarning($"Failed to retreive info on item {investment.ItemId}, most likely Gw2Sharp has not been updated yet to handle the item");
+                    }
+                    else
+                    {
+                        ProbablyRealException(ag);
+                    }
+                }
+                catch (Exception e)
+                {
+                    ProbablyRealException(e);
+                }
+                AppStatusIndicator.ShowStatus($"{baseStatusMessage} ({index}/{investmentDatas.Count})");
+                index++;
+            }
+            AppStatusIndicator.ShowStatus($"{baseStatusMessage} ({investmentDatas.Count}/{investmentDatas.Count})");
 
-        SetTotals();
+            // Calculate Profit
+            var totalInvested = Main.Database.TotalInvested;
+            var totalReturn = Main.Database.TotalReturn;
+            var totalProfit = Main.Database.TotalProfit;
+            GD.Print($"Total Invested: {totalInvested.ToCurrencyString(RichImageType.NONE)}, Total Return: {totalReturn.ToCurrencyString(RichImageType.NONE)},  Total Profit With Tax Removed: {totalProfit.ToCurrencyString(RichImageType.NONE)}, ROI: {Main.Database.ROI}");
 
-        AppStatusIndicator.ClearStatus();
+            if (cancelToken.IsCancellationRequested)
+                return;
+
+            SetTotals();
+
+            AppStatusIndicator.ClearStatus();
+        }, cancelToken);
     }
 
     private static void ProbablyRealException(Exception e)

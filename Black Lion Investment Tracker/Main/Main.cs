@@ -52,7 +52,12 @@ public partial class Main : Node
            {
                if (refreshCancelSource.IsCancellationRequested)
                    break;
-               RefreshDatabase();
+
+               await Database.RefreshDataAsync(refreshCancelSource.Token);
+               CompletedInvestments.ListInvestmentDatasAsync(Database.CollapsedCompletedInvestments, "Listing Completed Investments... ", refreshCancelSource.Token);
+               PendingInvestments.ListInvestmentDatasAsync(Database.CollapsedPendingInvestments, "Listing Pending Investments... ", refreshCancelSource.Token);
+               PotentialInvestments.ListInvestmentDatasAsync(Database.CollapsedPotentialInvestments, "Listing Potential Investments... ", refreshCancelSource.Token);
+
                await Task.Delay(Settings.Data.databaseInterval * 1000);
            }
            while (true);
@@ -78,12 +83,10 @@ public partial class Main : Node
 
     public void RefreshDatabase()
     {
-        Database.RefreshDataAsync(() =>
+        Task.Run(async () =>
         {
-            CompletedInvestments.ListInvestmentDatasAsync(Database.CollapsedCompletedInvestments, "Listing Completed Investments... ", refreshCancelSource.Token);
-            PendingInvestments.ListInvestmentDatasAsync(Database.CollapsedPendingInvestments, "Listing Pending Investments... ", refreshCancelSource.Token);
-            PotentialInvestments.ListInvestmentDatasAsync(Database.CollapsedPotentialInvestments, "Listing Potential Investments... ", refreshCancelSource.Token);
-        }, refreshCancelSource.Token);
+
+        });
     }
 
     public void RefreshDeliveryBox()

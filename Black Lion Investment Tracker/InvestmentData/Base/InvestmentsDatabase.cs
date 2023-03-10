@@ -8,6 +8,7 @@ using BLIT.ConstantVariables;
 using BLIT.Saving;
 using BLIT.UI;
 using Godot;
+using Gw2Sharp.WebApi.Exceptions;
 using Gw2Sharp.WebApi.V2.Models;
 
 namespace BLIT.Investments;
@@ -30,7 +31,7 @@ public partial class InvestmentsDatabase
 
     bool updating;
 
-    public void RefreshDataAsync(Action OnAfterUpdate, CancellationToken cancelSource)
+    public void RefreshData(Action OnAfterUpdate, CancellationToken cancelSource)
     {
         if (updating == true) return;
         updating = true;
@@ -50,220 +51,216 @@ public partial class InvestmentsDatabase
 
             OnAfterUpdate?.Invoke();
             updating = false;
-        });
+        }, cancelSource);
+    }
+
+    public Task RefreshDataAsync(CancellationToken cancelToken)
+    {
+        if (updating == true) return null;
+        updating = true;
+        return Task.Run(async () =>
+        {
+            AppStatusIndicator.ShowStatus("Updating Database...");
+            Cache.Prices.Clear();
+
+            await CalculateAndUpdateInvestments(cancelToken);
+
+            if (cancelToken.IsCancellationRequested)
+            {
+                updating = false;
+                return;
+            }
+
+            updating = false;
+
+        }, cancelToken);
     }
 
     // Do Calculations On History For Investments
-    Task CalculateAndUpdateInvestments(CancellationToken cancelSource)
+    async Task CalculateAndUpdateInvestments(CancellationToken cancelToken)
     {
-        return Task.Run(async () =>
+        try
         {
-            try
-            {
-                GD.Print("Starting Database Update");
+            GD.Print("Starting Database Update");
 
-                // Get All Transactions
-                List<CommerceTransactionHistory> buyOrders = new();
-                List<CommerceTransactionHistory> sellOrders = new();
-                List<CommerceTransactionCurrent> postedSellOrders = new();
+            // We don't want to clear completed here as that is keeping history that might not be obtainable again
+            PendingInvestments.Clear();
+            PotentialInvestments.Clear();
 
-                PendingInvestments.Clear();
-                PotentialInvestments.Clear();
+            // Get all the buy and sell orders from the API
+            if (cancelToken.IsCancellationRequested) return;
 
-                // Get all the buy and sell orders from the API
-                if (cancelSource.IsCancellationRequested) return;
-                await GetBuyAndSellHistory(buyOrders, sellOrders, postedSellOrders);
+            var buyOrders = await GetBuyOrdersAsync(0, cancelToken);
+            var sellOrders = await GetSellOrdersAsync(0, cancelToken);
+            var postedSellOrders = await GetPostedSellOrdersAsync(0, cancelToken);
 
-                // Create the Investment database from those buy and sell orders
-                if (cancelSource.IsCancellationRequested) return;
-                await CreateInvestmentsFromOrders(buyOrders, sellOrders, postedSellOrders);
+            if (cancelToken.IsCancellationRequested) return;
 
-                if (cancelSource.IsCancellationRequested) return;
-                CollapsedCompletedInvestments.Clear();
-                GenerateCollapsedCompleted();
+            // Create the Investment database from those buy and sell orders
+            CreateInvestmentsFromOrders(buyOrders.ToList(), sellOrders.ToList(), postedSellOrders.ToList());
 
-                if (cancelSource.IsCancellationRequested) return;
-                CollapsedPendingInvestments.Clear();
-                GenerateCollapsedPending();
+            CollapsedCompletedInvestments.Clear();
+            GenerateCollapsedCompleted();
 
-                if (cancelSource.IsCancellationRequested) return;
-                CollapsedPotentialInvestments.Clear();
-                GenerateCollapsedPotential();
+            CollapsedPendingInvestments.Clear();
+            GenerateCollapsedPending();
 
-                AppStatusIndicator.ClearStatus();
-            }
-            catch (System.Exception e)
-            {
-                GD.PushError(e);
-            }
-        });
+            CollapsedPotentialInvestments.Clear();
+            GenerateCollapsedPotential();
+
+            AppStatusIndicator.ClearStatus();
+        }
+        catch (System.Exception e)
+        {
+            GD.PushError(e);
+        }
     }
 
-    private static Task GetBuyAndSellHistory(List<CommerceTransactionHistory> buyOrders, List<CommerceTransactionHistory> sellOrders, List<CommerceTransactionCurrent> postedSellOrders)
+    private static async Task<IEnumerable<CommerceTransactionHistory>> GetBuyOrdersAsync(int pageIndex, CancellationToken cancelToken)
     {
-        return Task.Run(async () =>
+        try
         {
-            try
-            {
-                AppStatusIndicator.ShowStatus("Downloading transactions from GW2 server...");
-                // loop through all pages to get all the transactions then continue
+            AppStatusIndicator.ShowStatus("Downloading buy orders from GW2 server...");
+            var pageBuys = await Main.MyClient.WebApi.V2.Commerce.Transactions.History.Buys.PageAsync(pageIndex, cancelToken);
 
-                int pageIndex = 0;
-                while (true)
-                {
-                    var pageBuys = Main.MyClient.WebApi.V2.Commerce.Transactions.History.Buys.PageAsync(pageIndex);
-                    await Task.Delay(250);
-                    if (pageBuys.Status == TaskStatus.RanToCompletion)
-                    {
-                        AppStatusIndicator.ShowStatus("Downloading buy order history from GW2 server...");
-                        buyOrders.AddRange(pageBuys.Result);
-
-                        //Increment Loop
-                        pageIndex++;
-                        // Keep looping through pages till we have all the items
-                        continue;
-                    }
-
-                    // Break out of inner loop if it fails
-                    // And don't continue
-                    if (pageBuys.Status == TaskStatus.Faulted)
-                        break;
-                }
-
-                pageIndex = 0;
-                while (true)
-                {
-                    var pageSells = Main.MyClient.WebApi.V2.Commerce.Transactions.History.Sells.PageAsync(pageIndex);
-                    await Task.Delay(250);
-                    if (pageSells.Status == TaskStatus.RanToCompletion)
-                    {
-                        AppStatusIndicator.ShowStatus("Downloading sell order history from GW2 server...");
-                        sellOrders.AddRange(pageSells.Result);
-
-                        //Increment Loop
-                        pageIndex++;
-                        // Keep looping through pages till we have all the items
-                        continue;
-                    }
-
-                    // Break out of inner loop if it fails
-                    // And don't continue
-                    if (pageSells.Status == TaskStatus.Faulted)
-                        break;
-                }
-
-                pageIndex = 0;
-                while (true)
-                {
-                    var postedSells = Main.MyClient.WebApi.V2.Commerce.Transactions.Current.Sells.PageAsync(pageIndex);
-                    await Task.Delay(250);
-                    if (postedSells.Status == TaskStatus.RanToCompletion)
-                    {
-                        AppStatusIndicator.ShowStatus("Downloading current sell orders from GW2 server...");
-                        postedSellOrders.AddRange(postedSells.Result);
-
-                        //Increment Loop
-                        pageIndex++;
-                        // Keep looping through pages till we have all the items
-                        continue;
-                    }
-
-                    // Break out of inner loop if it fails
-                    // And don't continue
-                    if (postedSells.Status == TaskStatus.Faulted)
-                        break;
-                }
-            }
-            catch (System.Exception e)
-            {
-                GD.PushError(e);
-                throw e;
-            }
-        });
+            GD.Print($"num items in page {pageIndex} => {pageBuys.Count}");
+            return pageBuys.Concat(await GetBuyOrdersAsync(pageIndex + 1, cancelToken));
+        }
+        catch (PageOutOfRangeException)
+        {
+            GD.Print("End of pages for buy orders.");
+            return new List<CommerceTransactionHistory>();
+        }
+        catch (Exception e)
+        {
+            GD.PrintErr(e);
+            return new List<CommerceTransactionHistory>();
+        }
     }
 
-    private Task CreateInvestmentsFromOrders(List<CommerceTransactionHistory> buys, List<CommerceTransactionHistory> sells, List<CommerceTransactionCurrent> postedSellOrders)
+    private static async Task<IEnumerable<CommerceTransactionHistory>> GetSellOrdersAsync(int pageIndex, CancellationToken cancelToken)
     {
-        return Task.Run(() =>
+        try
         {
-            string status = $"Checking for investments in transactions...";
-            AppStatusIndicator.ShowStatus($"{status} (0/{buys.Count})");
-            var sortedBuys = buys.OrderBy(b => b.Purchased);
-            var sortedSells = sells.OrderBy(s => s.Purchased);
-            var sortedPostedSellOrders = postedSellOrders.OrderBy(p => p.Created);
+            AppStatusIndicator.ShowStatus("Downloading sell orders from GW2 server...");
+            var pageBuys = await Main.MyClient.WebApi.V2.Commerce.Transactions.History.Sells.PageAsync(pageIndex, cancelToken);
 
-            // Go through all buys and check if any are investments
-            int i = 0;
-            foreach (var buyOrder in sortedBuys)
+            GD.Print($"num items in page {pageIndex} => {pageBuys.Count}");
+            return pageBuys.Concat(await GetSellOrdersAsync(pageIndex + 1, cancelToken));
+        }
+        catch (PageOutOfRangeException)
+        {
+            GD.Print("End of pages for sell orders.");
+            return Enumerable.Empty<CommerceTransactionHistory>();
+        }
+        catch (Exception e)
+        {
+            GD.PrintErr(e);
+            return Enumerable.Empty<CommerceTransactionHistory>();
+        }
+    }
+
+    private static async Task<IEnumerable<CommerceTransactionCurrent>> GetPostedSellOrdersAsync(int pageIndex, CancellationToken cancelToken)
+    {
+        try
+        {
+            AppStatusIndicator.ShowStatus("Downloading posted sell orders from GW2 server...");
+            var pageBuys = await Main.MyClient.WebApi.V2.Commerce.Transactions.Current.Sells.PageAsync(pageIndex, cancelToken);
+
+            GD.Print($"num items in page {pageIndex} => {pageBuys.Count}");
+            return pageBuys.Concat(await GetPostedSellOrdersAsync(pageIndex + 1, cancelToken));
+        }
+        catch (PageOutOfRangeException)
+        {
+            GD.Print("End of pages for sell orders.");
+            return Enumerable.Empty<CommerceTransactionCurrent>();
+        }
+        catch (Exception e)
+        {
+            GD.PrintErr(e);
+            return Enumerable.Empty<CommerceTransactionCurrent>();
+        }
+    }
+
+    private void CreateInvestmentsFromOrders(List<CommerceTransactionHistory> buys, List<CommerceTransactionHistory> sells, List<CommerceTransactionCurrent> postedSells)
+    {
+        string status = $"Checking for investments in transactions...";
+        AppStatusIndicator.ShowStatus($"{status} (0/{buys.Count})");
+        var sortedBuys = buys.OrderBy(b => b.Purchased);
+        var sortedSells = sells.OrderBy(s => s.Purchased);
+        var sortedPostedSellOrders = postedSells.OrderBy(p => p.Created);
+
+        // Go through all buys and check if any are investments
+        int i = 0;
+        foreach (var buyOrder in sortedBuys)
+        {
+            //Skip if we already have the transaction in the database, that means we have used it already
+            if (Main.Database.NotInvestments.Any(l => l == buyOrder.Id))
             {
-                //Skip if we already have the transaction in the database, that means we have used it already
-                if (Main.Database.NotInvestments.Any(l => l == buyOrder.Id))
-                {
-                    SetStatusAndPrintAmmount(status, ref i, buys.Count);
-                    continue;
-                }
-                if (Main.Database.CompletedInvestments.Any(i => i.BuyData.TransactionId == buyOrder.Id))
-                {
-                    SetStatusAndPrintAmmount(status, ref i, buys.Count);
-                    continue;
-                }
-                if (Main.Database.PendingInvestments.Any(i => i.BuyData.TransactionId == buyOrder.Id))
-                {
-                    SetStatusAndPrintAmmount(status, ref i, buys.Count);
-                    continue;
-                }
-                if (Main.Database.PotentialInvestments.Any(i => i.BuyData.TransactionId == buyOrder.Id))
-                {
-                    SetStatusAndPrintAmmount(status, ref i, buys.Count);
-                    continue;
-                }
+                SetStatusAndPrintAmmount(status, ref i, buys.Count);
+                continue;
+            }
+            if (Main.Database.CompletedInvestments.Any(i => i.BuyData.TransactionId == buyOrder.Id))
+            {
+                SetStatusAndPrintAmmount(status, ref i, buys.Count);
+                continue;
+            }
+            if (Main.Database.PendingInvestments.Any(i => i.BuyData.TransactionId == buyOrder.Id))
+            {
+                SetStatusAndPrintAmmount(status, ref i, buys.Count);
+                continue;
+            }
+            if (Main.Database.PotentialInvestments.Any(i => i.BuyData.TransactionId == buyOrder.Id))
+            {
+                SetStatusAndPrintAmmount(status, ref i, buys.Count);
+                continue;
+            }
 
-                try
+            try
+            {
+                int buyAmmountLeft = buyOrder.Quantity;
+                // Make sure the sell transactions we look at are for the same item and only after the date the buy was purchase
+                var sellDataList = CheckHistorySellOrdersForCompleteInvestmentMatches(buyOrder, ref buyAmmountLeft, sortedSells);
+                var buyData = new BuyData(buyOrder);
+
+                // If there are previous sell orders ascociated with this buy order, its a completed investment
+                if (sellDataList.Count > 0)
                 {
-                    int buyAmmountLeft = buyOrder.Quantity;
+                    // If there are left over bought items, remove them from this transaction because they did not sell
+                    buyData.Quantity -= buyAmmountLeft;
+
+                    var investment = new CompletedInvestment(buyData, sellDataList);
+                    CompletedInvestments.Add(investment);
+                }
+                // If there are not any previous sell orders ascociated with this buy order that means it is either a pending investment or potential investment
+                else
+                {
+                    Lazy<int> lazyCurrentSellPrice = new Lazy<int>(() => Cache.Prices.GetPrice(buyOrder.ItemId));
                     // Make sure the sell transactions we look at are for the same item and only after the date the buy was purchase
-                    var sellDataList = CheckHistorySellOrdersForCompleteInvestmentMatches(buyOrder, ref buyAmmountLeft, sortedSells);
-                    var buyData = new BuyData(buyOrder);
-
-                    // If there are previous sell orders ascociated with this buy order, its a completed investment
-                    if (sellDataList.Count > 0)
+                    var postedSellOrders = CheckPostedSellOrdersForMatches(buyOrder, ref buyAmmountLeft, sortedPostedSellOrders);
+                    if (postedSellOrders.Count > 0)
                     {
-                        // If there are left over bought items, remove them from this transaction because they did not sell
-                        buyData.Quantity -= buyAmmountLeft;
-
-                        var investment = new CompletedInvestment(buyData, sellDataList);
-                        CompletedInvestments.Add(investment);
+                        var pendingInvestment = new PendingInvestment(buyData, postedSellOrders, lazyCurrentSellPrice);
+                        PendingInvestments.Add(pendingInvestment);
                     }
-                    // If there are not any previous sell orders ascociated with this buy order that means it is either a pending investment or potential investment
                     else
                     {
-                        Lazy<int> lazyCurrentSellPrice = new Lazy<int>(() => Cache.Prices.GetPrice(buyOrder.ItemId));
-                        // Make sure the sell transactions we look at are for the same item and only after the date the buy was purchase
-                        var postedSellOrders = CheckPostedSellOrdersForMatches(buyOrder, ref buyAmmountLeft, sortedPostedSellOrders);
-                        if (postedSellOrders.Count > 0)
-                        {
-                            var pendingInvestment = new PendingInvestment(buyData, postedSellOrders, lazyCurrentSellPrice);
-                            PendingInvestments.Add(pendingInvestment);
-                        }
-                        else
-                        {
-                            var potentialInvsetment = new PotentialInvestment(buyData, lazyCurrentSellPrice);
-                            PotentialInvestments.Add(potentialInvsetment);
-                        }
+                        var potentialInvsetment = new PotentialInvestment(buyData, lazyCurrentSellPrice);
+                        PotentialInvestments.Add(potentialInvsetment);
                     }
                 }
-                catch (System.Exception e)
-                {
-                    GD.PushError(e);
-                }
-
-                SetStatusAndPrintAmmount(status, ref i, buys.Count);
             }
-            AppStatusIndicator.ShowStatus($"{status} ({buys.Count}/{buys.Count})");
-        });
+            catch (System.Exception e)
+            {
+                GD.PushError(e);
+            }
+
+            SetStatusAndPrintAmmount(status, ref i, buys.Count);
+        }
+        AppStatusIndicator.ShowStatus($"{status} ({buys.Count}/{buys.Count})");
     }
 
-    private void SetStatusAndPrintAmmount(string status, ref int i, int buysCount)
+    private static void SetStatusAndPrintAmmount(string status, ref int i, int buysCount)
     {
         AppStatusIndicator.ShowStatus($"{status} ({i}/{buysCount})");
         i++;
