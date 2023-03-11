@@ -10,7 +10,7 @@ namespace BLIT.Investments;
 public class CompletedInvestment : Investment
 {
     [DataMember] internal List<SellData> SellDatas { get; private set; } = new();
-    public DateTimeOffset LatestSellDate => SellDatas.OrderBy(s => s.Date).First().Date;
+    public DateTimeOffset LatestSellDate => SellDatas.Max(s => s.Date);
 
     public bool AllSellDatasAreTheSame
     {

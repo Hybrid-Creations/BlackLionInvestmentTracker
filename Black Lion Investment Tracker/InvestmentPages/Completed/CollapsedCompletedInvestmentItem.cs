@@ -26,8 +26,7 @@ public sealed partial class CollapsedCompletedInvestmentItem : CollapsedInvestme
         itemProperties.GetNode<RichTextLabel>("BuyPrice").Text = _collapsedInvestment.GetBuyPriceStringFromInvestment(true, RichStringAlignment.RIGHT);
         itemProperties.GetNode<RichTextLabel>("SellPrice").Text = _collapsedInvestment.GetSellPriceStringFromInvestment(true, RichStringAlignment.RIGHT);
         itemProperties.GetNode<RichTextLabel>("Profit").Text = _collapsedInvestment.GetProfitStringFromInvestment(true, RichStringAlignment.RIGHT);
-        itemProperties.GetNode<Label>("BuyDate").Text = _collapsedInvestment.OldestPurchaseDate.ToTimeSinceString();
-        itemProperties.GetNode<Label>("SellDate").Text = _collapsedInvestment.NewestSellDate.ToTimeSinceString();
+        itemProperties.GetNode<Label>("BuyDate").Text = _collapsedInvestment.LastActiveDate.ToTimeSinceString();
     }
 
     public void TreeButtonToggled(bool enabled)
@@ -37,11 +36,11 @@ public sealed partial class CollapsedCompletedInvestmentItem : CollapsedInvestme
             subInvestmentTitles.Show();
             toggleTreeButton.Icon = arrowDown;
 
-            foreach (var investment in collapsedInvestment.SubInvestments.OrderBy(si => si.BuyData.DatePurchased))
+            foreach (var investment in collapsedInvestment.SubInvestments.OrderByDescending(si => si.LatestSellDate))
             {
                 var instance = subInvestmentItemScene.Instantiate<CompletedInvestmentItem>();
                 instance.Init(Cache.Items.GetItemData(investment.BuyData.ItemId), investment);
-                subInvestmentsHolder.AddChild(instance, 0);
+                subInvestmentsHolder.AddChild(instance);
             }
         }
         else

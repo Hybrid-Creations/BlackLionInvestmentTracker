@@ -2,7 +2,7 @@
 
 [ext_resource type="Theme" uid="uid://dy6mo6ior0maw" path="res://Themes/MainTheme.tres" id="1_bu83u"]
 [ext_resource type="Script" path="res://InvestmentPages/Base/InvestmentsPage.cs" id="2_oi2ei"]
-[ext_resource type="PackedScene" uid="uid://gvbguuwb5rl2" path="res://InvestmentPages/Base/CollapsedInvestmentItem.tscn" id="3_e17e6"]
+[ext_resource type="PackedScene" uid="uid://bydy6ay8008c0" path="res://InvestmentPages/Base/CollapsedInvestmentItem.tscn" id="3_e17e6"]
 [ext_resource type="PackedScene" uid="uid://dx4oojgad8vbx" path="res://InvestmentPages/Base/InvestmentItem.tscn" id="4_b6arg"]
 
 [node name="InvestmentsPage" type="VBoxContainer" node_paths=PackedStringArray("investmentHolder", "loadingLabel")]

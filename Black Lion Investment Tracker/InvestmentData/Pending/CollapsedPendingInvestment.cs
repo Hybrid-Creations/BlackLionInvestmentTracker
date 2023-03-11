@@ -8,7 +8,7 @@ namespace BLIT.Investments;
 public class CollapsedPendingInvestment : CollapsedInvestment<PendingInvestment>
 {
     public int CurrentSellPrice => SubInvestments.First().CurrentSellPrice;
-    public int LowestIndividualSellPrice => SubInvestments.SelectMany(i => i.PostedSellDatas).OrderBy(s => s.IndividualSellPrice).First().IndividualSellPrice;
+    public int LowestIndividualSellPrice => SubInvestments.SelectMany(i => i.PostedSellDatas).Max(s => s.IndividualSellPrice);
 
     public bool AllSellDatasAreTheSame
     {
@@ -28,7 +28,7 @@ public class CollapsedPendingInvestment : CollapsedInvestment<PendingInvestment>
     public double AverageIndividualProfit => SubInvestments.Average(i => i.AverageIndividualProfit);
     // Already has tax calculated
     public double TotalProfit => SubInvestments.Sum(si => si.TotalProfit);
-    public DateTimeOffset OldestPurchaseDate => SubInvestments.OrderBy(i => i.BuyData.DatePurchased).First().BuyData.DatePurchased;
+    public DateTimeOffset OldestPurchaseDate => SubInvestments.Max(i => i.BuyData.DatePurchased);
 
     public CollapsedPendingInvestment(params PendingInvestment[] subInvestments)
     {

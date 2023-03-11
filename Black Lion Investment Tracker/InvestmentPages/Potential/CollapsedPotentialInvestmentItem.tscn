@@ -1,6 +1,6 @@
 [gd_scene load_steps=6 format=3 uid="uid://c1xilgkwsf513"]
 
-[ext_resource type="PackedScene" uid="uid://gvbguuwb5rl2" path="res://InvestmentPages/Base/CollapsedInvestmentItem.tscn" id="1_jjjma"]
+[ext_resource type="PackedScene" uid="uid://bydy6ay8008c0" path="res://InvestmentPages/Base/CollapsedInvestmentItem.tscn" id="1_jjjma"]
 [ext_resource type="Script" path="res://InvestmentPages/Potential/CollapsedPotentialInvestmentItem.cs" id="2_yu7a8"]
 [ext_resource type="Texture2D" uid="uid://lm5hp18ipnd" path="res://Sprites/arrow_right.png" id="3_hqfet"]
 [ext_resource type="Texture2D" uid="uid://q0n8du351q8k" path="res://Sprites/arrow_down.png" id="4_pxqxy"]

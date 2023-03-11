@@ -32,28 +32,6 @@ public partial class InvestmentsDatabase
 
     bool updating;
 
-    public void RefreshData(Action OnAfterUpdate, CancellationToken cancelSource)
-    {
-        if (updating == true) return;
-        updating = true;
-        Task.Run(async () =>
-        {
-            APIStatusIndicator.ClearStatus();
-            Cache.Prices.Clear();
-
-            await CalculateAndUpdateInvestments(cancelSource);
-
-            if (cancelSource.IsCancellationRequested)
-            {
-                updating = false;
-                return;
-            }
-
-            OnAfterUpdate?.Invoke();
-            updating = false;
-        }, cancelSource);
-    }
-
     public Task RefreshDataAsync(CancellationToken cancelToken)
     {
         if (updating == true) return null;
@@ -62,7 +40,14 @@ public partial class InvestmentsDatabase
         {
             Cache.Prices.Clear();
 
-            await CalculateAndUpdateInvestments(cancelToken);
+            try
+            {
+                await CalculateAndUpdateInvestmentsAsync(cancelToken);
+            }
+            catch (Exception e)
+            {
+                GD.PushError(e);
+            }
 
             if (cancelToken.IsCancellationRequested)
             {
@@ -76,38 +61,52 @@ public partial class InvestmentsDatabase
     }
 
     // Do Calculations On History For Investments
-    async Task CalculateAndUpdateInvestments(CancellationToken cancelToken)
+    async Task CalculateAndUpdateInvestmentsAsync(CancellationToken cancelToken)
     {
         try
         {
             GD.Print("Starting Database Update");
 
             // We don't want to clear completed here as that is keeping history that might not be obtainable again
+            // CompletedInvestments.Clear();
+            CollapsedCompletedInvestments.Clear();
+
             PendingInvestments.Clear();
+            CollapsedPendingInvestments.Clear();
+
             PotentialInvestments.Clear();
+            CollapsedPotentialInvestments.Clear();
 
             // Get all the buy and sell orders from the API
-            if (cancelToken.IsCancellationRequested) return;
+            var buyOrders = GetBuyOrdersAsync(0, cancelToken);
+            var sellOrders = GetSellOrdersAsync(0, cancelToken);
+            var postedSellOrders = GetPostedSellOrdersAsync(0, cancelToken);
 
-            var buyOrders = await GetBuyOrdersAsync(0, cancelToken);
-            var sellOrders = await GetSellOrdersAsync(0, cancelToken);
-            var postedSellOrders = await GetPostedSellOrdersAsync(0, cancelToken);
+            if (cancelToken.IsCancellationRequested)
+                return; // Fail silently
 
-            if (cancelToken.IsCancellationRequested) return;
+            try
+            {
+                await Task.WhenAll(buyOrders, sellOrders, postedSellOrders);
+            }
+            catch (Exception e)
+            {
+                GD.PushError(e);
+            }
+
+            if (cancelToken.IsCancellationRequested)
+                return; // Fail silently
 
             // Create the Investment database from those buy and sell orders
-            CreateInvestmentsFromOrders(buyOrders.ToList(), sellOrders.ToList(), postedSellOrders.ToList());
+            CreateInvestmentsFromOrders(buyOrders.Result.ToList(), sellOrders.Result.ToList(), postedSellOrders.Result.ToList());
 
-            CollapsedCompletedInvestments.Clear();
             GenerateCollapsedCompleted();
 
-            CollapsedPendingInvestments.Clear();
             GenerateCollapsedPending();
 
-            CollapsedPotentialInvestments.Clear();
             GenerateCollapsedPotential();
         }
-        catch (System.Exception e)
+        catch (Exception e)
         {
             GD.PushError(e);
         }
@@ -134,7 +133,7 @@ public partial class InvestmentsDatabase
         }
         catch (Exception e)
         {
-            GD.PrintErr(e);
+            GD.PushError(e);
             AppStatusManager.ClearStatus(nameof(GetBuyOrdersAsync));
             return new List<CommerceTransactionHistory>();
         }
@@ -161,7 +160,7 @@ public partial class InvestmentsDatabase
         }
         catch (Exception e)
         {
-            GD.PrintErr(e);
+            GD.PushError(e);
             AppStatusManager.ClearStatus(nameof(GetSellOrdersAsync));
             return Enumerable.Empty<CommerceTransactionHistory>();
         }
@@ -181,13 +180,13 @@ public partial class InvestmentsDatabase
         }
         catch (PageOutOfRangeException)
         {
-            GD.Print("End of pages for sell orders.");
+            GD.Print("End of pages for posted sell orders.");
             AppStatusManager.ClearStatus(nameof(GetPostedSellOrdersAsync));
             return Enumerable.Empty<CommerceTransactionCurrent>();
         }
         catch (Exception e)
         {
-            GD.PrintErr(e);
+            GD.PushError(e);
             AppStatusManager.ClearStatus(nameof(GetPostedSellOrdersAsync));
             return Enumerable.Empty<CommerceTransactionCurrent>();
         }
@@ -261,7 +260,7 @@ public partial class InvestmentsDatabase
                     }
                 }
             }
-            catch (System.Exception e)
+            catch (Exception e)
             {
                 GD.PushError(e);
             }

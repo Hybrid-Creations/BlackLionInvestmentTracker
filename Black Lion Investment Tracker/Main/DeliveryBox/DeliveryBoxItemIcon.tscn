@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3 uid="uid://56wmqvanlryk"]
+
+[ext_resource type="PackedScene" uid="uid://xagkqsk3d03j" path="res://InvestmentPages/Base/ItemIcon.tscn" id="1_ffa1y"]
+
+[node name="DeliveryBoxItemIcon" instance=ExtResource("1_ffa1y")]
+custom_minimum_size = Vector2(56, 56)
+offset_right = 56.0
+offset_bottom = 56.0

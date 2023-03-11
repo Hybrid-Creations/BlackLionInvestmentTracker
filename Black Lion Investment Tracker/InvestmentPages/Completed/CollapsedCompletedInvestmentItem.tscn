@@ -1,6 +1,6 @@
 [gd_scene load_steps=6 format=3 uid="uid://b2b0qo4lrxcpe"]
 
-[ext_resource type="PackedScene" uid="uid://gvbguuwb5rl2" path="res://InvestmentPages/Base/CollapsedInvestmentItem.tscn" id="1_htx2q"]
+[ext_resource type="PackedScene" uid="uid://bydy6ay8008c0" path="res://InvestmentPages/Base/CollapsedInvestmentItem.tscn" id="1_htx2q"]
 [ext_resource type="Script" path="res://InvestmentPages/Completed/CollapsedCompletedInvestmentItem.cs" id="2_fxtmv"]
 [ext_resource type="PackedScene" uid="uid://cuq254wmca7y7" path="res://InvestmentPages/Completed/CompletedInvestmentItem.tscn" id="3_26g4i"]
 [ext_resource type="Texture2D" uid="uid://lm5hp18ipnd" path="res://Sprites/arrow_right.png" id="3_cdc21"]
@@ -17,13 +17,10 @@ subInvestmentsHolder = NodePath("SubInvestmentHolder")
 subInvestmentTitles = NodePath("SubItemTitles")
 
 [node name="Name" parent="HBoxContainer/CollapsedItem/ItemProperties" index="3"]
-custom_minimum_size = Vector2(275, 0)
+custom_minimum_size = Vector2(300, 0)
 
-[node name="SellDate" parent="HBoxContainer/CollapsedItem/ItemProperties" index="9"]
-visible = true
-
-[node name="SapcerButton" parent="SubItemTitles" index="0"]
-visible = false
+[node name="BuyDate" parent="HBoxContainer/CollapsedItem/ItemProperties" index="8"]
+custom_minimum_size = Vector2(130, 0)
 
 [node name="Name" parent="SubItemTitles" index="4"]
 custom_minimum_size = Vector2(275, 0)

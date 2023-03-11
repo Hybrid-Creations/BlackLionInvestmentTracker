@@ -14,7 +14,7 @@ public static partial class StringExtensions
     /// <returns></returns>
     public static string ToTimeSinceString(this DateTimeOffset value)
     {
-        var offset = DateTime.Now - value.ToLocalTime();
+        var offset = DateTimeOffset.UtcNow - value;
 
         var sb = new StringBuilder();
 
@@ -48,6 +48,13 @@ public static partial class StringExtensions
         }
 
         sb.Append(" ago");
+
+        if (sb.ToString() == "15 hours ago")
+        {
+
+            GD.Print($"offset: {offset}, now:{DateTimeOffset.UtcNow}, value: {value}");
+        }
+
         return sb.ToString();
     }
 

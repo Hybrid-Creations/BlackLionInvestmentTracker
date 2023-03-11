@@ -17,7 +17,7 @@ public class CollapsedPotentialInvestment : CollapsedInvestment<PotentialInvestm
     /// </summary>
     public int TotalPotentialProfit => SubInvestments.Sum(i => i.TotalPotentialProfit);
 
-    public DateTimeOffset OldestPurchaseDate => SubInvestments.OrderBy(i => i.BuyData.DatePurchased).First().BuyData.DatePurchased;
+    public DateTimeOffset OldestPurchaseDate => SubInvestments.Max(i => i.BuyData.DatePurchased);
 
     public CollapsedPotentialInvestment(params PotentialInvestment[] subInvestments)
     {

@@ -1,8 +1,8 @@
-[gd_scene load_steps=4 format=3 uid="uid://gvbguuwb5rl2"]
+[gd_scene load_steps=4 format=3 uid="uid://bydy6ay8008c0"]
 
 [ext_resource type="Theme" uid="uid://dy6mo6ior0maw" path="res://Themes/MainTheme.tres" id="1_etpwm"]
 [ext_resource type="Texture2D" uid="uid://lm5hp18ipnd" path="res://Sprites/arrow_right.png" id="3_gcdpq"]
-[ext_resource type="PackedScene" uid="uid://bfdrutohf5ob3" path="res://Main/ItemIcon.tscn" id="3_xr32t"]
+[ext_resource type="PackedScene" path="res://InvestmentPages/Base/ItemIcon.tscn" id="3_hq8hu"]
 
 [node name="CollapsedInvestmentItem" type="VBoxContainer"]
 anchors_preset = 10
@@ -42,7 +42,7 @@ layout_mode = 2
 size_flags_horizontal = 3
 size_flags_stretch_ratio = 0.25
 
-[node name="Icon" parent="HBoxContainer/CollapsedItem/ItemProperties" instance=ExtResource("3_xr32t")]
+[node name="Icon" parent="HBoxContainer/CollapsedItem/ItemProperties" instance=ExtResource("3_hq8hu")]
 layout_mode = 2
 
 [node name="SpacerL2" type="Control" parent="HBoxContainer/CollapsedItem/ItemProperties"]

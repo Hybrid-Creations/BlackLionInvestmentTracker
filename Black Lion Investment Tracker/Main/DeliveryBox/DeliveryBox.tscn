@@ -1,15 +1,15 @@
-[gd_scene load_steps=12 format=3 uid="uid://y0xcfolok7rs"]
+[gd_scene load_steps=12 format=3 uid="uid://hbp0asevqjpj"]
 
 [ext_resource type="Theme" uid="uid://dy6mo6ior0maw" path="res://Themes/MainTheme.tres" id="1_13c7d"]
 [ext_resource type="Texture2D" uid="uid://bsl8f80xnsea" path="res://Sprites/delivery_box_empty.png" id="1_yer8e"]
-[ext_resource type="Script" path="res://Main/DeliveryBox.cs" id="2_yr17c"]
+[ext_resource type="Script" path="res://Main/DeliveryBox/DeliveryBox.cs" id="2_yr17c"]
 [ext_resource type="Texture2D" uid="uid://onnos0i8b00d" path="res://Sprites/gold_64.png" id="3_8kmhj"]
 [ext_resource type="Texture2D" uid="uid://e3m84mv8teyg" path="res://Sprites/delivery_box_full.png" id="3_c42s0"]
 [ext_resource type="Texture2D" uid="uid://clr3da7nypicv" path="res://Sprites/gold_32.png" id="4_6b51j"]
 [ext_resource type="Texture2D" uid="uid://py6qsykngs4j" path="res://Sprites/silver_32.png" id="5_ymx57"]
 [ext_resource type="Texture2D" uid="uid://7xdrk6lpl0h6" path="res://Sprites/copper_32.png" id="6_ilsqf"]
 [ext_resource type="Texture2D" uid="uid://cagb4omlf5j04" path="res://Sprites/plus.png" id="8_m5o0g"]
-[ext_resource type="PackedScene" uid="uid://b4bjldmmdor6m" path="res://Main/DeliveryBoxPreview.tscn" id="10_7vu1f"]
+[ext_resource type="PackedScene" path="res://Main/DeliveryBox/DeliveryBoxPreview.tscn" id="10_7vu1f"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_qjh4a"]
 bg_color = Color(0.12549, 0.12549, 0.12549, 1)

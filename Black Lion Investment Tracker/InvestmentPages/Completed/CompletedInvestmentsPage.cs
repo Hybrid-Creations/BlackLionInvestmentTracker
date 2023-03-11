@@ -58,7 +58,7 @@ public partial class CompletedInvestmentsPage : InvestmentsPage
             int index = 0;
             AppStatusManager.ShowStatus($"{nameof(CompletedInvestmentsPage)}{nameof(ListInvestmentDatasAsync)}", $"{baseStatusMessage} ({index}/{investmentDatas.Count})");
             // Add New Investment Items To UI
-            foreach (var investment in investmentDatas.OrderByDescending(ci => ci.OldestPurchaseDate))
+            foreach (var investment in investmentDatas.OrderByDescending(ci => ci.LastActiveDate))
             {
                 try
                 {

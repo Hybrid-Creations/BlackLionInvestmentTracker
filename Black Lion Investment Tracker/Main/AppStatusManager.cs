@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using BLIT.ConstantVariables;
 using BLIT.Extensions;
 using Godot;
@@ -10,7 +11,7 @@ public partial class AppStatusManager : VBoxContainer
     [Export]
     PackedScene appStatusScene;
 
-    static readonly Dictionary<string, AppStatusEntry> statusMessages = new();
+    static readonly ConcurrentDictionary<string, AppStatusEntry> statusMessages = new();
 
     static AppStatusManager Instance;
 
@@ -36,7 +37,9 @@ public partial class AppStatusManager : VBoxContainer
     {
         if (statusMessages.TryGetValue(key, out var statusEntry))
         {
-            statusMessages.Remove(key);
+            if (statusMessages.TryRemove(key, out var _) == false)
+                GD.PrintErr($"Failed to remove status entry");
+
             statusEntry.QueueFreeSafe();
         }
     }

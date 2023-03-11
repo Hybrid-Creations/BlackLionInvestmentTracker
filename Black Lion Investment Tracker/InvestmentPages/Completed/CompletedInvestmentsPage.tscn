@@ -90,10 +90,11 @@ size_flags_horizontal = 3
 size_flags_stretch_ratio = 0.1
 
 [node name="Name" parent="ColumnTitles" index="4"]
-custom_minimum_size = Vector2(275, 0)
+custom_minimum_size = Vector2(300, 0)
 
-[node name="SellDate" parent="ColumnTitles" index="10"]
-visible = true
+[node name="BuyDate" parent="ColumnTitles" index="9"]
+custom_minimum_size = Vector2(130, 0)
+text = "Last Active "
 
 [node name="CollapsedCompletedInvestmentItem" parent="ScrollContainer/VBoxContainer/InvsetmentHolder" index="0" instance=ExtResource("3_4trgs")]
 layout_mode = 2

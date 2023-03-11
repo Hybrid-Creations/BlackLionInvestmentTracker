@@ -7,9 +7,6 @@
 script = ExtResource("2_yweko")
 itemProperties = NodePath("ItemProperties")
 
-[node name="SapcerButton" parent="ItemProperties" index="0"]
-visible = false
-
 [node name="Name" parent="ItemProperties" index="4"]
 custom_minimum_size = Vector2(275, 0)
 

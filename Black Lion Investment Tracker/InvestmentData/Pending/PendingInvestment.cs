@@ -11,7 +11,7 @@ public class PendingInvestment : Investment
 
     private readonly Lazy<int> lazyCurrentSellPrice;
     internal int CurrentSellPrice => lazyCurrentSellPrice.Value;
-    public int LowestIndividualSellPrice => PostedSellDatas.OrderBy(s => s.IndividualSellPrice).First().IndividualSellPrice;
+    public int LowestIndividualSellPrice => PostedSellDatas.Max(s => s.IndividualSellPrice);
 
     public bool AllSellDatasAreTheSame
     {
@@ -24,7 +24,7 @@ public class PendingInvestment : Investment
 
     public int IndividualListedSellPrice => PostedSellDatas.First().IndividualSellPrice;
     public double AverageIndividualListedSellPrice => PostedSellDatas.Average(s => s.IndividualSellPrice);
-    public int LowestIndividualListedSellPrice => PostedSellDatas.OrderBy(s => s.IndividualSellPrice).First().IndividualSellPrice;
+    public int LowestIndividualListedSellPrice => PostedSellDatas.Max(s => s.IndividualSellPrice);
     public int TotalListedSellPrice => PostedSellDatas.Sum(s => s.TotalSellPrice);
 
     public double IndividualProfit => (PostedSellDatas.First().IndividualSellPrice * Constants.MultiplyTax) - BuyData.IndividualBuyPrice;

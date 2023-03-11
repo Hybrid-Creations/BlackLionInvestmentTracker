@@ -2,6 +2,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using BLIT.Investments;
+using BLIT.Timers;
 using Godot;
 using Gw2Sharp;
 
@@ -9,10 +10,6 @@ namespace BLIT.UI;
 
 public partial class Main : Node
 {
-    [ExportCategory("Settings")]
-    [Export(PropertyHint.File, "*.tscn")]
-    string settingsScene;
-
     [ExportCategory("Pages")]
     [Export]
     CompletedInvestmentsPage CompletedInvestments;
@@ -31,6 +28,9 @@ public partial class Main : Node
 
     CancellationTokenSource refreshCancelSource;
 
+    BetterTimer refreshDatabaseTimer;
+    BetterTimer refreshDeliveryBoxTimer;
+
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
     {
@@ -47,36 +47,45 @@ public partial class Main : Node
 
     void RefreshDatabaseOnInterval()
     {
-        Task.Run(async () =>
-       {
-           do
-           {
-               if (refreshCancelSource.IsCancellationRequested)
-                   break;
+        refreshDatabaseTimer = new BetterTimer
+        {
+            Interval = TimeSpan.FromSeconds(Settings.Data.databaseInterval),
+            Repeat = true
+        };
+        refreshDatabaseTimer.Elapsed += async () =>
+        {
+            if (refreshCancelSource.IsCancellationRequested)
+            {
+                refreshDatabaseTimer.Stop();
+                return;
+            }
 
-               await Database.RefreshDataAsync(refreshCancelSource.Token);
-               var completeListTask = CompletedInvestments.ListInvestmentDatasAsync(Database.CollapsedCompletedInvestments, "Listing Completed Investments... ", refreshCancelSource.Token);
-               var pendingListTask = PendingInvestments.ListInvestmentDatasAsync(Database.CollapsedPendingInvestments, "Listing Pending Investments... ", refreshCancelSource.Token);
-               var potentialListTask = PotentialInvestments.ListInvestmentDatasAsync(Database.CollapsedPotentialInvestments, "Listing Potential Investments... ", refreshCancelSource.Token);
+            await Database.RefreshDataAsync(refreshCancelSource.Token);
 
-               try
-               {
-                   Task.WaitAll(completeListTask, pendingListTask, potentialListTask);
-               }
-               catch (Exception e)
-               {
-                   GD.PushError(e);
-               }
-               await Task.Delay(Settings.Data.databaseInterval * 1000);
-           }
-           while (true);
+            var completeListTask = CompletedInvestments.ListInvestmentDatasAsync(Database.CollapsedCompletedInvestments, "Listing Completed Investments... ", refreshCancelSource.Token);
+            var pendingListTask = PendingInvestments.ListInvestmentDatasAsync(Database.CollapsedPendingInvestments, "Listing Pending Investments... ", refreshCancelSource.Token);
+            var potentialListTask = PotentialInvestments.ListInvestmentDatasAsync(Database.CollapsedPotentialInvestments, "Listing Potential Investments... ", refreshCancelSource.Token);
 
-       }, refreshCancelSource.Token);
+            try
+            {
+                await Task.WhenAll(completeListTask, pendingListTask, potentialListTask);
+            }
+            catch (Exception e)
+            {
+                GD.PushError(e);
+            }
+        };
+        refreshDatabaseTimer.Start(true);
     }
 
     void RefreshDeliveryBoxOnInverval()
     {
-        Task.Run(async () =>
+        refreshDeliveryBoxTimer = new BetterTimer
+        {
+            Interval = TimeSpan.FromSeconds(Settings.Data.databaseInterval),
+            Repeat = true
+        };
+        refreshDeliveryBoxTimer.Elapsed += async () =>
        {
            do
            {
@@ -89,12 +98,14 @@ public partial class Main : Node
            }
            while (true);
 
-       }, refreshCancelSource.Token);
+       };
+        refreshDeliveryBoxTimer.Start(true);
     }
 
-    public void RefreshDatabase()
+    public void RefreshNow()
     {
-        throw new NotImplementedException();
+        refreshDatabaseTimer.InvokeASAP();
+        refreshDeliveryBoxTimer.InvokeASAP();
     }
 
     public void RefreshDeliveryBox()
@@ -102,32 +113,34 @@ public partial class Main : Node
         DeliveryBox.RefreshData(refreshCancelSource.Token);
     }
 
-    public void OpenSettings()
-    {
-        GetTree().ChangeSceneToFile(settingsScene);
-        refreshCancelSource.Cancel();
-    }
-
-    public void MinimizeApp()
-    {
-        GetWindow().Mode = Window.ModeEnum.Minimized;
-    }
-
     public void CloseApp()
     {
-        GD.Print("Quitting");
+        Cleanup();
+        GetTree().Quit();
+    }
+
+    void Cleanup()
+    {
+        GD.Print("Main Cleanup");
         Database.Save();
         Settings.Save();
         Cache.Items.Save();
         MyClient.Dispose();
-        GetTree().Quit();
+
+        //refreshCancelSource might still leak here :(
+        refreshCancelSource.Cancel();
+        refreshDatabaseTimer.Stop();
+        refreshDeliveryBoxTimer.Stop();
+    }
+
+    public override void _ExitTree()
+    {
+        Cleanup();
     }
 
     public override void _Notification(int what)
     {
         if (what == NotificationWMCloseRequest || what == NotificationCrash)
-        {
-            // CloseApp();
-        }
+            CloseApp();
     }
 }

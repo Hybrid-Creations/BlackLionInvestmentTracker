@@ -2,7 +2,7 @@
 
 [ext_resource type="Theme" uid="uid://dy6mo6ior0maw" path="res://Themes/MainTheme.tres" id="1_p7dll"]
 [ext_resource type="Script" path="res://Settings/Settings.cs" id="2_rptdu"]
-[ext_resource type="PackedScene" uid="uid://bijs1mco726lc" path="res://Main/Main.tscn" id="3_uddsk"]
+[ext_resource type="PackedScene" uid="uid://7ifvv708hvob" path="res://Main/Main.tscn" id="3_uddsk"]
 
 [node name="Settings" type="Panel" node_paths=PackedStringArray("apiKeyField", "databaseIntervalField", "deliveryBoxIntervalField")]
 anchors_preset = 15

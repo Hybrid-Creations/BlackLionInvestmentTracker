@@ -1,9 +1,9 @@
-[gd_scene load_steps=6 format=3 uid="uid://b4bjldmmdor6m"]
+[gd_scene load_steps=6 format=3 uid="uid://dcf4345sldir5"]
 
 [ext_resource type="Theme" uid="uid://dy6mo6ior0maw" path="res://Themes/MainTheme.tres" id="1_lgew3"]
-[ext_resource type="Script" path="res://Main/DeliveryBoxPreview.cs" id="2_2ebke"]
-[ext_resource type="PackedScene" uid="uid://bn4e2gtbmufdo" path="res://Main/DeliveryBoxItem.tscn" id="3_4uc1n"]
-[ext_resource type="PackedScene" uid="uid://drklel2kqapip" path="res://Main/DeliveryBoxItemIcon.tscn" id="4_nusq5"]
+[ext_resource type="Script" path="res://Main/DeliveryBox/DeliveryBoxPreview.cs" id="2_2ebke"]
+[ext_resource type="PackedScene" uid="uid://vx35wq5fp3jc" path="res://Main/DeliveryBox/DeliveryBoxItem.tscn" id="3_4uc1n"]
+[ext_resource type="PackedScene" uid="uid://56wmqvanlryk" path="res://Main/DeliveryBox/DeliveryBoxItemIcon.tscn" id="4_nusq5"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_p3hsb"]
 content_margin_left = 7.0

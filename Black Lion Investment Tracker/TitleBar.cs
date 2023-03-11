@@ -1,10 +1,15 @@
 using BLIT.Extensions;
+using BLIT.UI;
 using Godot;
 
 namespace BLIT;
 
 public partial class TitleBar : Control
 {
+    [ExportCategory("Settings")]
+    [Export(PropertyHint.File, "*.tscn")]
+    string settingsScene;
+
     Window window;
     Vector2 dragStartPosition;
 
@@ -31,5 +36,20 @@ public partial class TitleBar : Control
                 SetProcess(!IsProcessing());
             }
         }
+    }
+
+    public void OpenSettings()
+    {
+        GetTree().ChangeSceneToFile(settingsScene);
+    }
+
+    public void MinimizeApp()
+    {
+        GetWindow().Mode = Window.ModeEnum.Minimized;
+    }
+
+    public void CloseApp()
+    {
+        GetTree().Quit();
     }
 }
