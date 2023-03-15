@@ -72,7 +72,7 @@ public static class DataExtensions
 
     public static string GetSellPriceStringFromInvestment(this CollapsedPotentialInvestment collapsedInvestment, bool includeIndividualPrice, RichStringAlignment alignment)
     {
-        return GetSellPriceString(collapsedInvestment.TotalPotentialSellPrice, collapsedInvestment.IndividualPotentialSellPrice, includeIndividualPrice, "ea", alignment);
+        return GetSellPriceString(collapsedInvestment.TotalPotentialSellPrice, collapsedInvestment.CurrentSellPrice, includeIndividualPrice, "ea", alignment);
     }
 
     public static string GetSellPriceStringFromInvestment(this PotentialInvestment investment, bool includeIndividualPrice, RichStringAlignment alignment)

@@ -9,15 +9,19 @@ namespace BLIT.UI;
 public sealed partial class CollapsedPendingInvestmentItem : CollapsedInvestmentItem
 {
     private CollapsedPendingInvestment collapsedInvestment;
+    int currentSellPrice;
 
     public override void _Ready()
     {
         subInvestmentTitles.Hide();
     }
 
-    public void Init(ItemData _item, CollapsedPendingInvestment _collapsedInvestment)
+    public void Init(ItemData _item, CollapsedPendingInvestment _collapsedInvestment, int _currentSellPrice)
     {
+        if (IsQueuedForDeletion()) return;
+
         collapsedInvestment = _collapsedInvestment;
+        currentSellPrice = _currentSellPrice;
 
         itemProperties.GetNode<TextureRect>("Icon").Texture = _item.Icon;
         itemProperties.GetNode<Label>("Icon/Quantity").Text = _collapsedInvestment.Quantity.ToString();
@@ -31,8 +35,8 @@ public sealed partial class CollapsedPendingInvestmentItem : CollapsedInvestment
 
     private string GetCurrentListedPrice(CollapsedPendingInvestment investment)
     {
-        var listedIsHigher = investment.CurrentSellPrice < investment.LowestIndividualSellPrice;
-        return $"{(listedIsHigher ? $"\n[right][color=gray]ea[/color] [color=#ff9200]{investment.CurrentSellPrice.ToCurrencyString(RichImageType.PX32)}" : Constants.EmptyItemPropertyEntry)}";
+        var listedIsHigher = currentSellPrice < investment.LowestIndividualSellPrice;
+        return $"{(listedIsHigher ? $"\n[right][color=gray]ea[/color] [color=#ff9200]{currentSellPrice.ToCurrencyString(RichImageType.PX32)}" : Constants.EmptyItemPropertyEntry)}";
     }
 
     public void TreeButtonToggled(bool enabled)
@@ -42,11 +46,11 @@ public sealed partial class CollapsedPendingInvestmentItem : CollapsedInvestment
             subInvestmentTitles.Show();
             toggleTreeButton.Icon = arrowDown;
 
-            foreach (var investment in collapsedInvestment.SubInvestments.OrderBy(si => si.BuyData.DatePurchased))
+            foreach (var investment in collapsedInvestment.SubInvestments.OrderByDescending(si => si.BuyData.DatePurchased))
             {
                 var instance = subInvestmentItemScene.Instantiate<PendingInvestmentItem>();
-                instance.Init(Cache.Items.GetItemData(investment.BuyData.ItemId), investment);
-                subInvestmentsHolder.AddChild(instance, 0);
+                instance.Init(Cache.Items.GetItemData(investment.BuyData.ItemId), investment, currentSellPrice);
+                subInvestmentsHolder.AddChildSafe(instance);
             }
         }
         else

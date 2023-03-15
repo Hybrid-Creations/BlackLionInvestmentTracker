@@ -5,8 +5,7 @@ namespace BLIT.Investments;
 
 public class PotentialInvestment : Investment
 {
-    private readonly Lazy<int> lazyCurrentSellPrice;
-    internal int CurrentSellPrice => lazyCurrentSellPrice.Value;
+    internal int CurrentSellPrice { get; set; }
 
     public int IndividualPotentialSellPrice => CurrentSellPrice;
     public int TotalPotentialSellPrice => CurrentSellPrice * BuyData.Quantity;
@@ -20,8 +19,7 @@ public class PotentialInvestment : Investment
     /// </summary>
     public int TotalPotentialProfit => (int)Math.Floor((TotalPotentialSellPrice * Constants.MultiplyTax) - BuyData.TotalBuyPrice);
 
-    public PotentialInvestment(BuyData buyData, Lazy<int> lazyCurrentSellPrice) : base(buyData)
+    public PotentialInvestment(BuyData buyData) : base(buyData)
     {
-        this.lazyCurrentSellPrice = lazyCurrentSellPrice;
     }
 }

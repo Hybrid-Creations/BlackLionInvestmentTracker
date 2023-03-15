@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using BLIT.Extensions;
 using Godot;
 
 public partial class RightClickMenu : PanelContainer
@@ -24,14 +25,14 @@ public partial class RightClickMenu : PanelContainer
                 onButtonPress.Invoke(btnText);
                 CloseInstance();
             }));
-            btnContainer.AddChild(btn);
+            btnContainer.AddChildSafe(btn);
 
             if (btnText != buttons.Last())
             {
                 var rect = new ColorRect();
                 rect.Color = Color.Color8(128, 128, 128);
                 rect.CustomMinimumSize = new Vector2(0, 1);
-                btnContainer.AddChild(rect);
+                btnContainer.AddChildSafe(rect);
             }
         }
 
@@ -39,8 +40,8 @@ public partial class RightClickMenu : PanelContainer
         closeBtn.Text = "Close";
         closeBtn.Flat = true;
         closeBtn.Connect(Button.SignalName.Pressed, Callable.From(() => CloseInstance()));
-        btnContainer.AddChild(closeBtn);
-        rootNode.AddChild(instance);
+        btnContainer.AddChildSafe(closeBtn);
+        rootNode.AddChildSafe(instance);
 
         CloseInstance();
         MainInstance = instance;

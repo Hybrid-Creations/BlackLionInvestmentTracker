@@ -10,6 +10,8 @@ public partial class CompletedInvestmentItem : InvestmentItem
 {
     public virtual void Init(ItemData item, CompletedInvestment investment)
     {
+        if (IsQueuedForDeletion()) return;
+
         itemProperties.GetNode<TextureRect>("Icon").Texture = item.Icon;
         itemProperties.GetNode<Label>("Icon/Quantity").Text = investment.BuyData.Quantity.ToString();
         itemProperties.GetNode<Label>("Name").Text = item.Name;

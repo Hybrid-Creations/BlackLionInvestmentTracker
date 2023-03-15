@@ -37,10 +37,10 @@ public partial class AppStatusManager : VBoxContainer
     {
         if (statusMessages.TryGetValue(key, out var statusEntry))
         {
-            if (statusMessages.TryRemove(key, out var _) == false)
+            if (statusMessages.TryRemove(key, out var _))
+                statusEntry.QueueFreeSafe();
+            else
                 GD.PrintErr($"Failed to remove status entry");
-
-            statusEntry.QueueFreeSafe();
         }
     }
 }

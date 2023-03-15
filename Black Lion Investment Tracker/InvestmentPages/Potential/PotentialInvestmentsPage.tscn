@@ -12,6 +12,9 @@ collapsedInvestmentScene = ExtResource("3_xupfe")
 [node name="Name" parent="ColumnTitles" index="4"]
 custom_minimum_size = Vector2(275, 0)
 
+[node name="SellPrice" parent="ColumnTitles" index="6"]
+text = "Cur Sell Price "
+
 [node name="BreakEvenSellPrice" parent="ColumnTitles" index="7"]
 visible = true
 

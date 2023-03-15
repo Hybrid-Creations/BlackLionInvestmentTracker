@@ -33,7 +33,7 @@ public partial class DeliveryBoxPreview : PanelContainer
         {
             var instance = itemPreview.Instantiate<DeliveryBoxItem>();
             instance.Init(item);
-            itemsContainer.AddChild(instance);
+            itemsContainer.AddChildSafe(instance);
         }
     }
 }

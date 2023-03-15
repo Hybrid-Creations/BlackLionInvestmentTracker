@@ -9,8 +9,6 @@ public class PendingInvestment : Investment
 {
     internal List<SellData> PostedSellDatas { get; private set; } = new();
 
-    private readonly Lazy<int> lazyCurrentSellPrice;
-    internal int CurrentSellPrice => lazyCurrentSellPrice.Value;
     public int LowestIndividualSellPrice => PostedSellDatas.Max(s => s.IndividualSellPrice);
 
     public bool AllSellDatasAreTheSame
@@ -37,9 +35,8 @@ public class PendingInvestment : Investment
     /// </summary>
     public double TotalProfit => (TotalListedSellPrice * Constants.MultiplyTax) - BuyData.TotalBuyPrice;
 
-    public PendingInvestment(BuyData buyData, List<SellData> sellDatas, Lazy<int> lazyCurrentSellPrice) : base(buyData)
+    public PendingInvestment(BuyData buyData, List<SellData> sellDatas) : base(buyData)
     {
         PostedSellDatas = sellDatas;
-        this.lazyCurrentSellPrice = lazyCurrentSellPrice;
     }
 }

@@ -16,9 +16,12 @@ public sealed partial class CollapsedPotentialInvestmentItem : CollapsedInvestme
         subInvestmentTitles.Hide();
     }
 
-    public void Init(ItemData _item, CollapsedPotentialInvestment _collapsedInvestment)
+    public void Init(ItemData _item, CollapsedPotentialInvestment _collapsedInvestment, int currentSellPrice)
     {
+        if (IsQueuedForDeletion()) return;
+
         collapsedInvestment = _collapsedInvestment;
+        collapsedInvestment.CurrentSellPrice = currentSellPrice;
 
         itemProperties.GetNode<TextureRect>("Icon").Texture = _item.Icon;
         itemProperties.GetNode<Label>("Icon/Quantity").Text = _collapsedInvestment.Quantity.ToString();
@@ -50,11 +53,11 @@ public sealed partial class CollapsedPotentialInvestmentItem : CollapsedInvestme
             subInvestmentTitles.Show();
             toggleTreeButton.Icon = arrowDown;
 
-            foreach (var investment in collapsedInvestment.SubInvestments.OrderBy(si => si.BuyData.DatePurchased))
+            foreach (var investment in collapsedInvestment.SubInvestments.OrderByDescending(si => si.BuyData.DatePurchased))
             {
                 var instance = subInvestmentItemScene.Instantiate<PotentialInvestmentItem>();
                 instance.Init(Cache.Items.GetItemData(investment.BuyData.ItemId), investment);
-                subInvestmentsHolder.AddChild(instance, 0);
+                subInvestmentsHolder.AddChildSafe(instance);
             }
         }
         else

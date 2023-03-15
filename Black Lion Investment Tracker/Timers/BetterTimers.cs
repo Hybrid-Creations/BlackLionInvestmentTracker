@@ -6,10 +6,10 @@ using Godot;
 
 namespace BLIT.Timers;
 
-public class BetterTimer
+public class ThreadedTimer
 {
     public TimeSpan Interval { get; set; }
-    public Action Elapsed { get; set; }
+    public Func<Task> Elapsed { get; set; }
     public bool Repeat { get; set; } = false;
 
     TimeSpan offset = TimeSpan.Zero;
@@ -22,6 +22,9 @@ public class BetterTimer
         source = new CancellationTokenSource();
 
         bool firstRun = true;
+
+        // Thread thread = new(() =>
+        // {
         Task.Run(async () =>
         {
             do
@@ -46,7 +49,14 @@ public class BetterTimer
 
                 var stopwatch = Stopwatch.StartNew();
 
-                Elapsed?.Invoke();
+                try
+                {
+                    await Elapsed?.Invoke();
+                }
+                catch (Exception e)
+                {
+                    GD.PushError(e);
+                }
 
                 offset = stopwatch.Elapsed;
                 stopwatch.Stop();
@@ -57,6 +67,8 @@ public class BetterTimer
 
             currentDelaySource?.Dispose();
         }, source.Token);
+        // });
+        // thread.Start();
     }
 
     public void Stop()
@@ -69,3 +81,4 @@ public class BetterTimer
         currentDelaySource.Cancel();
     }
 }
+

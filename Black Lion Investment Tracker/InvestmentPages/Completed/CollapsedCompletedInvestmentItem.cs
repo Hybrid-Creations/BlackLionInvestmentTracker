@@ -18,6 +18,8 @@ public sealed partial class CollapsedCompletedInvestmentItem : CollapsedInvestme
 
     public void Init(ItemData _item, CollapsedCompletedInvestment _collapsedInvestment)
     {
+        if (IsQueuedForDeletion()) return;
+
         collapsedInvestment = _collapsedInvestment;
 
         itemProperties.GetNode<TextureRect>("Icon").Texture = _item.Icon;
@@ -40,7 +42,7 @@ public sealed partial class CollapsedCompletedInvestmentItem : CollapsedInvestme
             {
                 var instance = subInvestmentItemScene.Instantiate<CompletedInvestmentItem>();
                 instance.Init(Cache.Items.GetItemData(investment.BuyData.ItemId), investment);
-                subInvestmentsHolder.AddChild(instance);
+                subInvestmentsHolder.AddChildSafe(instance);
             }
         }
         else

@@ -47,18 +47,19 @@ public partial class DeliveryBox : Button
         deliveryBoxPreview.Hide();
     }
 
-    public void RefreshData(CancellationToken cancelToken)
+    public Task RefreshDataAsync(CancellationToken cancelToken)
     {
-        if (updating == true) return;
+        if (updating == true) return Task.CompletedTask;
         updating = true;
         ClearVisuals();
-        Task.Run(() =>
+        return Task.Run(() =>
         {
             var deliveryBox = Main.MyClient.WebApi.V2.Commerce.Delivery.GetAsync().Result;
             var coins = deliveryBox.Coins;
             var items = deliveryBox.Items;
 
-            if (cancelToken.IsCancellationRequested) return;
+            if (cancelToken.IsCancellationRequested)
+                return;
 
             Icon = items.Count > 0 || coins > 0 ? deliveryBoxFull : deliveryBoxEmpty;
 

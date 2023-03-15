@@ -29,6 +29,9 @@ visible = true
 [node name="Name" parent="SubItemTitles" index="4"]
 custom_minimum_size = Vector2(300, 0)
 
+[node name="SellPrice" parent="SubItemTitles" index="6"]
+text = "Cur Sell Price "
+
 [node name="BreakEvenPrice" parent="SubItemTitles" index="7"]
 visible = true
 

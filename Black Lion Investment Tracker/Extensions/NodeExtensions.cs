@@ -5,17 +5,9 @@ namespace BLIT.Extensions;
 
 public static class NodeExtensions
 {
-    public static void AddChildSafe(this Node node, Node child, int index = -1)
+    public static void AddChildSafe(this Node node, Node child)
     {
         node.CallDeferred(Node.MethodName.AddChild, child);
-        if (index > -1)
-            node.CallDeferred(Node.MethodName.MoveChild, child, index);
-    }
-    public static void AddChild(this Node node, Node child, int index = -1)
-    {
-        node.AddChild(child);
-        if (index > -1)
-            node.MoveChild(child, index);
     }
 
     public static void QueueFreeSafe(this Node node)

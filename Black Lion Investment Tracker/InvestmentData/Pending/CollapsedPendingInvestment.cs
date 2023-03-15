@@ -1,13 +1,11 @@
 using System;
 using System.Linq;
 using BLIT.ConstantVariables;
-using BLIT.Extensions;
 
 namespace BLIT.Investments;
 
 public class CollapsedPendingInvestment : CollapsedInvestment<PendingInvestment>
 {
-    public int CurrentSellPrice => SubInvestments.First().CurrentSellPrice;
     public int LowestIndividualSellPrice => SubInvestments.SelectMany(i => i.PostedSellDatas).Max(s => s.IndividualSellPrice);
 
     public bool AllSellDatasAreTheSame

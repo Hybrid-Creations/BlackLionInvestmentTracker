@@ -7,8 +7,13 @@ namespace BLIT.UI;
 
 public partial class PendingInvestmentItem : InvestmentItem
 {
-    public virtual void Init(ItemData item, PendingInvestment investment)
+    int currentSellPrice;
+    public virtual void Init(ItemData item, PendingInvestment investment, int currentSellPrice)
     {
+        if (IsQueuedForDeletion()) return;
+
+        this.currentSellPrice = currentSellPrice;
+
         itemProperties.GetNode<TextureRect>("Icon").Texture = item.Icon;
         itemProperties.GetNode<Label>("Icon/Quantity").Text = investment.BuyData.Quantity.ToString();
         itemProperties.GetNode<Label>("Name").Text = item.Name;
@@ -21,7 +26,7 @@ public partial class PendingInvestmentItem : InvestmentItem
 
     private string GetCurrentListedPrice(PendingInvestment investment)
     {
-        var listedIsHigher = investment.CurrentSellPrice < investment.LowestIndividualSellPrice;
-        return $"{(listedIsHigher ? $"\n[right][color=gray]ea[/color] [color=#ff9200]{investment.CurrentSellPrice.ToCurrencyString(RichImageType.PX32)}" : Constants.EmptyItemPropertyEntry)}";
+        var listedIsHigher = currentSellPrice < investment.LowestIndividualSellPrice;
+        return $"{(listedIsHigher ? $"\n[right][color=gray]ea[/color] [color=#ff9200]{currentSellPrice.ToCurrencyString(RichImageType.PX32)}" : Constants.EmptyItemPropertyEntry)}";
     }
 }

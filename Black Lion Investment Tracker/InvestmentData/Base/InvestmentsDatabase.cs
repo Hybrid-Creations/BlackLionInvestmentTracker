@@ -34,12 +34,10 @@ public partial class InvestmentsDatabase
 
     public Task RefreshDataAsync(CancellationToken cancelToken)
     {
-        if (updating == true) return null;
+        if (updating == true) return Task.CompletedTask; ;
         updating = true;
         return Task.Run(async () =>
         {
-            Cache.Prices.Clear();
-
             try
             {
                 await CalculateAndUpdateInvestmentsAsync(cancelToken);
@@ -83,8 +81,7 @@ public partial class InvestmentsDatabase
             var postedSellOrders = GetPostedSellOrdersAsync(0, cancelToken);
 
             if (cancelToken.IsCancellationRequested)
-                return; // Fail silently
-
+                return;
             try
             {
                 await Task.WhenAll(buyOrders, sellOrders, postedSellOrders);
@@ -95,7 +92,7 @@ public partial class InvestmentsDatabase
             }
 
             if (cancelToken.IsCancellationRequested)
-                return; // Fail silently
+                return;
 
             // Create the Investment database from those buy and sell orders
             CreateInvestmentsFromOrders(buyOrders.Result.ToList(), sellOrders.Result.ToList(), postedSellOrders.Result.ToList());
@@ -120,14 +117,12 @@ public partial class InvestmentsDatabase
 
             var pageBuys = await Main.MyClient.WebApi.V2.Commerce.Transactions.History.Buys.PageAsync(pageIndex, cancelToken);
 
-            GD.Print($"num items in page {pageIndex} => {pageBuys.Count}");
             AppStatusManager.ClearStatus(nameof(GetBuyOrdersAsync));
 
             return pageBuys.Concat(await GetBuyOrdersAsync(pageIndex + 1, cancelToken));
         }
         catch (PageOutOfRangeException)
         {
-            GD.Print("End of pages for buy orders.");
             AppStatusManager.ClearStatus(nameof(GetBuyOrdersAsync));
             return new List<CommerceTransactionHistory>();
         }
@@ -147,14 +142,12 @@ public partial class InvestmentsDatabase
 
             var pageBuys = await Main.MyClient.WebApi.V2.Commerce.Transactions.History.Sells.PageAsync(pageIndex, cancelToken);
 
-            GD.Print($"num items in page {pageIndex} => {pageBuys.Count}");
             AppStatusManager.ClearStatus(nameof(GetSellOrdersAsync));
 
             return pageBuys.Concat(await GetSellOrdersAsync(pageIndex + 1, cancelToken));
         }
         catch (PageOutOfRangeException)
         {
-            GD.Print("End of pages for sell orders.");
             AppStatusManager.ClearStatus(nameof(GetSellOrdersAsync));
             return Enumerable.Empty<CommerceTransactionHistory>();
         }
@@ -173,14 +166,12 @@ public partial class InvestmentsDatabase
             AppStatusManager.ShowStatus(nameof(GetPostedSellOrdersAsync), "Downloading posted sell orders from GW2 server...");
             var pageBuys = await Main.MyClient.WebApi.V2.Commerce.Transactions.Current.Sells.PageAsync(pageIndex, cancelToken);
 
-            GD.Print($"num items in page {pageIndex} => {pageBuys.Count}");
             AppStatusManager.ClearStatus(nameof(GetPostedSellOrdersAsync));
 
             return pageBuys.Concat(await GetPostedSellOrdersAsync(pageIndex + 1, cancelToken));
         }
         catch (PageOutOfRangeException)
         {
-            GD.Print("End of pages for posted sell orders.");
             AppStatusManager.ClearStatus(nameof(GetPostedSellOrdersAsync));
             return Enumerable.Empty<CommerceTransactionCurrent>();
         }
@@ -197,77 +188,50 @@ public partial class InvestmentsDatabase
         var sortedSells = sells.OrderBy(s => s.Purchased).ToList();
         var sortedPostedSellOrders = postedSells.OrderBy(p => p.Created).ToList();
 
-        string status = $"Checking for investments in transactions...";
-        AppStatusManager.ShowStatus(nameof(CreateInvestmentsFromOrders), $"{status} (0/{buys.Count})");
-
         // Go through all buys and check if any are investments
-        int i = 0;
         foreach (var buyOrder in buys.OrderBy(b => b.Purchased))
         {
             //Skip if we already have the transaction in the database, that means we have used it already
             if (NotInvestments.Any(l => l == buyOrder.Id))
-            {
-                AppStatusManager.ShowStatus(nameof(CreateInvestmentsFromOrders), $"{status} ({i}/{buys.Count})");
                 continue;
-            }
             if (CompletedInvestments.Any(i => i.BuyData.TransactionId == buyOrder.Id))
-            {
-                AppStatusManager.ShowStatus(nameof(CreateInvestmentsFromOrders), $"{status} ({i}/{buys.Count})");
                 continue;
-            }
             if (PendingInvestments.Any(i => i.BuyData.TransactionId == buyOrder.Id))
-            {
-                AppStatusManager.ShowStatus(nameof(CreateInvestmentsFromOrders), $"{status} ({i}/{buys.Count})");
                 continue;
-            }
             if (PotentialInvestments.Any(i => i.BuyData.TransactionId == buyOrder.Id))
-            {
-                AppStatusManager.ShowStatus(nameof(CreateInvestmentsFromOrders), $"{status} ({i}/{buys.Count})");
                 continue;
-            }
 
-            try
+            int buyAmmountLeft = buyOrder.Quantity;
+            // Make sure the sell transactions we look at are for the same item and only after the date the buy was purchase
+            var sellDataList = CheckHistorySellOrdersForCompleteInvestmentMatches(buyOrder, ref buyAmmountLeft, sortedSells);
+            var buyData = new BuyData(buyOrder);
+
+            // If there are previous sell orders ascociated with this buy order, its a completed investment
+            if (sellDataList.Count > 0)
             {
-                int buyAmmountLeft = buyOrder.Quantity;
+                // If there are left over bought items, remove them from this transaction because they did not sell
+                buyData.Quantity -= buyAmmountLeft;
+
+                var investment = new CompletedInvestment(buyData, sellDataList);
+                CompletedInvestments.Add(investment);
+            }
+            // If there are not any previous sell orders ascociated with this buy order that means it is either a pending investment or potential investment
+            else
+            {
                 // Make sure the sell transactions we look at are for the same item and only after the date the buy was purchase
-                var sellDataList = CheckHistorySellOrdersForCompleteInvestmentMatches(buyOrder, ref buyAmmountLeft, sortedSells);
-                var buyData = new BuyData(buyOrder);
-
-                // If there are previous sell orders ascociated with this buy order, its a completed investment
-                if (sellDataList.Count > 0)
+                var postedSellOrders = CheckPostedSellOrdersForMatches(buyOrder, ref buyAmmountLeft, sortedPostedSellOrders);
+                if (postedSellOrders.Count > 0)
                 {
-                    // If there are left over bought items, remove them from this transaction because they did not sell
-                    buyData.Quantity -= buyAmmountLeft;
-
-                    var investment = new CompletedInvestment(buyData, sellDataList);
-                    CompletedInvestments.Add(investment);
+                    var pendingInvestment = new PendingInvestment(buyData, postedSellOrders);
+                    PendingInvestments.Add(pendingInvestment);
                 }
-                // If there are not any previous sell orders ascociated with this buy order that means it is either a pending investment or potential investment
                 else
                 {
-                    Lazy<int> lazyCurrentSellPrice = new(() => Cache.Prices.GetPrice(buyOrder.ItemId));
-                    // Make sure the sell transactions we look at are for the same item and only after the date the buy was purchase
-                    var postedSellOrders = CheckPostedSellOrdersForMatches(buyOrder, ref buyAmmountLeft, sortedPostedSellOrders);
-                    if (postedSellOrders.Count > 0)
-                    {
-                        var pendingInvestment = new PendingInvestment(buyData, postedSellOrders, lazyCurrentSellPrice);
-                        PendingInvestments.Add(pendingInvestment);
-                    }
-                    else
-                    {
-                        var potentialInvsetment = new PotentialInvestment(buyData, lazyCurrentSellPrice);
-                        PotentialInvestments.Add(potentialInvsetment);
-                    }
+                    var potentialInvsetment = new PotentialInvestment(buyData);
+                    PotentialInvestments.Add(potentialInvsetment);
                 }
             }
-            catch (Exception e)
-            {
-                GD.PushError(e);
-            }
-
-            AppStatusManager.ShowStatus(nameof(CreateInvestmentsFromOrders), $"{status} ({i}/{buys.Count})");
         }
-        AppStatusManager.ClearStatus(nameof(CreateInvestmentsFromOrders));
     }
 
     private List<SellData> CheckHistorySellOrdersForCompleteInvestmentMatches(CommerceTransactionHistory buyOrder, ref int buyAmmountLeft, List<CommerceTransactionHistory> sortedSellOrders)

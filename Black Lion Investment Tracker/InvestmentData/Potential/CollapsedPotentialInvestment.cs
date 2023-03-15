@@ -5,7 +5,17 @@ namespace BLIT.Investments;
 
 public class CollapsedPotentialInvestment : CollapsedInvestment<PotentialInvestment>
 {
-    public int IndividualPotentialSellPrice => SubInvestments.First().IndividualPotentialSellPrice;
+    private int currentSellPrice;
+
+    public int CurrentSellPrice
+    {
+        get => currentSellPrice;
+        set
+        {
+            SubInvestments.ForEach(s => s.CurrentSellPrice = value);
+            currentSellPrice = value;
+        }
+    }
     public int TotalPotentialSellPrice => SubInvestments.Sum(i => i.TotalPotentialSellPrice);
 
     /// <summary>

@@ -28,8 +28,8 @@ public partial class Main : Node
 
     CancellationTokenSource refreshCancelSource;
 
-    BetterTimer refreshDatabaseTimer;
-    BetterTimer refreshDeliveryBoxTimer;
+    ThreadedTimer refreshDatabaseTimer;
+    ThreadedTimer refreshDeliveryBoxTimer;
 
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
@@ -45,9 +45,9 @@ public partial class Main : Node
         RefreshDeliveryBoxOnInverval();
     }
 
-    void RefreshDatabaseOnInterval()
+    private void RefreshDatabaseOnInterval()
     {
-        refreshDatabaseTimer = new BetterTimer
+        refreshDatabaseTimer = new ThreadedTimer
         {
             Interval = TimeSpan.FromSeconds(Settings.Data.databaseInterval),
             Repeat = true
@@ -62,42 +62,28 @@ public partial class Main : Node
 
             await Database.RefreshDataAsync(refreshCancelSource.Token);
 
-            var completeListTask = CompletedInvestments.ListInvestmentDatasAsync(Database.CollapsedCompletedInvestments, "Listing Completed Investments... ", refreshCancelSource.Token);
-            var pendingListTask = PendingInvestments.ListInvestmentDatasAsync(Database.CollapsedPendingInvestments, "Listing Pending Investments... ", refreshCancelSource.Token);
-            var potentialListTask = PotentialInvestments.ListInvestmentDatasAsync(Database.CollapsedPotentialInvestments, "Listing Potential Investments... ", refreshCancelSource.Token);
+            await CompletedInvestments.ListInvestmentDatasAsync(Database.CollapsedCompletedInvestments, "Listing Completed Investments... ", refreshCancelSource.Token);
+            await PendingInvestments.ListInvestmentDatasAsync(Database.CollapsedPendingInvestments, "Listing Pending Investments... ", refreshCancelSource.Token);
+            await PotentialInvestments.ListInvestmentDatasAsync(Database.CollapsedPotentialInvestments, "Listing Potential Investments... ", refreshCancelSource.Token);
 
-            try
-            {
-                await Task.WhenAll(completeListTask, pendingListTask, potentialListTask);
-            }
-            catch (Exception e)
-            {
-                GD.PushError(e);
-            }
+            GD.Print("Done");
         };
         refreshDatabaseTimer.Start(true);
     }
 
-    void RefreshDeliveryBoxOnInverval()
+    private void RefreshDeliveryBoxOnInverval()
     {
-        refreshDeliveryBoxTimer = new BetterTimer
+        refreshDeliveryBoxTimer = new ThreadedTimer
         {
-            Interval = TimeSpan.FromSeconds(Settings.Data.databaseInterval),
+            Interval = TimeSpan.FromSeconds(Settings.Data.deliveryBoxInterval),
             Repeat = true
         };
         refreshDeliveryBoxTimer.Elapsed += async () =>
        {
-           do
-           {
-               if (refreshCancelSource.IsCancellationRequested)
-                   break;
+           if (refreshCancelSource.IsCancellationRequested)
+               return;
 
-               DeliveryBox.RefreshData(refreshCancelSource.Token);
-
-               await Task.Delay(Settings.Data.deliveryBoxInterval * 1000);
-           }
-           while (true);
-
+           await DeliveryBox.RefreshDataAsync(refreshCancelSource.Token);
        };
         refreshDeliveryBoxTimer.Start(true);
     }
@@ -108,18 +94,13 @@ public partial class Main : Node
         refreshDeliveryBoxTimer.InvokeASAP();
     }
 
-    public void RefreshDeliveryBox()
-    {
-        DeliveryBox.RefreshData(refreshCancelSource.Token);
-    }
-
     public void CloseApp()
     {
         Cleanup();
         GetTree().Quit();
     }
 
-    void Cleanup()
+    private void Cleanup()
     {
         GD.Print("Main Cleanup");
         Database.Save();
@@ -140,7 +121,9 @@ public partial class Main : Node
 
     public override void _Notification(int what)
     {
-        if (what == NotificationWMCloseRequest || what == NotificationCrash)
+        if (what == NotificationWMCloseRequest)
             CloseApp();
+        if (what == NotificationCrash)
+            GD.PrintErr("AHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH");
     }
 }
