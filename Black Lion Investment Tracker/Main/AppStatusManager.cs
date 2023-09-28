@@ -2,7 +2,6 @@ using System.Collections.Concurrent;
 using BLIT.ConstantVariables;
 using BLIT.Extensions;
 using Godot;
-using Godot.Collections;
 
 namespace BLIT.Status;
 
@@ -26,10 +25,14 @@ public partial class AppStatusManager : VBoxContainer
             statusEntry.SetPendingStatus(status.AlignRichString(RichStringAlignment.RIGHT));
         else
         {
-            var isntance = Instance.appStatusScene.Instantiate<AppStatusEntry>();
-            isntance.SetPendingStatus(status.AlignRichString(RichStringAlignment.RIGHT));
-            Instance.AddChildSafe(isntance);
-            statusMessages[key] = isntance;
+            ThreadsHelper.CallOnMainThread(() =>
+            {
+                GD.Print(status);
+                var instance = Instance.appStatusScene.Instantiate<AppStatusEntry>();
+                instance.SetPendingStatus(status.AlignRichString(RichStringAlignment.RIGHT));
+                Instance.AddChildSafe(instance);
+                statusMessages[key] = instance;
+            });
         }
     }
 

@@ -13,8 +13,10 @@ public partial class Main : Node
     [ExportCategory("Pages")]
     [Export]
     CompletedInvestmentsPage CompletedInvestments;
+
     [Export]
     PendingInvestmentsPage PendingInvestments;
+
     [Export]
     PotentialInvestmentsPage PotentialInvestments;
 
@@ -34,6 +36,8 @@ public partial class Main : Node
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
     {
+        ThreadsHelper.SetMainThreadId(System.Threading.Thread.CurrentThread.ManagedThreadId);
+
         Database.Load();
         Cache.Items.Load();
 
@@ -47,11 +51,7 @@ public partial class Main : Node
 
     private void RefreshDatabaseOnInterval()
     {
-        refreshDatabaseTimer = new ThreadedTimer
-        {
-            Interval = TimeSpan.FromSeconds(Settings.Data.databaseInterval),
-            Repeat = true
-        };
+        refreshDatabaseTimer = new ThreadedTimer { Interval = TimeSpan.FromSeconds(Settings.Data.DatabaseInterval), Repeat = true };
         refreshDatabaseTimer.Elapsed += async () =>
         {
             if (refreshCancelSource.IsCancellationRequested)
@@ -62,36 +62,36 @@ public partial class Main : Node
 
             await Database.RefreshDataAsync(refreshCancelSource.Token);
 
-            await CompletedInvestments.ListInvestmentDatasAsync(Database.CollapsedCompletedInvestments, "Listing Completed Investments... ", refreshCancelSource.Token);
-            await PendingInvestments.ListInvestmentDatasAsync(Database.CollapsedPendingInvestments, "Listing Pending Investments... ", refreshCancelSource.Token);
-            await PotentialInvestments.ListInvestmentDatasAsync(Database.CollapsedPotentialInvestments, "Listing Potential Investments... ", refreshCancelSource.Token);
+            GD.Print("Listing Completed Investments");
+            CompletedInvestments.ListInvestmentDatas(Database.CollapsedCompletedInvestments, "Listing Completed Investments... ");
+            GD.Print("Listing Pending Investments");
+            PendingInvestments.ListInvestmentDatas(Database.CollapsedPendingInvestments, "Listing Pending Investments... ");
+            GD.Print("Listing Potential Investments");
+            PotentialInvestments.ListInvestmentDatas(Database.CollapsedPotentialInvestments, "Listing Potential Investments... ");
 
-            GD.Print("Done");
+            GD.Print("Databse & UI Update Done");
         };
         refreshDatabaseTimer.Start(true);
     }
 
     private void RefreshDeliveryBoxOnInverval()
     {
-        refreshDeliveryBoxTimer = new ThreadedTimer
-        {
-            Interval = TimeSpan.FromSeconds(Settings.Data.deliveryBoxInterval),
-            Repeat = true
-        };
+        refreshDeliveryBoxTimer = new ThreadedTimer { Interval = TimeSpan.FromSeconds(Settings.Data.DeliveryBoxInterval), Repeat = true };
         refreshDeliveryBoxTimer.Elapsed += async () =>
-       {
-           if (refreshCancelSource.IsCancellationRequested)
-               return;
+        {
+            if (refreshCancelSource.IsCancellationRequested)
+                return;
 
-           await DeliveryBox.RefreshDataAsync(refreshCancelSource.Token);
-       };
+            await DeliveryBox.RefreshAsync(refreshCancelSource.Token);
+        };
         refreshDeliveryBoxTimer.Start(true);
     }
 
     public void RefreshNow()
     {
         refreshDatabaseTimer.InvokeASAP();
-        refreshDeliveryBoxTimer.InvokeASAP();
+        refreshDeliveryBoxTimer?.InvokeASAP();
+        APIStatusIndicator.ClearStatus();
     }
 
     public void CloseApp()
@@ -109,9 +109,10 @@ public partial class Main : Node
         MyClient.Dispose();
 
         //refreshCancelSource might still leak here :(
+        // This should be fine however as we intend to quit when this is called
         refreshCancelSource.Cancel();
         refreshDatabaseTimer.Stop();
-        refreshDeliveryBoxTimer.Stop();
+        refreshDeliveryBoxTimer?.Stop();
     }
 
     public override void _ExitTree()

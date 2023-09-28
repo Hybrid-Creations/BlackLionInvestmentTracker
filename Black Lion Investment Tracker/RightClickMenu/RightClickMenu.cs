@@ -5,54 +5,54 @@ using Godot;
 
 public partial class RightClickMenu : PanelContainer
 {
-    static RightClickMenu MainInstance;
+	static RightClickMenu MainInstance;
 
-    public static void OpenMenu(Node rootNode, Vector2 mousePosition, string[] buttons, Action<string> onButtonPress)
-    {
-        var scene = GD.Load<PackedScene>("res://RightClickMenu/RightClickMenu.tscn");
-        var instance = scene.Instantiate<RightClickMenu>();
-        instance.Position = mousePosition;
+	public static void OpenMenu(Node rootNode, Vector2 mousePosition, string[] buttons, Action<string> onButtonPress)
+	{
+		var scene = GD.Load<PackedScene>("res://RightClickMenu/RightClickMenu.tscn");
+		var instance = scene.Instantiate<RightClickMenu>();
+		instance.Position = mousePosition;
 
-        var btnContainer = instance.GetNode<VBoxContainer>("ButtonContainer");
+		var btnContainer = instance.GetNode<VBoxContainer>("ButtonContainer");
 
-        foreach (var btnText in buttons)
-        {
-            var btn = new Button();
-            btn.Text = btnText;
-            btn.Flat = true;
-            btn.Connect(Button.SignalName.Pressed, Callable.From(() =>
-            {
-                onButtonPress.Invoke(btnText);
-                CloseInstance();
-            }));
-            btnContainer.AddChildSafe(btn);
+		foreach (var btnText in buttons)
+		{
+			var btn = new Button();
+			btn.Text = btnText;
+			btn.Flat = true;
+			btn.Connect(Button.SignalName.Pressed, Callable.From(() =>
+			{
+				onButtonPress.Invoke(btnText);
+				CloseInstance();
+			}));
+			btnContainer.AddChildSafe(btn);
 
-            if (btnText != buttons.Last())
-            {
-                var rect = new ColorRect();
-                rect.Color = Color.Color8(128, 128, 128);
-                rect.CustomMinimumSize = new Vector2(0, 1);
-                btnContainer.AddChildSafe(rect);
-            }
-        }
+			if (btnText != buttons.Last())
+			{
+				var rect = new ColorRect();
+				rect.Color = Color.Color8(128, 128, 128);
+				rect.CustomMinimumSize = new Vector2(0, 1);
+				btnContainer.AddChildSafe(rect);
+			}
+		}
 
-        var closeBtn = new Button();
-        closeBtn.Text = "Close";
-        closeBtn.Flat = true;
-        closeBtn.Connect(Button.SignalName.Pressed, Callable.From(() => CloseInstance()));
-        btnContainer.AddChildSafe(closeBtn);
-        rootNode.AddChildSafe(instance);
+		var closeBtn = new Button();
+		closeBtn.Text = "Close";
+		closeBtn.Flat = true;
+		closeBtn.Connect(Button.SignalName.Pressed, Callable.From(() => CloseInstance()));
+		btnContainer.AddChildSafe(closeBtn);
+		rootNode.AddChildSafe(instance);
 
-        CloseInstance();
-        MainInstance = instance;
-    }
+		CloseInstance();
+		MainInstance = instance;
+	}
 
-    public static void CloseInstance()
-    {
-        if (MainInstance?.IsQueuedForDeletion() == false)
-        {
-            MainInstance?.QueueFree();
-            MainInstance = null;
-        }
-    }
+	public static void CloseInstance()
+	{
+		if (MainInstance?.IsQueuedForDeletion() == false)
+		{
+			MainInstance?.QueueFree();
+			MainInstance = null;
+		}
+	}
 }

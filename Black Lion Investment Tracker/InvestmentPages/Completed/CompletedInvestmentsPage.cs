@@ -13,6 +13,8 @@ namespace BLIT.UI;
 
 public partial class CompletedInvestmentsPage : InvestmentsPage
 {
+    private const string StatusKey = $"{nameof(CompletedInvestmentsPage)}{nameof(ListInvestmentDatas)}";
+
     [Export]
     HBoxContainer totals;
 
@@ -42,13 +44,13 @@ public partial class CompletedInvestmentsPage : InvestmentsPage
     private void ClearList()
     {
         // Remove Old Investment Items From UI
-        investmentHolder.ClearChildrenSafe();
+        investmentHolder.ClearChildren();
         loadingLabel.Show();
     }
 
-    public Task ListInvestmentDatasAsync(List<CollapsedCompletedInvestment> investmentDatas, string baseStatusMessage, CancellationToken cancelToken)
+    public void ListInvestmentDatas(List<CollapsedCompletedInvestment> investmentDatas, string baseStatusMessage)
     {
-        return Task.Run(() =>
+        ThreadsHelper.CallOnMainThread(() =>
         {
             ClearTotals();
             ClearList();
@@ -56,7 +58,7 @@ public partial class CompletedInvestmentsPage : InvestmentsPage
             loadingLabel.Hide();
 
             int index = 0;
-            AppStatusManager.ShowStatus($"{nameof(CompletedInvestmentsPage)}{nameof(ListInvestmentDatasAsync)}", $"{baseStatusMessage} ({index}/{investmentDatas.Count})");
+            AppStatusManager.ShowStatus(StatusKey, $"{baseStatusMessage}");
             // Add New Investment Items To UI
             foreach (var investment in investmentDatas.OrderByDescending(ci => ci.LastActiveDate))
             {
@@ -65,10 +67,7 @@ public partial class CompletedInvestmentsPage : InvestmentsPage
                     var instance = collapsedInvestmentScene.Instantiate<CollapsedCompletedInvestmentItem>();
                     instance.Init(Cache.Items.GetItemData(investment.ItemId), investment);
 
-                    if (cancelToken.IsCancellationRequested)
-                        break;
-
-                    investmentHolder.AddChildSafe(instance);
+                    investmentHolder.AddChild(instance);
                 }
                 catch (AggregateException ag)
                 {
@@ -78,18 +77,14 @@ public partial class CompletedInvestmentsPage : InvestmentsPage
                         GD.PushWarning($"Failed to retreive info on item {investment.ItemId}, most likely Gw2Sharp has not been updated yet to handle the item");
                     }
                     else
-                    {
                         ProbablyRealException(ag);
-                    }
                 }
                 catch (Exception e)
                 {
                     ProbablyRealException(e);
                 }
-                AppStatusManager.ShowStatus($"{nameof(CompletedInvestmentsPage)}{nameof(ListInvestmentDatasAsync)}", $"{baseStatusMessage} ({index}/{investmentDatas.Count})");
                 index++;
             }
-            AppStatusManager.ShowStatus($"{nameof(CompletedInvestmentsPage)}{nameof(ListInvestmentDatasAsync)}", $"{baseStatusMessage} ({index}/{investmentDatas.Count})");
 
             // Calculate Profit
             var totalInvested = Main.Database.TotalInvested;
@@ -97,24 +92,9 @@ public partial class CompletedInvestmentsPage : InvestmentsPage
             var totalProfit = Main.Database.TotalProfit;
             GD.Print($"Total Invested: {totalInvested.ToCurrencyString(RichImageType.NONE)}, Total Return: {totalReturn.ToCurrencyString(RichImageType.NONE)},  Total Profit With Tax Removed: {totalProfit.ToCurrencyString(RichImageType.NONE)}, ROI: {Main.Database.ROI}");
 
-            if (cancelToken.IsCancellationRequested)
-            {
-                ClearTotals();
-                ClearList();
-                AppStatusManager.ClearStatus($"{nameof(CompletedInvestmentsPage)}{nameof(ListInvestmentDatasAsync)}");
-                return;
-            }
-
             SetTotals();
 
-            AppStatusManager.ClearStatus($"{nameof(CompletedInvestmentsPage)}{nameof(ListInvestmentDatasAsync)}");
-        }, cancelToken);
-    }
-
-    private static void ProbablyRealException(Exception e)
-    {
-        GD.PushError(e);
-        GD.PushWarning("Unexpected error from GW2Sharp, might be an API issue?");
-        APIStatusIndicator.ShowStatus("Possible Issues With API, Some Requests Are Failing.");
+            AppStatusManager.ClearStatus(StatusKey);
+        });
     }
 }

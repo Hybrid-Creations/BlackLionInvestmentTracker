@@ -34,28 +34,25 @@ public partial class InvestmentsDatabase
 
     public Task RefreshDataAsync(CancellationToken cancelToken)
     {
-        if (updating == true) return Task.CompletedTask; ;
+        if (updating == true)
+            return Task.CompletedTask;
         updating = true;
-        return Task.Run(async () =>
-        {
-            try
+        return Task.Run(
+            async () =>
             {
-                await CalculateAndUpdateInvestmentsAsync(cancelToken);
-            }
-            catch (Exception e)
-            {
-                GD.PushError(e);
-            }
+                try
+                {
+                    await CalculateAndUpdateInvestmentsAsync(cancelToken);
+                }
+                catch (Exception e)
+                {
+                    GD.PushError(e);
+                }
 
-            if (cancelToken.IsCancellationRequested)
-            {
                 updating = false;
-                return;
-            }
-
-            updating = false;
-
-        }, cancelToken);
+            },
+            cancelToken
+        );
     }
 
     // Do Calculations On History For Investments
@@ -111,76 +108,89 @@ public partial class InvestmentsDatabase
 
     private static async Task<IEnumerable<CommerceTransactionHistory>> GetBuyOrdersAsync(int pageIndex, CancellationToken cancelToken)
     {
-        try
-        {
-            AppStatusManager.ShowStatus(nameof(GetBuyOrdersAsync), "Downloading buy orders from GW2 server...");
+        AppStatusManager.ShowStatus(nameof(GetBuyOrdersAsync), "Downloading buy orders from GW2 server...");
 
-            var pageBuys = await Main.MyClient.WebApi.V2.Commerce.Transactions.History.Buys.PageAsync(pageIndex, cancelToken);
+        int page = 0;
+        List<CommerceTransactionHistory> history = new();
 
-            AppStatusManager.ClearStatus(nameof(GetBuyOrdersAsync));
+        while (true)
+        {
+            try
+            {
+                history.AddRange(await Main.MyClient.WebApi.V2.Commerce.Transactions.History.Buys.PageAsync(page, cancelToken));
+                page++;
+            }
+            catch (PageOutOfRangeException)
+            {
+                break;
+            }
+            catch (Exception e)
+            {
+                GD.PushError(e);
+                break;
+            }
+        }
 
-            return pageBuys.Concat(await GetBuyOrdersAsync(pageIndex + 1, cancelToken));
-        }
-        catch (PageOutOfRangeException)
-        {
-            AppStatusManager.ClearStatus(nameof(GetBuyOrdersAsync));
-            return new List<CommerceTransactionHistory>();
-        }
-        catch (Exception e)
-        {
-            GD.PushError(e);
-            AppStatusManager.ClearStatus(nameof(GetBuyOrdersAsync));
-            return new List<CommerceTransactionHistory>();
-        }
+        AppStatusManager.ClearStatus(nameof(GetBuyOrdersAsync));
+        return history;
     }
 
     private static async Task<IEnumerable<CommerceTransactionHistory>> GetSellOrdersAsync(int pageIndex, CancellationToken cancelToken)
     {
-        try
-        {
-            AppStatusManager.ShowStatus(nameof(GetSellOrdersAsync), "Downloading sell orders from GW2 server...");
+        AppStatusManager.ShowStatus(nameof(GetSellOrdersAsync), "Downloading sell orders from GW2 server...");
 
-            var pageBuys = await Main.MyClient.WebApi.V2.Commerce.Transactions.History.Sells.PageAsync(pageIndex, cancelToken);
+        int page = 0;
+        List<CommerceTransactionHistory> history = new();
 
-            AppStatusManager.ClearStatus(nameof(GetSellOrdersAsync));
+        while (true)
+        {
+            try
+            {
+                history.AddRange(await Main.MyClient.WebApi.V2.Commerce.Transactions.History.Sells.PageAsync(page, cancelToken));
+                page++;
+            }
+            catch (PageOutOfRangeException)
+            {
+                break;
+            }
+            catch (Exception e)
+            {
+                GD.PushError(e);
+                break;
+            }
+        }
 
-            return pageBuys.Concat(await GetSellOrdersAsync(pageIndex + 1, cancelToken));
-        }
-        catch (PageOutOfRangeException)
-        {
-            AppStatusManager.ClearStatus(nameof(GetSellOrdersAsync));
-            return Enumerable.Empty<CommerceTransactionHistory>();
-        }
-        catch (Exception e)
-        {
-            GD.PushError(e);
-            AppStatusManager.ClearStatus(nameof(GetSellOrdersAsync));
-            return Enumerable.Empty<CommerceTransactionHistory>();
-        }
+        AppStatusManager.ClearStatus(nameof(GetSellOrdersAsync));
+        return history;
     }
 
     private static async Task<IEnumerable<CommerceTransactionCurrent>> GetPostedSellOrdersAsync(int pageIndex, CancellationToken cancelToken)
     {
-        try
-        {
-            AppStatusManager.ShowStatus(nameof(GetPostedSellOrdersAsync), "Downloading posted sell orders from GW2 server...");
-            var pageBuys = await Main.MyClient.WebApi.V2.Commerce.Transactions.Current.Sells.PageAsync(pageIndex, cancelToken);
+        AppStatusManager.ShowStatus(nameof(GetPostedSellOrdersAsync), "Downloading posted sell orders from GW2 server...");
 
-            AppStatusManager.ClearStatus(nameof(GetPostedSellOrdersAsync));
+        int page = 0;
+        List<CommerceTransactionCurrent> history = new();
 
-            return pageBuys.Concat(await GetPostedSellOrdersAsync(pageIndex + 1, cancelToken));
-        }
-        catch (PageOutOfRangeException)
+        while (true)
         {
-            AppStatusManager.ClearStatus(nameof(GetPostedSellOrdersAsync));
-            return Enumerable.Empty<CommerceTransactionCurrent>();
+            try
+            {
+                history.AddRange(await Main.MyClient.WebApi.V2.Commerce.Transactions.Current.Sells.PageAsync(page, cancelToken));
+                page++;
+            }
+            catch (PageOutOfRangeException)
+            {
+                break;
+            }
+            catch (Exception e)
+            {
+                GD.PushError(e);
+                break;
+            }
         }
-        catch (Exception e)
-        {
-            GD.PushError(e);
-            AppStatusManager.ClearStatus(nameof(GetPostedSellOrdersAsync));
-            return Enumerable.Empty<CommerceTransactionCurrent>();
-        }
+
+        AppStatusManager.ClearStatus(nameof(GetPostedSellOrdersAsync));
+        return history;
     }
 
     private void CreateInvestmentsFromOrders(List<CommerceTransactionHistory> buys, List<CommerceTransactionHistory> sells, List<CommerceTransactionCurrent> postedSells)
@@ -291,7 +301,8 @@ public partial class InvestmentsDatabase
                 sellDatasList.Add(sellData);
             }
             // We made sure all the buys are accounted for so we don't need to check any more sells
-            else break;
+            else
+                break;
         }
         return sellDatasList;
     }
@@ -352,7 +363,8 @@ public partial class InvestmentsDatabase
                 pendingSellDataList.Add(pendingSellData);
             }
             // We made sure all the buys are accounted for so we don't need to check any more sells
-            else break;
+            else
+                break;
         }
         return pendingSellDataList;
     }
@@ -423,12 +435,16 @@ public partial class InvestmentsDatabase
     [DataContract]
     public class CompletedInvestmentsData
     {
-        [DataMember] public List<CompletedInvestment> CompletedInvestments { get; internal set; } = new();
-        [DataMember] public List<long> NotInvestments { get; internal set; } = new();
+        [DataMember]
+        public List<CompletedInvestment> CompletedInvestments { get; internal set; } = new();
+
+        [DataMember]
+        public List<long> NotInvestments { get; internal set; } = new();
     }
 
     // ---------- Saving
     const string databasePath = "user://database.completed";
+
     public void Save()
     {
         var savedData = new CompletedInvestmentsData();

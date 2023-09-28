@@ -12,6 +12,8 @@ namespace BLIT.UI;
 
 public partial class PendingInvestmentsPage : InvestmentsPage
 {
+    private const string StatusKey = $"{nameof(PendingInvestmentsPage)}{nameof(ListInvestmentDatas)}";
+
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
     {
@@ -21,69 +23,49 @@ public partial class PendingInvestmentsPage : InvestmentsPage
     private void ClearList()
     {
         // Remove Old Investment Items From UI
-        investmentHolder.ClearChildrenSafe();
+        investmentHolder.ClearChildren();
         loadingLabel.Show();
     }
 
-    public async Task ListInvestmentDatasAsync(List<CollapsedPendingInvestment> investmentDatas, string baseStatusMessage, CancellationToken cancelToken)
+    public void ListInvestmentDatas(List<CollapsedPendingInvestment> investmentDatas, string baseStatusMessage)
     {
-        ClearList();
+        var prices = Main.MyClient.WebApi.V2.Commerce.Prices.ManyAsync(investmentDatas.Select(i => i.ItemId).Distinct()).Result;
 
-        loadingLabel.Hide();
-
-        var prices = await Main.MyClient.WebApi.V2.Commerce.Prices.ManyAsync(investmentDatas.Select(i => i.ItemId).Distinct(), cancelToken);
-
-        int index = 0;
-        AppStatusManager.ShowStatus($"{nameof(PendingInvestmentsPage)}{nameof(ListInvestmentDatasAsync)}", $"{baseStatusMessage} ({index}/{investmentDatas.Count})");
-        // Add New Investment Items To UI
-        foreach (var investment in investmentDatas.OrderByDescending(ci => ci.OldestPurchaseDate))
-        {
-            try
-            {
-                var instance = collapsedInvestmentScene.Instantiate<CollapsedPendingInvestmentItem>();
-                instance.Init(Cache.Items.GetItemData(investment.ItemId), investment, prices.First(l => investment.ItemId == l.Id).Sells.UnitPrice);
-
-                if (cancelToken.IsCancellationRequested)
-                    break;
-
-                investmentHolder.AddChildSafe(instance);
-            }
-            catch (AggregateException ag)
-            {
-                if (ag.ToString().Contains("Unsupported type") && ag.ToString().Contains("GW2Sharp"))
-                {
-                    // Most likely a new item that Gw2Sharp doesn't understand so we'll just skip it
-                    GD.PushWarning($"Failed to retreive info on item {investment.ItemId}, most likely Gw2Sharp has not been updated yet to handle the item");
-                }
-                else
-                {
-                    ProbablyRealException(ag);
-                }
-            }
-            catch (Exception e)
-            {
-                ProbablyRealException(e);
-            }
-            AppStatusManager.ShowStatus($"{nameof(PendingInvestmentsPage)}{nameof(ListInvestmentDatasAsync)}", $"{baseStatusMessage} ({index}/{investmentDatas.Count})");
-            index++;
-        }
-        AppStatusManager.ShowStatus($"{nameof(PendingInvestmentsPage)}{nameof(ListInvestmentDatasAsync)}", $"{baseStatusMessage} ({index}/{investmentDatas.Count})");
-
-        if (cancelToken.IsCancellationRequested)
+        ThreadsHelper.CallOnMainThread(() =>
         {
             ClearList();
-            AppStatusManager.ClearStatus($"{nameof(PendingInvestmentsPage)}{nameof(ListInvestmentDatasAsync)}");
-            return;
-        }
+            loadingLabel.Hide();
 
-        AppStatusManager.ClearStatus($"{nameof(PendingInvestmentsPage)}{nameof(ListInvestmentDatasAsync)}");
-    }
+            int index = 0;
+            AppStatusManager.ShowStatus(StatusKey, $"{baseStatusMessage}");
+            // Add New Investment Items To UI
+            foreach (var investment in investmentDatas.OrderByDescending(ci => ci.OldestPurchaseDate))
+            {
+                try
+                {
+                    var instance = collapsedInvestmentScene.Instantiate<CollapsedPendingInvestmentItem>();
+                    instance.Init(Cache.Items.GetItemData(investment.ItemId), investment, prices.First(l => investment.ItemId == l.Id).Sells.UnitPrice);
 
+                    investmentHolder.AddChildSafe(instance);
+                }
+                catch (AggregateException ag)
+                {
+                    if (ag.ToString().Contains("Unsupported type") && ag.ToString().Contains("GW2Sharp"))
+                    {
+                        // Most likely a new item that Gw2Sharp doesn't understand so we'll just skip it
+                        GD.PushWarning($"Failed to retreive info on item {investment.ItemId}, most likely Gw2Sharp has not been updated yet to handle the item");
+                    }
+                    else
+                        ProbablyRealException(ag);
+                }
+                catch (Exception e)
+                {
+                    ProbablyRealException(e);
+                }
+                index++;
+            }
 
-    private static void ProbablyRealException(Exception e)
-    {
-        GD.PushError(e);
-        GD.PushWarning("Unexpected error from GW2Sharp, might be an API issue?");
-        APIStatusIndicator.ShowStatus("Possible Issues With API, Some Requests Are Failing.");
+            AppStatusManager.ClearStatus(StatusKey);
+        });
     }
 }

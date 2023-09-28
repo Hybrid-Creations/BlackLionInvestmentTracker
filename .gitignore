@@ -17,3 +17,6 @@ Builds/*
 # Links
 userdata
 BLIT_User_Data
+
+# Old csproj files
+*.csproj.old*

@@ -1,0 +1,18 @@
+[gd_scene load_steps=4 format=3 uid="uid://btpbcbdxbgt3g"]
+
+[ext_resource type="Theme" uid="uid://dy6mo6ior0maw" path="res://Themes/MainTheme.tres" id="1_qiou2"]
+[ext_resource type="Script" path="res://Tooltip/Tooltip.cs" id="2_dlk2q"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_j4a1c"]
+bg_color = Color(0.12549, 0.12549, 0.12549, 1)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.752941, 0.752941, 0.752941, 1)
+border_blend = true
+
+[node name="Tooltip" type="PanelContainer"]
+theme = ExtResource("1_qiou2")
+theme_override_styles/panel = SubResource("StyleBoxFlat_j4a1c")
+script = ExtResource("2_dlk2q")

@@ -14,24 +14,22 @@ public class ThreadedTimer
 
     TimeSpan offset = TimeSpan.Zero;
 
-    CancellationTokenSource source;
+    CancellationTokenSource cancelSource;
     CancellationTokenSource currentDelaySource;
 
     public void Start(bool startNow)
     {
-        source = new CancellationTokenSource();
+        cancelSource = new CancellationTokenSource();
 
         bool firstRun = true;
 
-        // Thread thread = new(() =>
-        // {
         Task.Run(async () =>
         {
             do
             {
                 currentDelaySource?.Dispose();
                 currentDelaySource = new CancellationTokenSource();
-                if (source.IsCancellationRequested)
+                if (cancelSource.IsCancellationRequested)
                     break;
 
                 if (firstRun && startNow) { } // Don't delay if we want it to Invoke on first run
@@ -41,16 +39,24 @@ public class ThreadedTimer
                     {
                         await Task.Delay(Interval - offset, currentDelaySource.Token);
                     }
-                    catch (System.Exception) { }
+                    catch (System.Exception e) 
+                    { 
+                        if(e is not TaskCanceledException)
+                        {
+                            cancelSource.Cancel(); // Safely fail out the timer
+                            GD.PushError(e); // But show the error
+                        }
+                    } 
                 }
 
-                if (source.IsCancellationRequested)
+                if (cancelSource.IsCancellationRequested)
                     break;
 
                 var stopwatch = Stopwatch.StartNew();
 
                 try
                 {
+                    GD.Print("Timer has elapsed.");
                     await Elapsed?.Invoke();
                 }
                 catch (Exception e)
@@ -58,22 +64,20 @@ public class ThreadedTimer
                     GD.PushError(e);
                 }
 
-                offset = stopwatch.Elapsed;
+                offset = stopwatch.Elapsed; // This makes it so the tiemr always runs every X interval, as it takes away the time it took to run the code
                 stopwatch.Stop();
 
                 firstRun = false;
             }
-            while (Repeat && source.IsCancellationRequested == false);
+            while (Repeat && cancelSource.IsCancellationRequested == false);
 
             currentDelaySource?.Dispose();
-        }, source.Token);
-        // });
-        // thread.Start();
+        }, cancelSource.Token);
     }
 
     public void Stop()
     {
-        source.Cancel();
+        cancelSource.Cancel();
     }
 
     public void InvokeASAP()
@@ -81,4 +85,3 @@ public class ThreadedTimer
         currentDelaySource.Cancel();
     }
 }
-

@@ -18,28 +18,22 @@ public partial class APIStatusIndicator : Panel
         Hide();
     }
 
-    public override void _Process(double delta)
-    {
-        if (string.IsNullOrWhiteSpace(newStatus) == false)
-            statusLabel.Text = $"[center][right]{newStatus}";
-
-        if (newStatus == "clear")
-        {
-            statusLabel.Text = "";
-            Instance.Hide();
-            Instance.SetProcess(false);
-        }
-    }
-
     public static void ShowStatus(string status)
     {
-        newStatus = $"{status} => [color=cyan][url=https://status.gw2efficiency.com/]Check End Points[/url][/color] <= This App Uses /v2/commerce/*";
-        Instance.Show();
-        Instance.SetProcess(true);
+        ThreadsHelper.CallOnMainThread(() =>
+        {
+            Instance.statusLabel.Text = $"[center][right]{status} => [color=cyan][url=https://status.gw2efficiency.com/]Check End Points[/url][/color] <= This App Uses /v2/commerce/*";
+            ;
+            Instance.Show();
+        });
     }
 
     public static void ClearStatus()
     {
-        newStatus = "clear";
+        ThreadsHelper.CallOnMainThread(() =>
+        {
+            Instance.statusLabel.Clear();
+            Instance.Hide();
+        });
     }
 }

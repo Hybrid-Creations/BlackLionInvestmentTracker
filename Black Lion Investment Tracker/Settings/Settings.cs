@@ -4,88 +4,91 @@ namespace BLIT;
 
 public partial class Settings : Panel
 {
-    [Export]
-    LineEdit apiKeyField;
-    [Export]
-    SpinBox databaseIntervalField;
-    [Export]
-    SpinBox deliveryBoxIntervalField;
-    [Export]
-    PackedScene mainScene;
+	[Export]
+	LineEdit apiKeyField;
+	[Export]
+	SpinBox databaseIntervalField;
+	[Export]
+	SpinBox deliveryBoxIntervalField;
+	[Export]
+	PackedScene mainScene;
 
-    public static SettingsData Data { get; private set; } = new SettingsData();
+	public static SettingsData Data { get; private set; } = new SettingsData();
 
-    static bool firstLoad = true;
+	static bool firstLoad = true;
 
-    public override void _Ready()
-    {
-        Load();
+	public override void _Ready()
+	{
+		Load();
 
-        apiKeyField.Text = Data.APIKey;
-        databaseIntervalField.Value = Data.databaseInterval;
-        deliveryBoxIntervalField.Value = Data.deliveryBoxInterval;
+		apiKeyField.Text = Data.APIKey;
+		databaseIntervalField.Value = Data.DatabaseInterval;
+		deliveryBoxIntervalField.Value = Data.DeliveryBoxInterval;
 
-        if (firstLoad)
-        {
-            firstLoad = false;
+		if (firstLoad)
+		{
+			firstLoad = false;
 
-            if (string.IsNullOrWhiteSpace(Data.APIKey) == false)
-                ContinueToMainScene();
-        }
-    }
+			if (string.IsNullOrWhiteSpace(Data.APIKey) == false)
+				ContinueToMainScene();
+		}
+	}
 
-    public void SaveSettings()
-    {
-        if (string.IsNullOrWhiteSpace(apiKeyField.Text) == false)
-        {
-            Data.APIKey = apiKeyField.Text;
+	public void SaveSettings()
+	{
+		if (string.IsNullOrWhiteSpace(apiKeyField.Text) == false)
+		{
+			Data.APIKey = apiKeyField.Text;
 
-            Save();
-            ContinueToMainScene();
-        }
-        Data.databaseInterval = (int)databaseIntervalField.Value;
-        Data.deliveryBoxInterval = (int)deliveryBoxIntervalField.Value;
-    }
+			Save();
+			ContinueToMainScene();
+		}
+		Data.DatabaseInterval = (int)databaseIntervalField.Value;
+		Data.DeliveryBoxInterval = (int)deliveryBoxIntervalField.Value;
+	}
 
-    void ContinueToMainScene()
-    {
-        GetTree().ChangeSceneToPacked(mainScene);
-    }
+	void ContinueToMainScene()
+	{
+		GetTree().ChangeSceneToPacked(mainScene);
+	}
 
-    public class SettingsData
-    {
-        public string APIKey;
-        public int databaseInterval;
-        public int deliveryBoxInterval;
-    }
+	public class SettingsData
+	{
+		public string APIKey;
+		public int DatabaseInterval;
+		public int DeliveryBoxInterval;
 
-    const string settingsPath = "user://settings";
-    public static void Save()
-    {
-        var config = new ConfigFile();
-        config.SetValue("Settings", nameof(Settings.SettingsData.APIKey), Data.APIKey);
-        config.SetValue("Settings", nameof(Settings.SettingsData.databaseInterval), Data.databaseInterval);
-        config.SetValue("Settings", nameof(Settings.SettingsData.deliveryBoxInterval), Data.deliveryBoxInterval);
-        config.Save(settingsPath);
-    }
+		public const int DatabaseIntervalDefault = 300;
+		public const int DeliveryBoxIntervalDefault = 30;
+	}
 
-    public static void Load()
-    {
-        var config = new ConfigFile();
+	const string settingsPath = "user://settings";
+	public static void Save()
+	{
+		var config = new ConfigFile();
+		config.SetValue("Settings", nameof(Settings.SettingsData.APIKey), Data.APIKey);
+		config.SetValue("Settings", nameof(Settings.SettingsData.DatabaseInterval), Data.DatabaseInterval);
+		config.SetValue("Settings", nameof(Settings.SettingsData.DeliveryBoxInterval), Data.DeliveryBoxInterval);
+		config.Save(settingsPath);
+	}
 
-        if (config.Load(settingsPath) == Error.Ok)
-        {
-            Data.APIKey = config.GetValue("Settings", nameof(Settings.SettingsData.APIKey)).AsString();
-            Data.databaseInterval = config.GetValue("Settings", nameof(Settings.SettingsData.databaseInterval), 300).AsInt32();
-            Data.deliveryBoxInterval = config.GetValue("Settings", nameof(Settings.SettingsData.deliveryBoxInterval), 15).AsInt32();
-        }
-        else
-        {
-            Data.APIKey = "";
-            Data.databaseInterval = 300;
-            Data.deliveryBoxInterval = 15;
-        }
+	public static void Load()
+	{
+		var config = new ConfigFile();
 
-        GD.Print($"Loaded Settings => API Key Exists: {string.IsNullOrWhiteSpace(Data.APIKey) == false} Database Interval: {Data.databaseInterval} Delivery Box Interval: {Data.deliveryBoxInterval}");
-    }
+		if (config.Load(settingsPath) == Error.Ok)
+		{
+			Data.APIKey = config.GetValue("Settings", nameof(Settings.SettingsData.APIKey)).AsString();
+			Data.DatabaseInterval = config.GetValue("Settings", nameof(Settings.SettingsData.DatabaseInterval), SettingsData.DatabaseIntervalDefault).AsInt32();
+			Data.DeliveryBoxInterval = config.GetValue("Settings", nameof(Settings.SettingsData.DeliveryBoxInterval), SettingsData.DeliveryBoxIntervalDefault).AsInt32();
+		}
+		else
+		{
+			Data.APIKey = "";
+			Data.DatabaseInterval = SettingsData.DatabaseIntervalDefault;
+			Data.DeliveryBoxInterval = SettingsData.DeliveryBoxIntervalDefault;
+		}
+
+		GD.Print($"Loaded Settings => API Key Exists: {string.IsNullOrWhiteSpace(Data.APIKey) == false} Database Interval: {Data.DatabaseInterval} Delivery Box Interval: {Data.DeliveryBoxInterval}");
+	}
 }
