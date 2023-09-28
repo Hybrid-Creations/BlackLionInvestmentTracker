@@ -23,56 +23,62 @@ public class ThreadedTimer
 
         bool firstRun = true;
 
-        Task.Run(async () =>
-        {
-            do
+        Task.Run(
+            async () =>
             {
-                currentDelaySource?.Dispose();
-                currentDelaySource = new CancellationTokenSource();
-                if (cancelSource.IsCancellationRequested)
-                    break;
-
-                if (firstRun && startNow) { } // Don't delay if we want it to Invoke on first run
-                else
+                do
                 {
+                    currentDelaySource?.Dispose();
+                    currentDelaySource = new CancellationTokenSource();
+                    if (cancelSource.IsCancellationRequested)
+                        break;
+
+                    if (firstRun && startNow) { } // Don't delay if we want it to Invoke on first run
+                    else
+                    {
+                        try
+                        {
+                            var timeSpan = Interval - offset;
+                            if (timeSpan.TotalMilliseconds < 0)
+                                await Task.Delay(1, currentDelaySource.Token);
+                            else
+                                await Task.Delay(timeSpan, currentDelaySource.Token);
+                        }
+                        catch (System.Exception e)
+                        {
+                            if (e is not TaskCanceledException)
+                            {
+                                cancelSource.Cancel(); // Safely fail out the timer
+                                GD.PushError($"ts:{Interval - offset} => {e}"); // But show the error
+                            }
+                        }
+                    }
+
+                    if (cancelSource.IsCancellationRequested)
+                        break;
+
+                    var stopwatch = Stopwatch.StartNew();
+
                     try
                     {
-                        await Task.Delay(Interval - offset, currentDelaySource.Token);
+                        GD.Print("Timer has elapsed.");
+                        await Elapsed?.Invoke();
                     }
-                    catch (System.Exception e) 
-                    { 
-                        if(e is not TaskCanceledException)
-                        {
-                            cancelSource.Cancel(); // Safely fail out the timer
-                            GD.PushError(e); // But show the error
-                        }
-                    } 
-                }
+                    catch (Exception e)
+                    {
+                        GD.PushError(e);
+                    }
 
-                if (cancelSource.IsCancellationRequested)
-                    break;
+                    offset = stopwatch.Elapsed; // This makes it so the tiemr always runs every X interval, as it takes away the time it took to run the code
+                    stopwatch.Stop();
 
-                var stopwatch = Stopwatch.StartNew();
+                    firstRun = false;
+                } while (Repeat && cancelSource.IsCancellationRequested == false);
 
-                try
-                {
-                    GD.Print("Timer has elapsed.");
-                    await Elapsed?.Invoke();
-                }
-                catch (Exception e)
-                {
-                    GD.PushError(e);
-                }
-
-                offset = stopwatch.Elapsed; // This makes it so the tiemr always runs every X interval, as it takes away the time it took to run the code
-                stopwatch.Stop();
-
-                firstRun = false;
-            }
-            while (Repeat && cancelSource.IsCancellationRequested == false);
-
-            currentDelaySource?.Dispose();
-        }, cancelSource.Token);
+                currentDelaySource?.Dispose();
+            },
+            cancelSource.Token
+        );
     }
 
     public void Stop()

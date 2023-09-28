@@ -1,13 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using BLIT.Extensions;
 using BLIT.Investments;
 using BLIT.Status;
 using Godot;
-using Gw2Sharp.WebApi.Exceptions;
 
 namespace BLIT.UI;
 
@@ -15,21 +12,11 @@ public partial class PotentialInvestmentsPage : InvestmentsPage
 {
     private const string StatusKey = $"{nameof(PotentialInvestmentsPage)}{nameof(ListInvestmentDatas)}";
 
-    // Called when the node enters the scene tree for the first time.
-    public override void _Ready()
-    {
-        ClearList();
-    }
-
-    private void ClearList()
-    {
-        // Remove Old Investment Items From UI
-        investmentHolder.ClearChildren();
-        loadingLabel.Show();
-    }
-
     public void ListInvestmentDatas(List<CollapsedPotentialInvestment> investmentDatas, string baseStatusMessage)
     {
+        if (investmentDatas.Count <= 0)
+            return;
+
         var prices = Main.MyClient.WebApi.V2.Commerce.Prices.ManyAsync(investmentDatas.Select(i => i.ItemId).Distinct()).Result;
 
         ThreadsHelper.CallOnMainThread(() =>
@@ -68,7 +55,11 @@ public partial class PotentialInvestmentsPage : InvestmentsPage
                 }
                 index++;
             }
-          
+            Direction = SortingDirection.Descending;
+            ResetAllSortingArrows();
+            lastActiveSortingArrow.Show();
+            lastActiveSortingArrow.FlipV = Direction == SortingDirection.Ascending;
+
             AppStatusManager.ClearStatus(StatusKey);
         });
     }

@@ -22,7 +22,7 @@ public static partial class StringExtensions
         if (offset.Days > 0)
         {
             // then check if its over a month
-            if (offset.Days >= DateTime.DaysInMonth(DateTime.Now.Year, DateTime.Now.Month))
+            if (offset.Days > DateTime.DaysInMonth(DateTime.Now.Year, DateTime.Now.Month))
             {
                 int months = offset.Months(DateTime.Now);
                 sb.Append($"{months} month{(months > 1 ? "s" : "")}");
@@ -49,11 +49,11 @@ public static partial class StringExtensions
 
         sb.Append(" ago");
 
-        if (sb.ToString() == "15 hours ago")
-        {
-
-            GD.Print($"offset: {offset}, now:{DateTimeOffset.UtcNow}, value: {value}");
-        }
+        // Uncomment For Testing Purposes
+        // if (sb.ToString() == "0 month ago")
+        // {
+        //     GD.Print($"offset: {offset}, now:{DateTimeOffset.UtcNow}, value: {value}");
+        // }
 
         return sb.ToString();
     }

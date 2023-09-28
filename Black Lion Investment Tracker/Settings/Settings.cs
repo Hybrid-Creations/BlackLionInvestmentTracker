@@ -4,91 +4,134 @@ namespace BLIT;
 
 public partial class Settings : Panel
 {
-	[Export]
-	LineEdit apiKeyField;
-	[Export]
-	SpinBox databaseIntervalField;
-	[Export]
-	SpinBox deliveryBoxIntervalField;
-	[Export]
-	PackedScene mainScene;
+    [Export]
+    LineEdit apiKeyField;
 
-	public static SettingsData Data { get; private set; } = new SettingsData();
+    [Export]
+    SpinBox databaseIntervalField;
 
-	static bool firstLoad = true;
+    [Export]
+    SpinBox deliveryBoxIntervalField;
 
-	public override void _Ready()
-	{
-		Load();
+    [Export]
+    SpinBox databaseBackupsToKeepField;
 
-		apiKeyField.Text = Data.APIKey;
-		databaseIntervalField.Value = Data.DatabaseInterval;
-		deliveryBoxIntervalField.Value = Data.DeliveryBoxInterval;
+    [Export]
+    PackedScene mainScene;
 
-		if (firstLoad)
-		{
-			firstLoad = false;
+    public static SettingsData Data { get; private set; }
 
-			if (string.IsNullOrWhiteSpace(Data.APIKey) == false)
-				ContinueToMainScene();
-		}
-	}
+    static bool firstLoad = true;
 
-	public void SaveSettings()
-	{
-		if (string.IsNullOrWhiteSpace(apiKeyField.Text) == false)
-		{
-			Data.APIKey = apiKeyField.Text;
+    public override void _Ready()
+    {
+        Data = new SettingsData(databaseIntervalField.MinValue, deliveryBoxIntervalField.MinValue, databaseBackupsToKeepField.MinValue);
+        Load();
 
-			Save();
-			ContinueToMainScene();
-		}
-		Data.DatabaseInterval = (int)databaseIntervalField.Value;
-		Data.DeliveryBoxInterval = (int)deliveryBoxIntervalField.Value;
-	}
+        apiKeyField.Text = Data.APIKey;
+        databaseIntervalField.Value = Data.DatabaseInterval;
+        deliveryBoxIntervalField.Value = Data.DeliveryBoxInterval;
+        databaseBackupsToKeepField.Value = Data.DatabaseBackupsToKeep;
 
-	void ContinueToMainScene()
-	{
-		GetTree().ChangeSceneToPacked(mainScene);
-	}
+        if (firstLoad)
+        {
+            firstLoad = false;
 
-	public class SettingsData
-	{
-		public string APIKey;
-		public int DatabaseInterval;
-		public int DeliveryBoxInterval;
+            if (string.IsNullOrWhiteSpace(Data.APIKey) == false)
+                ContinueToMainScene();
+        }
+    }
 
-		public const int DatabaseIntervalDefault = 300;
-		public const int DeliveryBoxIntervalDefault = 30;
-	}
+    public void SaveSettings()
+    {
+        if (string.IsNullOrWhiteSpace(apiKeyField.Text) == false)
+        {
+            Data.APIKey = apiKeyField.Text;
+            Data.DatabaseInterval = (int)databaseIntervalField.Value;
+            Data.DeliveryBoxInterval = (int)deliveryBoxIntervalField.Value;
+            Data.DatabaseBackupsToKeep = (int)databaseBackupsToKeepField.Value;
 
-	const string settingsPath = "user://settings";
-	public static void Save()
-	{
-		var config = new ConfigFile();
-		config.SetValue("Settings", nameof(Settings.SettingsData.APIKey), Data.APIKey);
-		config.SetValue("Settings", nameof(Settings.SettingsData.DatabaseInterval), Data.DatabaseInterval);
-		config.SetValue("Settings", nameof(Settings.SettingsData.DeliveryBoxInterval), Data.DeliveryBoxInterval);
-		config.Save(settingsPath);
-	}
+            Save();
+            ContinueToMainScene();
+        }
+    }
 
-	public static void Load()
-	{
-		var config = new ConfigFile();
+    void ContinueToMainScene()
+    {
+        GetTree().ChangeSceneToPacked(mainScene);
+    }
 
-		if (config.Load(settingsPath) == Error.Ok)
-		{
-			Data.APIKey = config.GetValue("Settings", nameof(Settings.SettingsData.APIKey)).AsString();
-			Data.DatabaseInterval = config.GetValue("Settings", nameof(Settings.SettingsData.DatabaseInterval), SettingsData.DatabaseIntervalDefault).AsInt32();
-			Data.DeliveryBoxInterval = config.GetValue("Settings", nameof(Settings.SettingsData.DeliveryBoxInterval), SettingsData.DeliveryBoxIntervalDefault).AsInt32();
-		}
-		else
-		{
-			Data.APIKey = "";
-			Data.DatabaseInterval = SettingsData.DatabaseIntervalDefault;
-			Data.DeliveryBoxInterval = SettingsData.DeliveryBoxIntervalDefault;
-		}
+    public class SettingsData
+    {
+        int DatabaseIntervalMin = 30;
+        int DeliveryBoxIntervalMin = 15;
+        int DatabaseBackupsToKeepMin = 1;
 
-		GD.Print($"Loaded Settings => API Key Exists: {string.IsNullOrWhiteSpace(Data.APIKey) == false} Database Interval: {Data.DatabaseInterval} Delivery Box Interval: {Data.DeliveryBoxInterval}");
-	}
+        private int databaseIntervalBackingField;
+        private int deliveryBoxIntervalBackingField;
+        private int databaseBackupsToKeepBackingField;
+
+        public int DatabaseInterval
+        {
+            get => databaseIntervalBackingField;
+            set { databaseIntervalBackingField = Mathf.Max(value, DatabaseIntervalMin); }
+        }
+        public int DeliveryBoxInterval
+        {
+            get => deliveryBoxIntervalBackingField;
+            set { deliveryBoxIntervalBackingField = Mathf.Max(value, DeliveryBoxIntervalMin); }
+        }
+        public int DatabaseBackupsToKeep
+        {
+            get => databaseBackupsToKeepBackingField;
+            set { databaseBackupsToKeepBackingField = Mathf.Max(value, DatabaseBackupsToKeepMin); }
+        }
+
+        public string APIKey;
+
+        public const int DatabaseIntervalDefault = 300;
+        public const int DeliveryBoxIntervalDefault = 30;
+        public const int DatabaseBackupsToKeepDefault = 5;
+
+        public SettingsData(double dbInvervalMinValue, double boxIntervalMinValue, double backupMinValue)
+        {
+            DatabaseIntervalMin = (int)dbInvervalMinValue;
+            DeliveryBoxIntervalMin = (int)boxIntervalMinValue;
+            DatabaseBackupsToKeepMin = (int)backupMinValue;
+        }
+    }
+
+    const string settingsPath = "user://settings";
+
+    public static void Save()
+    {
+        var config = new ConfigFile();
+        config.SetValue("Settings", nameof(Settings.SettingsData.APIKey), Data.APIKey);
+        config.SetValue("Settings", nameof(Settings.SettingsData.DatabaseInterval), Data.DatabaseInterval);
+        config.SetValue("Settings", nameof(Settings.SettingsData.DeliveryBoxInterval), Data.DeliveryBoxInterval);
+        config.SetValue("Settings", nameof(Settings.SettingsData.DatabaseBackupsToKeep), Data.DatabaseBackupsToKeep);
+        config.Save(settingsPath);
+    }
+
+    public static void Load()
+    {
+        var config = new ConfigFile();
+
+        if (config.Load(settingsPath) == Error.Ok)
+        {
+            Data.APIKey = config.GetValue("Settings", nameof(Settings.SettingsData.APIKey)).AsString();
+            Data.DatabaseInterval = config.GetValue("Settings", nameof(Settings.SettingsData.DatabaseInterval), SettingsData.DatabaseIntervalDefault).AsInt32();
+            Data.DeliveryBoxInterval = config.GetValue("Settings", nameof(Settings.SettingsData.DeliveryBoxInterval), SettingsData.DeliveryBoxIntervalDefault).AsInt32();
+            Data.DatabaseBackupsToKeep = config.GetValue("Settings", nameof(Settings.SettingsData.DatabaseBackupsToKeep), SettingsData.DatabaseBackupsToKeepDefault).AsInt32();
+        }
+        else
+        {
+            Data.APIKey = "";
+            Data.DatabaseInterval = SettingsData.DatabaseIntervalDefault;
+            Data.DeliveryBoxInterval = SettingsData.DeliveryBoxIntervalDefault;
+            Data.DatabaseBackupsToKeep = SettingsData.DatabaseBackupsToKeepDefault;
+        }
+
+        GD.Print($"Loaded Settings => API Key Exists: {string.IsNullOrWhiteSpace(Data.APIKey) == false} Database Interval: {Data.DatabaseInterval} Delivery Box Interval: {Data.DeliveryBoxInterval}");
+    }
 }

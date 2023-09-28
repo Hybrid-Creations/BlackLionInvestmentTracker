@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using BLIT.ConstantVariables;
 using BLIT.Extensions;
@@ -11,6 +12,11 @@ public sealed partial class CollapsedPendingInvestmentItem : CollapsedInvestment
     private CollapsedPendingInvestment collapsedInvestment;
     int currentSellPrice;
 
+    public override double TotalBuyPrice => collapsedInvestment.TotalBuyPrice;
+    public override double TotalSellPrice => collapsedInvestment.TotalSellPrice;
+    public override double TotalProfit => collapsedInvestment.TotalProfit;
+    public override DateTimeOffset LastActive => collapsedInvestment.OldestPurchaseDate;
+
     public override void _Ready()
     {
         subInvestmentTitles.Hide();
@@ -18,14 +24,15 @@ public sealed partial class CollapsedPendingInvestmentItem : CollapsedInvestment
 
     public void Init(ItemData _item, CollapsedPendingInvestment _collapsedInvestment, int _currentSellPrice)
     {
-        if (IsQueuedForDeletion()) return;
+        if (IsQueuedForDeletion())
+            return;
 
         collapsedInvestment = _collapsedInvestment;
         currentSellPrice = _currentSellPrice;
 
         itemProperties.GetNode<TextureRect>("Icon").Texture = _item.Icon;
         itemProperties.GetNode<Label>("Icon/Quantity").Text = _collapsedInvestment.Quantity.ToString();
-        itemProperties.GetNode<Label>("Name").Text = _item.Name;
+        itemProperties.GetNode<Label>("Name").Text = ItemName = _item.Name;
         itemProperties.GetNode<RichTextLabel>("BuyPrice").Text = _collapsedInvestment.GetBuyPriceStringFromInvestment(true, RichStringAlignment.RIGHT);
         itemProperties.GetNode<RichTextLabel>("SellPrice").Text = _collapsedInvestment.GetSellPriceStringFromInvestment(true, RichStringAlignment.RIGHT);
         itemProperties.GetNode<RichTextLabel>("BreakEvenPrice").Text = GetCurrentListedPrice(_collapsedInvestment);
@@ -69,21 +76,26 @@ public sealed partial class CollapsedPendingInvestmentItem : CollapsedInvestment
         {
             if (mouse.ButtonMask == MouseButtonMask.Right)
             {
-                RightClickMenu.OpenMenu(GetTree().Root, mouse.GlobalPosition, new[] { MarkNotAnInvestment }, (str) =>
-                {
-                    if (str == MarkNotAnInvestment)
+                RightClickMenu.OpenMenu(
+                    GetTree().Root,
+                    mouse.GlobalPosition,
+                    new[] { MarkNotAnInvestment },
+                    (str) =>
                     {
-                        Main.Database.CollapsedPendingInvestments.Remove(collapsedInvestment);
-
-                        foreach (var investment in collapsedInvestment.SubInvestments)
+                        if (str == MarkNotAnInvestment)
                         {
-                            Main.Database.PendingInvestments.Remove(investment);
-                            Main.Database.NotInvestments.Add(investment.BuyData.TransactionId);
+                            Main.Database.CollapsedPendingInvestments.Remove(collapsedInvestment);
+
+                            foreach (var investment in collapsedInvestment.SubInvestments)
+                            {
+                                Main.Database.PendingInvestments.Remove(investment);
+                                Main.Database.NotInvestments.Add(investment.BuyData.TransactionId);
+                            }
+                            Main.Database.Save();
+                            QueueFree();
                         }
-                        Main.Database.Save();
-                        QueueFree();
                     }
-                });
+                );
             }
             else if (mouse.ButtonMask == MouseButtonMask.Left)
             {

@@ -4,7 +4,7 @@
 [ext_resource type="Script" path="res://Settings/Settings.cs" id="2_rptdu"]
 [ext_resource type="PackedScene" uid="uid://7ifvv708hvob" path="res://Main/Main.tscn" id="3_uddsk"]
 
-[node name="Settings" type="Panel" node_paths=PackedStringArray("apiKeyField", "databaseIntervalField", "deliveryBoxIntervalField")]
+[node name="Settings" type="Panel" node_paths=PackedStringArray("apiKeyField", "databaseIntervalField", "deliveryBoxIntervalField", "databaseBackupsToKeepField")]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -15,6 +15,7 @@ script = ExtResource("2_rptdu")
 apiKeyField = NodePath("API Key/API Key Field")
 databaseIntervalField = NodePath("Refresh Intervals/Refresh Database Interval/DatabaseInterval")
 deliveryBoxIntervalField = NodePath("Refresh Intervals/Refresh Delivery Box Interval/DeliveryBoxInterval")
+databaseBackupsToKeepField = NodePath("Backups/BackupsToKeep")
 mainScene = ExtResource("3_uddsk")
 
 [node name="Label" type="Label" parent="."]
@@ -60,8 +61,8 @@ caret_blink = true
 layout_mode = 1
 anchors_preset = 10
 anchor_right = 1.0
-offset_top = 192.0
-offset_bottom = 228.0
+offset_top = 208.0
+offset_bottom = 244.0
 grow_horizontal = 2
 theme_override_font_sizes/font_size = 22
 text = "Refresh Intervals:"
@@ -92,7 +93,7 @@ offset_bottom = 84.0
 grow_horizontal = 2
 min_value = 15.0
 max_value = 3600.0
-value = 15.0
+value = 300.0
 alignment = 1
 suffix = "s"
 select_all_on_focus = true
@@ -121,9 +122,36 @@ offset_bottom = 84.0
 grow_horizontal = 2
 min_value = 15.0
 max_value = 3600.0
-value = 300.0
+value = 30.0
 alignment = 1
 suffix = "s"
+select_all_on_focus = true
+
+[node name="Backups" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_top = 368.0
+offset_bottom = 404.0
+grow_horizontal = 2
+theme_override_font_sizes/font_size = 22
+text = "Backups:"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="BackupsToKeep" type="SpinBox" parent="Backups"]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_left = 25.0
+offset_top = 48.0
+offset_right = -25.0
+offset_bottom = 84.0
+grow_horizontal = 2
+min_value = 1.0
+max_value = 15.0
+value = 15.0
+alignment = 1
 select_all_on_focus = true
 
 [node name="Button" type="Button" parent="."]

@@ -67,8 +67,9 @@ layout_mode = 2
 visible = false
 layout_mode = 2
 
-[node name="TitleBar" parent="." instance=ExtResource("6_1jd8q")]
+[node name="TitleBar" parent="." node_paths=PackedStringArray("main") instance=ExtResource("6_1jd8q")]
 layout_mode = 1
+main = NodePath("..")
 
 [node name="DragRegion" parent="TitleBar" index="0"]
 offset_left = 76.0

@@ -71,7 +71,6 @@ public partial class DeliveryBox : Button
         CommerceDelivery deliveryBox;
         try
         {
-            throw new System.NotImplementedException();
             deliveryBox = await Main.MyClient.WebApi.V2.Commerce.Delivery.GetAsync(cancelToken);
         }
         catch (System.Exception e)

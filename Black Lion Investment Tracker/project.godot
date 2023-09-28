@@ -15,9 +15,7 @@ run/main_scene="res://Settings/Settings.tscn"
 config/use_custom_user_dir=true
 config/custom_user_dir_name="BLIT"
 config/features=PackedStringArray("4.1", "C#", "Forward Plus")
-run/max_fps=144
 run/low_processor_mode=true
-run/low_processor_mode_sleep_usec=50000
 config/icon="res://icon.png"
 config/windows_native_icon="res://icon.ico"
 
@@ -35,4 +33,4 @@ project/assembly_name="Black Lion Investment Tracker"
 
 [rendering]
 
-renderer/rendering_method="gl_compatibility"
+renderer/rendering_method="mobile"

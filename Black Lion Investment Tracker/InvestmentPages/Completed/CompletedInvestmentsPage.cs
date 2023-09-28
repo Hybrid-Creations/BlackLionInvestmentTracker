@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using BLIT.ConstantVariables;
 using BLIT.Extensions;
 using BLIT.Investments;
@@ -21,8 +19,8 @@ public partial class CompletedInvestmentsPage : InvestmentsPage
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
     {
+        base._Ready();
         ClearTotals();
-        ClearList();
     }
 
     private void ClearTotals()
@@ -39,13 +37,6 @@ public partial class CompletedInvestmentsPage : InvestmentsPage
         totals.GetNode<RichTextLabel>("Return").Text = $"Return:   {Main.Database.TotalReturn.ToCurrencyString(RichImageType.PX32, 24)}";
         totals.GetNode<RichTextLabel>("Profit").Text = $"Profit:   {Main.Database.TotalProfit.ToCurrencyString(RichImageType.PX32, 24)}";
         totals.GetNode<Label>("ROI").Text = $"ROI:  {Main.Database.ROI:00}%";
-    }
-
-    private void ClearList()
-    {
-        // Remove Old Investment Items From UI
-        investmentHolder.ClearChildren();
-        loadingLabel.Show();
     }
 
     public void ListInvestmentDatas(List<CollapsedCompletedInvestment> investmentDatas, string baseStatusMessage)
@@ -85,12 +76,18 @@ public partial class CompletedInvestmentsPage : InvestmentsPage
                 }
                 index++;
             }
+            Direction = SortingDirection.Descending;
+            ResetAllSortingArrows();
+            lastActiveSortingArrow.Show();
+            lastActiveSortingArrow.FlipV = Direction == SortingDirection.Ascending;
 
             // Calculate Profit
             var totalInvested = Main.Database.TotalInvested;
             var totalReturn = Main.Database.TotalReturn;
             var totalProfit = Main.Database.TotalProfit;
-            GD.Print($"Total Invested: {totalInvested.ToCurrencyString(RichImageType.NONE)}, Total Return: {totalReturn.ToCurrencyString(RichImageType.NONE)},  Total Profit With Tax Removed: {totalProfit.ToCurrencyString(RichImageType.NONE)}, ROI: {Main.Database.ROI}");
+            GD.Print(
+                $"Total Invested: {totalInvested.ToCurrencyString(RichImageType.NONE)}, Total Return: {totalReturn.ToCurrencyString(RichImageType.NONE)},  Total Profit With Tax Removed: {totalProfit.ToCurrencyString(RichImageType.NONE)}, ROI: {Main.Database.ROI}"
+            );
 
             SetTotals();
 

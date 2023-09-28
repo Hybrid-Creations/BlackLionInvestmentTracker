@@ -15,6 +15,10 @@ custom_minimum_size = Vector2(275, 0)
 [node name="SellPrice" parent="ColumnTitles" index="6"]
 text = "List Sell Price "
 
+[node name="SortingArrow" parent="ColumnTitles/SellPrice" index="0"]
+offset_left = -52.315
+offset_right = -36.315
+
 [node name="BreakEvenSellPrice" parent="ColumnTitles" index="7"]
 visible = true
 text = "Cur Sell Price "

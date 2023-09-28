@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Threading;
@@ -79,14 +80,8 @@ public partial class InvestmentsDatabase
 
             if (cancelToken.IsCancellationRequested)
                 return;
-            try
-            {
-                await Task.WhenAll(buyOrders, sellOrders, postedSellOrders);
-            }
-            catch (Exception e)
-            {
-                GD.PushError(e);
-            }
+
+            await Task.WhenAll(buyOrders, sellOrders, postedSellOrders);
 
             if (cancelToken.IsCancellationRequested)
                 return;
@@ -127,6 +122,8 @@ public partial class InvestmentsDatabase
             catch (Exception e)
             {
                 GD.PushError(e);
+                AppStatusManager.ClearStatus(nameof(GetBuyOrdersAsync));
+                APIStatusIndicator.ShowStatus("Error occured getting Buy History");
                 break;
             }
         }
@@ -156,6 +153,8 @@ public partial class InvestmentsDatabase
             catch (Exception e)
             {
                 GD.PushError(e);
+                AppStatusManager.ClearStatus(nameof(GetSellOrdersAsync));
+                APIStatusIndicator.ShowStatus("Error occured getting Sell History");
                 break;
             }
         }
@@ -185,6 +184,8 @@ public partial class InvestmentsDatabase
             catch (Exception e)
             {
                 GD.PushError(e);
+                AppStatusManager.ClearStatus(nameof(GetPostedSellOrdersAsync));
+                APIStatusIndicator.ShowStatus("Error occured getting Posted Sell Orders");
                 break;
             }
         }
@@ -443,20 +444,30 @@ public partial class InvestmentsDatabase
     }
 
     // ---------- Saving
-    const string databasePath = "user://database.completed";
+    const string databaseFileName = "database.completed";
+    const string databaseGodotPath = $"user://{databaseFileName}";
 
-    public void Save()
+    public void Save(bool createBackup = false)
     {
+        GD.Print("Saving Database");
         var savedData = new CompletedInvestmentsData();
         savedData.CompletedInvestments = CompletedInvestments;
         savedData.NotInvestments = NotInvestments;
-        SaveSystem.SaveToFile(databasePath, savedData);
+        if (createBackup)
+            BackupCurrentDatabase();
+        SaveSystem.SaveToFile(databaseGodotPath, savedData);
+    }
+
+    // ---------- Backup
+    void BackupCurrentDatabase()
+    {
+        GD.Print("Backup" + SaveSystem.CreateBackup(databaseGodotPath));
     }
 
     // ---------- Loading
     public void Load()
     {
-        if (SaveSystem.TryLoadFromFile(databasePath, out CompletedInvestmentsData newData))
+        if (SaveSystem.TryLoadFromFile(databaseGodotPath, out CompletedInvestmentsData newData))
         {
             CompletedInvestments = newData.CompletedInvestments ?? new();
             NotInvestments = newData.NotInvestments ?? new();

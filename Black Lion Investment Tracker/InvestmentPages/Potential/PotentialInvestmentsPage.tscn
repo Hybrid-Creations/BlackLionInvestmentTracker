@@ -15,11 +15,19 @@ custom_minimum_size = Vector2(275, 0)
 [node name="SellPrice" parent="ColumnTitles" index="6"]
 text = "Cur Sell Price "
 
+[node name="SortingArrow" parent="ColumnTitles/SellPrice" index="0"]
+offset_left = -52.4
+offset_right = -36.4
+
 [node name="BreakEvenSellPrice" parent="ColumnTitles" index="7"]
 visible = true
 
 [node name="Profit" parent="ColumnTitles" index="8"]
 text = "Cur Profit"
+
+[node name="SortingArrow" parent="ColumnTitles/Profit" index="0"]
+offset_left = -24.545
+offset_right = -8.54497
 
 [node name="CollapsedPotentialInvestmentItem" parent="ScrollContainer/VBoxContainer/InvsetmentHolder" index="0" instance=ExtResource("3_xupfe")]
 layout_mode = 2

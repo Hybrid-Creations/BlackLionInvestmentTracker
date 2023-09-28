@@ -20,9 +20,9 @@ public class CollapsedCompletedInvestment : CollapsedInvestment<CompletedInvestm
     public double AverageIndividualSellPrice => SubInvestments.SelectMany(i => i.SellDatas).Average(s => s.IndividualSellPrice);
     public int TotalSellPrice => SubInvestments.Sum(si => si.TotalSellPrice);
 
-
     public double IndividualProfit => (SubInvestments.First().SellDatas.First().IndividualSellPrice * Constants.MultiplyTax) - SubInvestments.First().BuyData.IndividualBuyPrice;
     public double AverageIndividualProfit => SubInvestments.Average(i => i.AverageIndividualProfit);
+
     // Already has tax calculated
     public double TotalProfit => SubInvestments.Sum(si => si.TotalProfit);
     public DateTimeOffset OldestPurchaseDate => SubInvestments.Min(i => i.BuyData.DatePurchased);

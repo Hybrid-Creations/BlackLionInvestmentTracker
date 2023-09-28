@@ -9,8 +9,6 @@ public partial class APIStatusIndicator : Panel
 
     static APIStatusIndicator Instance;
 
-    static string newStatus = "";
-
     public override void _Ready()
     {
         Instance = this;

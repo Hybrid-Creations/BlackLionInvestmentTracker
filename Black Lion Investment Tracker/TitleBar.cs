@@ -10,6 +10,9 @@ public partial class TitleBar : Control
     [Export(PropertyHint.File, "*.tscn")]
     string settingsScene;
 
+    [Export]
+    Main main;
+
     Window window;
     Vector2 dragStartPosition;
 
@@ -50,6 +53,6 @@ public partial class TitleBar : Control
 
     public void CloseApp()
     {
-        GetTree().Quit();
+        main.CloseApp();
     }
 }

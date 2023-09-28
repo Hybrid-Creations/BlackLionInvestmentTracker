@@ -96,6 +96,10 @@ custom_minimum_size = Vector2(300, 0)
 custom_minimum_size = Vector2(130, 0)
 text = "Last Active "
 
+[node name="SortingArrow" parent="ColumnTitles/BuyDate" index="0"]
+offset_left = -37.19
+offset_right = -21.19
+
 [node name="CollapsedCompletedInvestmentItem" parent="ScrollContainer/VBoxContainer/InvsetmentHolder" index="0" instance=ExtResource("3_4trgs")]
 layout_mode = 2
 

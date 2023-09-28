@@ -1,6 +1,5 @@
 using System;
 using System.Threading;
-using System.Threading.Tasks;
 using BLIT.Investments;
 using BLIT.Timers;
 using Godot;
@@ -96,14 +95,14 @@ public partial class Main : Node
 
     public void CloseApp()
     {
-        Cleanup();
+        Cleanup(true);
         GetTree().Quit();
     }
 
-    private void Cleanup()
+    private void Cleanup(bool createDatabaseBackup)
     {
         GD.Print("Main Cleanup");
-        Database.Save();
+        Database.Save(createDatabaseBackup);
         Settings.Save();
         Cache.Items.Save();
         MyClient.Dispose();
@@ -111,13 +110,13 @@ public partial class Main : Node
         //refreshCancelSource might still leak here :(
         // This should be fine however as we intend to quit when this is called
         refreshCancelSource.Cancel();
-        refreshDatabaseTimer.Stop();
+        refreshDatabaseTimer?.Stop();
         refreshDeliveryBoxTimer?.Stop();
     }
 
     public override void _ExitTree()
     {
-        Cleanup();
+        Cleanup(false);
     }
 
     public override void _Notification(int what)

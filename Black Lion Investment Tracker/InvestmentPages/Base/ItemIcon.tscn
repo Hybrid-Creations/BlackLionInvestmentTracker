@@ -1,6 +1,6 @@
 [gd_scene load_steps=4 format=3 uid="uid://xagkqsk3d03j"]
 
-[ext_resource type="Texture2D" uid="uid://dlbpcw8rui0ri" path="res://test.png" id="1_e0wi8"]
+[ext_resource type="Texture2D" uid="uid://dlbpcw8rui0ri" path="res://placeholder.png" id="1_e0wi8"]
 [ext_resource type="LabelSettings" uid="uid://cohsxdtkacnpa" path="res://Themes/IconQuantityLabelSettings.tres" id="2_t6bce"]
 [ext_resource type="Script" path="res://InvestmentPages/Base/ItemIcon.cs" id="2_t5118"]
 
