@@ -88,7 +88,7 @@ public partial class Main : Node
 
     public void RefreshNow()
     {
-        refreshDatabaseTimer.InvokeASAP();
+        refreshDatabaseTimer?.InvokeASAP();
         refreshDeliveryBoxTimer?.InvokeASAP();
         APIStatusIndicator.ClearStatus();
     }
@@ -109,7 +109,7 @@ public partial class Main : Node
 
         //refreshCancelSource might still leak here :(
         // This should be fine however as we intend to quit when this is called
-        refreshCancelSource.Cancel();
+        refreshCancelSource?.Cancel();
         refreshDatabaseTimer?.Stop();
         refreshDeliveryBoxTimer?.Stop();
     }

@@ -6,7 +6,7 @@
 [ext_resource type="PackedScene" uid="uid://bgj2jtb2jgf2w" path="res://InvestmentPages/Pending/PendingInvestmentsPage.tscn" id="4_1yk28"]
 [ext_resource type="PackedScene" uid="uid://4maprnmh3gii" path="res://InvestmentPages/Potential/PotentialInvestmentsPage.tscn" id="5_7qvtw"]
 [ext_resource type="Texture2D" uid="uid://du668hhlqaqyd" path="res://Sprites/cycle.png" id="5_ey6tk"]
-[ext_resource type="PackedScene" uid="uid://dd58xqdvmb2p" path="res://TitleBar.tscn" id="6_1jd8q"]
+[ext_resource type="PackedScene" uid="uid://dd58xqdvmb2p" path="res://TitleBar/TitleBar.tscn" id="6_1jd8q"]
 [ext_resource type="PackedScene" uid="uid://hbp0asevqjpj" path="res://Main/DeliveryBox/DeliveryBox.tscn" id="8_fiy3i"]
 [ext_resource type="Script" path="res://Main/APIStatusIndicator.cs" id="11_i4fps"]
 [ext_resource type="Script" path="res://Main/AppStatusManager.cs" id="13_6ed4a"]

@@ -1,6 +1,6 @@
 [gd_scene load_steps=5 format=3 uid="uid://dd58xqdvmb2p"]
 
-[ext_resource type="Script" path="res://TitleBar.cs" id="1_3bafr"]
+[ext_resource type="Script" path="res://TitleBar/TitleBar.cs" id="1_3bafr"]
 [ext_resource type="Texture2D" uid="uid://cx0d6ygxqqg3v" path="res://Sprites/cog.png" id="2_xnhdw"]
 [ext_resource type="Texture2D" uid="uid://7u3gqytdg2tg" path="res://Sprites/minimize.png" id="3_pfe3o"]
 [ext_resource type="Texture2D" uid="uid://0psyksa17uch" path="res://Sprites/close.png" id="4_kmw3n"]
