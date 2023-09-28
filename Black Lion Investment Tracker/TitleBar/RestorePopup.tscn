@@ -1,0 +1,96 @@
+[gd_scene load_steps=3 format=3 uid="uid://e8dgkmdqkne2"]
+
+[ext_resource type="Script" path="res://TitleBar/RestorePopup.cs" id="1_bkpjl"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ym5wu"]
+bg_color = Color(0.180392, 0.180392, 0.180392, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+shadow_color = Color(0.862745, 0.862745, 0.862745, 0.498039)
+shadow_size = 7
+
+[node name="RestorePopup" type="Control"]
+layout_mode = 3
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_bkpjl")
+
+[node name="Panel" type="Panel" parent="."]
+layout_mode = 0
+offset_left = -282.0
+offset_top = -77.0
+offset_right = 291.0
+offset_bottom = 80.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_ym5wu")
+
+[node name="Title" type="Label" parent="Panel"]
+layout_mode = 1
+anchors_preset = -1
+anchor_top = 0.05
+anchor_right = 1.0
+anchor_bottom = 0.29
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 22
+text = "Would you like to restore the investment database?"
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="Description" type="Label" parent="Panel"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.02
+anchor_top = 0.33
+anchor_right = 0.98
+anchor_bottom = 0.577
+offset_top = 0.5
+offset_bottom = 0.0249939
+grow_horizontal = 2
+grow_vertical = 2
+text = "This will send to trash the current database and replace it with the most recent backyp you have."
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 2
+
+[node name="Cancel" type="Button" parent="Panel"]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 15.0
+offset_top = -46.0
+offset_right = 75.0
+offset_bottom = -15.0
+grow_vertical = 0
+theme_override_font_sizes/font_size = 18
+text = "Cancel"
+
+[node name="Accept" type="Button" parent="Panel"]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -75.0
+offset_top = -46.0
+offset_right = -15.0
+offset_bottom = -15.0
+grow_horizontal = 0
+grow_vertical = 0
+theme_override_font_sizes/font_size = 18
+text = "Accept"
+
+[connection signal="pressed" from="Panel/Cancel" to="." method="Cancel"]
+[connection signal="pressed" from="Panel/Accept" to="." method="Accept"]

@@ -2,7 +2,7 @@
 
 [ext_resource type="Theme" uid="uid://dy6mo6ior0maw" path="res://Themes/MainTheme.tres" id="1_bu83u"]
 [ext_resource type="Script" path="res://InvestmentPages/Base/InvestmentsPage.cs" id="2_oi2ei"]
-[ext_resource type="Texture2D" uid="uid://chd16fdt2lslf" path="res://sorting_arrow.png" id="3_ab0jc"]
+[ext_resource type="Texture2D" uid="uid://chd16fdt2lslf" path="res://Sprites/sorting_arrow.png" id="3_7ovut"]
 [ext_resource type="PackedScene" uid="uid://bydy6ay8008c0" path="res://InvestmentPages/Base/CollapsedInvestmentItem.tscn" id="3_e17e6"]
 [ext_resource type="PackedScene" uid="uid://dx4oojgad8vbx" path="res://InvestmentPages/Base/InvestmentItem.tscn" id="4_b6arg"]
 
@@ -68,6 +68,7 @@ horizontal_alignment = 1
 vertical_alignment = 2
 
 [node name="SortingArrow" type="TextureRect" parent="ColumnTitles/Name"]
+self_modulate = Color(0.447059, 0.843137, 1, 1)
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -80,7 +81,7 @@ offset_right = -24.98
 offset_bottom = 8.0
 grow_horizontal = 2
 grow_vertical = 2
-texture = ExtResource("3_ab0jc")
+texture = ExtResource("3_7ovut")
 
 [node name="BuyPrice" type="Label" parent="ColumnTitles"]
 custom_minimum_size = Vector2(130, 0)
@@ -92,6 +93,7 @@ horizontal_alignment = 2
 vertical_alignment = 2
 
 [node name="SortingArrow" type="TextureRect" parent="ColumnTitles/BuyPrice"]
+self_modulate = Color(0.447059, 0.843137, 1, 1)
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -104,7 +106,7 @@ offset_right = -8.37499
 offset_bottom = 8.0
 grow_horizontal = 2
 grow_vertical = 2
-texture = ExtResource("3_ab0jc")
+texture = ExtResource("3_7ovut")
 
 [node name="SellPrice" type="Label" parent="ColumnTitles"]
 custom_minimum_size = Vector2(130, 0)
@@ -116,6 +118,7 @@ horizontal_alignment = 2
 vertical_alignment = 2
 
 [node name="SortingArrow" type="TextureRect" parent="ColumnTitles/SellPrice"]
+self_modulate = Color(0.447059, 0.843137, 1, 1)
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -128,7 +131,7 @@ offset_right = -8.37499
 offset_bottom = 8.0
 grow_horizontal = 2
 grow_vertical = 2
-texture = ExtResource("3_ab0jc")
+texture = ExtResource("3_7ovut")
 
 [node name="BreakEvenSellPrice" type="Label" parent="ColumnTitles"]
 visible = false
@@ -148,6 +151,7 @@ horizontal_alignment = 2
 vertical_alignment = 2
 
 [node name="SortingArrow" type="TextureRect" parent="ColumnTitles/Profit"]
+self_modulate = Color(0.447059, 0.843137, 1, 1)
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -160,7 +164,7 @@ offset_right = 16.84
 offset_bottom = 8.0
 grow_horizontal = 2
 grow_vertical = 2
-texture = ExtResource("3_ab0jc")
+texture = ExtResource("3_7ovut")
 
 [node name="BuyDate" type="Label" parent="ColumnTitles"]
 custom_minimum_size = Vector2(120, 0)
@@ -172,6 +176,7 @@ horizontal_alignment = 2
 vertical_alignment = 2
 
 [node name="SortingArrow" type="TextureRect" parent="ColumnTitles/BuyDate"]
+self_modulate = Color(0.447059, 0.843137, 1, 1)
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -184,7 +189,7 @@ offset_right = -34.91
 offset_bottom = 8.0
 grow_horizontal = 2
 grow_vertical = 2
-texture = ExtResource("3_ab0jc")
+texture = ExtResource("3_7ovut")
 
 [node name="SellDate" type="Label" parent="ColumnTitles"]
 visible = false

@@ -1,4 +1,6 @@
 using BLIT.Extensions;
+using BLIT.Investments;
+using BLIT.Saving;
 using BLIT.UI;
 using Godot;
 
@@ -11,6 +13,12 @@ public partial class TitleBar : Control
     string settingsScene;
 
     [Export]
+    PackedScene restorePopup;
+
+    [Export]
+    Button restoreButton;
+
+    [Export]
     Main main;
 
     Window window;
@@ -18,6 +26,7 @@ public partial class TitleBar : Control
 
     public override void _Ready()
     {
+        CheckForBackups();
         window = GetWindow();
         SetProcess(false);
     }
@@ -27,6 +36,12 @@ public partial class TitleBar : Control
         window.Position = window.Position + GetGlobalMousePosition().ToVector2I() - dragStartPosition.ToVector2I();
         if (Input.IsMouseButtonPressed(MouseButton.Left) == false)
             SetProcess(false);
+    }
+
+    void CheckForBackups()
+    {
+        if (SaveSystem.BackupsExist(InvestmentsDatabase.DatabaseFileName) == false)
+            restoreButton.Hide();
     }
 
     public void GUIInput(InputEvent @event)
@@ -39,6 +54,14 @@ public partial class TitleBar : Control
                 SetProcess(!IsProcessing());
             }
         }
+    }
+
+    public void OpenRestoreDialogue()
+    {
+        var dialogue = restorePopup.Instantiate<RestorePopup>();
+        dialogue.Setup(main);
+        GetTree().Root.AddChild(dialogue);
+        dialogue.OnPopupAccepted += CheckForBackups;
     }
 
     public void OpenSettings()

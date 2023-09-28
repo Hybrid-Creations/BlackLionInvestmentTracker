@@ -245,7 +245,11 @@ public partial class InvestmentsDatabase
         }
     }
 
-    private List<SellData> CheckHistorySellOrdersForCompleteInvestmentMatches(CommerceTransactionHistory buyOrder, ref int buyAmmountLeft, List<CommerceTransactionHistory> sortedSellOrders)
+    private List<SellData> CheckHistorySellOrdersForCompleteInvestmentMatches(
+        CommerceTransactionHistory buyOrder,
+        ref int buyAmmountLeft,
+        List<CommerceTransactionHistory> sortedSellOrders
+    )
     {
         var sellDatasList = new List<SellData>();
         // Look through sell orders that are of the same type of item, and was purchased at a later date from the buyOrder
@@ -376,7 +380,12 @@ public partial class InvestmentsDatabase
 
         foreach (var investment in CompletedInvestments)
         {
-            var readyGroup = groups.FirstOrDefault(ci => ci.ItemId == investment.BuyData.ItemId && ci.IndividualBuyPrice == investment.BuyData.IndividualBuyPrice && ci.Quantity + investment.BuyData.Quantity <= Constants.MaxItemStack);
+            var readyGroup = groups.FirstOrDefault(
+                ci =>
+                    ci.ItemId == investment.BuyData.ItemId
+                    && ci.IndividualBuyPrice == investment.BuyData.IndividualBuyPrice
+                    && ci.Quantity + investment.BuyData.Quantity <= Constants.MaxItemStack
+            );
             if (readyGroup is not null)
             {
                 readyGroup.SubInvestments.Add(investment);
@@ -397,7 +406,12 @@ public partial class InvestmentsDatabase
 
         foreach (var investment in PendingInvestments)
         {
-            var readyGroup = groups.FirstOrDefault(ci => ci.ItemId == investment.BuyData.ItemId && ci.IndividualBuyPrice == investment.BuyData.IndividualBuyPrice && ci.Quantity + investment.BuyData.Quantity <= Constants.MaxItemStack);
+            var readyGroup = groups.FirstOrDefault(
+                ci =>
+                    ci.ItemId == investment.BuyData.ItemId
+                    && ci.IndividualBuyPrice == investment.BuyData.IndividualBuyPrice
+                    && ci.Quantity + investment.BuyData.Quantity <= Constants.MaxItemStack
+            );
             if (readyGroup is not null)
             {
                 readyGroup.SubInvestments.Add(investment);
@@ -418,7 +432,12 @@ public partial class InvestmentsDatabase
 
         foreach (var investment in PotentialInvestments)
         {
-            var readyGroup = groups.FirstOrDefault(ci => ci.ItemId == investment.BuyData.ItemId && ci.IndividualBuyPrice == investment.BuyData.IndividualBuyPrice && ci.Quantity + investment.BuyData.Quantity <= Constants.MaxItemStack);
+            var readyGroup = groups.FirstOrDefault(
+                ci =>
+                    ci.ItemId == investment.BuyData.ItemId
+                    && ci.IndividualBuyPrice == investment.BuyData.IndividualBuyPrice
+                    && ci.Quantity + investment.BuyData.Quantity <= Constants.MaxItemStack
+            );
             if (readyGroup is not null)
             {
                 readyGroup.SubInvestments.Add(investment);
@@ -444,8 +463,8 @@ public partial class InvestmentsDatabase
     }
 
     // ---------- Saving
-    const string databaseFileName = "database.completed";
-    const string databaseGodotPath = $"user://{databaseFileName}";
+    public const string DatabaseFileName = "database.completed";
+    const string databaseGodotPath = $"user://{DatabaseFileName}";
 
     public void Save(bool createBackup = false)
     {
@@ -461,7 +480,7 @@ public partial class InvestmentsDatabase
     // ---------- Backup
     void BackupCurrentDatabase()
     {
-        GD.Print("Backup" + SaveSystem.CreateBackup(databaseGodotPath));
+        GD.Print("Backup Success; " + SaveSystem.CreateBackupIfNeeded(databaseGodotPath, TimeSpan.FromDays(1)));
     }
 
     // ---------- Loading
@@ -473,5 +492,10 @@ public partial class InvestmentsDatabase
             NotInvestments = newData.NotInvestments ?? new();
         }
         GD.Print($"Loaded Investment Database => investments: {CompletedInvestments.Count}, not investments: {NotInvestments.Count}");
+    }
+
+    public static void RestoreMostRecentBackup()
+    {
+        GD.Print("Restoring Backup Success: " + SaveSystem.RestoreMostRecentBackup(DatabaseFileName));
     }
 }

@@ -48,6 +48,12 @@ public partial class Main : Node
         RefreshDeliveryBoxOnInverval();
     }
 
+    public void ReloadAndRefresh()
+    {
+        Database.Load();
+        RefreshNow();
+    }
+
     private void RefreshDatabaseOnInterval()
     {
         refreshDatabaseTimer = new ThreadedTimer { Interval = TimeSpan.FromSeconds(Settings.Data.DatabaseInterval), Repeat = true };
@@ -124,6 +130,8 @@ public partial class Main : Node
         if (what == NotificationWMCloseRequest)
             CloseApp();
         if (what == NotificationCrash)
-            GD.PrintErr("AHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH");
+            GD.PrintErr(
+                "AHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH"
+            );
     }
 }
