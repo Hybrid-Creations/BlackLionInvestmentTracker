@@ -16,6 +16,8 @@ public sealed partial class CollapsedCompletedInvestmentItem : CollapsedInvestme
     public override double TotalProfit => collapsedInvestment.TotalProfit;
     public override DateTimeOffset LastActive => collapsedInvestment.LastActiveDate;
 
+    bool isInDeliveryBox;
+
     public override void _Ready()
     {
         subInvestmentTitles.Hide();
@@ -28,8 +30,7 @@ public sealed partial class CollapsedCompletedInvestmentItem : CollapsedInvestme
 
         collapsedInvestment = _collapsedInvestment;
 
-        itemProperties.GetNode<TextureRect>("Icon").Texture = _item.Icon;
-        itemProperties.GetNode<Label>("Icon/Quantity").Text = _collapsedInvestment.Quantity.ToString();
+        itemProperties.GetNode<ItemIcon>("Icon").Init(_item.Icon, _collapsedInvestment.Quantity, false);
         itemProperties.GetNode<Label>("Name").Text = ItemName = _item.Name;
         itemProperties.GetNode<RichTextLabel>("BuyPrice").Text = _collapsedInvestment.GetBuyPriceStringFromInvestment(true, RichStringAlignment.RIGHT);
         itemProperties.GetNode<RichTextLabel>("SellPrice").Text = _collapsedInvestment.GetSellPriceStringFromInvestment(true, RichStringAlignment.RIGHT);
@@ -47,7 +48,7 @@ public sealed partial class CollapsedCompletedInvestmentItem : CollapsedInvestme
             foreach (var investment in collapsedInvestment.SubInvestments.OrderByDescending(si => si.LatestSellDate))
             {
                 var instance = subInvestmentItemScene.Instantiate<CompletedInvestmentItem>();
-                instance.Init(Cache.Items.GetItemData(investment.BuyData.ItemId), investment);
+                instance.Init(Cache.Items.GetItemData(investment.BuyData.ItemId), false, investment);
                 subInvestmentsHolder.AddChildSafe(instance);
             }
         }

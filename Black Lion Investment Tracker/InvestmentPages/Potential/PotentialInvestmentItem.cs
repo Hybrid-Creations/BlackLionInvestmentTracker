@@ -7,13 +7,12 @@ namespace BLIT.UI;
 
 public partial class PotentialInvestmentItem : InvestmentItem
 {
-
-    public virtual void Init(ItemData item, PotentialInvestment investment)
+    public virtual void Init(ItemData item, bool isInDeliveryBox, PotentialInvestment investment)
     {
-        if (IsQueuedForDeletion()) return;
+        if (IsQueuedForDeletion())
+            return;
 
-        itemProperties.GetNode<TextureRect>("Icon").Texture = item.Icon;
-        itemProperties.GetNode<Label>("Icon/Quantity").Text = investment.BuyData.Quantity.ToString();
+        itemProperties.GetNode<ItemIcon>("Icon").Init(item.Icon, investment.BuyData.Quantity, isInDeliveryBox);
         itemProperties.GetNode<Label>("Name").Text = item.Name;
         itemProperties.GetNode<RichTextLabel>("BuyPrice").Text = investment.GetBuyPriceStringFromInvestment(true, RichStringAlignment.RIGHT);
         itemProperties.GetNode<RichTextLabel>("SellPrice").Text = investment.GetSellPriceStringFromInvestment(true, RichStringAlignment.RIGHT);

@@ -91,7 +91,7 @@ public partial class Settings : Panel
 
         public const int DatabaseIntervalDefault = 300;
         public const int DeliveryBoxIntervalDefault = 30;
-        public const int DatabaseBackupsToKeepDefault = 5;
+        public const int DatabaseBackupsToKeepDefault = 10;
 
         public SettingsData(double dbInvervalMinValue, double boxIntervalMinValue, double backupMinValue)
         {
@@ -132,6 +132,8 @@ public partial class Settings : Panel
             Data.DatabaseBackupsToKeep = SettingsData.DatabaseBackupsToKeepDefault;
         }
 
-        GD.Print($"Loaded Settings => API Key Exists: {string.IsNullOrWhiteSpace(Data.APIKey) == false} Database Interval: {Data.DatabaseInterval} Delivery Box Interval: {Data.DeliveryBoxInterval}");
+        GD.Print(
+            $"Loaded Settings => API Key Exists: {string.IsNullOrWhiteSpace(Data.APIKey) == false} Database Interval: {Data.DatabaseInterval} Delivery Box Interval: {Data.DeliveryBoxInterval}"
+        );
     }
 }

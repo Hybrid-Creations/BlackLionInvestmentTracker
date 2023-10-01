@@ -33,7 +33,12 @@ public partial class PotentialInvestmentsPage : InvestmentsPage
                 try
                 {
                     var instance = collapsedInvestmentScene.Instantiate<CollapsedPotentialInvestmentItem>();
-                    instance.Init(Cache.Items.GetItemData(investment.ItemId), investment, prices.First(p => p.Id == investment.ItemId).Sells.UnitPrice);
+                    instance.Init(
+                        Cache.Items.GetItemData(investment.ItemId),
+                        DeliveryBox.IsInDeliveryBox(investment.ItemId, investment.Quantity),
+                        investment,
+                        prices.First(p => p.Id == investment.ItemId).Sells.UnitPrice
+                    );
 
                     investmentHolder.AddChildSafe(instance);
                 }

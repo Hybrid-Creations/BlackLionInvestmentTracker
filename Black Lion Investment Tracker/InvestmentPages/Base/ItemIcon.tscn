@@ -1,16 +1,18 @@
-[gd_scene load_steps=4 format=3 uid="uid://xagkqsk3d03j"]
+[gd_scene load_steps=5 format=3 uid="uid://xagkqsk3d03j"]
 
 [ext_resource type="Texture2D" uid="uid://dlbpcw8rui0ri" path="res://placeholder.png" id="1_e0wi8"]
 [ext_resource type="LabelSettings" uid="uid://cohsxdtkacnpa" path="res://Themes/IconQuantityLabelSettings.tres" id="2_t6bce"]
 [ext_resource type="Script" path="res://InvestmentPages/Base/ItemIcon.cs" id="2_t5118"]
+[ext_resource type="Texture2D" uid="uid://e3m84mv8teyg" path="res://Sprites/delivery_box_full.png" id="4_bkhgk"]
 
-[node name="ItemIcon" type="TextureRect" node_paths=PackedStringArray("icon", "quantity")]
+[node name="ItemIcon" type="TextureRect" node_paths=PackedStringArray("icon", "quantity", "inDeliveryBox")]
 custom_minimum_size = Vector2(64, 64)
 texture = ExtResource("1_e0wi8")
 expand_mode = 1
 script = ExtResource("2_t5118")
 icon = NodePath(".")
 quantity = NodePath("Quantity")
+inDeliveryBox = NodePath("Chest-Background")
 
 [node name="Quantity" type="Label" parent="."]
 layout_mode = 1
@@ -25,3 +27,30 @@ text = "250"
 label_settings = ExtResource("2_t6bce")
 horizontal_alignment = 2
 vertical_alignment = 2
+
+[node name="Chest-Background" type="TextureRect" parent="."]
+self_modulate = Color(0, 0, 0, 1)
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 3.0
+offset_top = -21.0
+offset_right = 21.0
+offset_bottom = -3.0
+grow_vertical = 0
+texture = ExtResource("4_bkhgk")
+expand_mode = 1
+
+[node name="Chest" type="TextureRect" parent="Chest-Background"]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 1.0
+offset_top = -17.0
+offset_right = 17.0
+offset_bottom = -1.0
+grow_vertical = 0
+texture = ExtResource("4_bkhgk")
+expand_mode = 1

@@ -11,7 +11,7 @@ namespace BLIT;
 
 public static partial class Cache
 {
-    public class Items
+    public static class Items
     {
         static ConcurrentDictionary<int, ItemData> itemDB = new();
 
@@ -28,6 +28,7 @@ public static partial class Cache
         }
 
         private const string pathToItems = "user://cache.items";
+
         public static void Save()
         {
             var saved = new SavedItems();
@@ -52,8 +53,11 @@ public static partial class Cache
 [DataContract]
 public class ItemData
 {
-    [DataMember] public string Name { get; private set; }
-    [DataMember] private byte[] iconBytes;
+    [DataMember]
+    public string Name { get; private set; }
+
+    [DataMember]
+    private byte[] iconBytes;
 
     private ImageTexture icon;
     public ImageTexture Icon

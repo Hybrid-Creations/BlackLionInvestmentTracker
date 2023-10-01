@@ -7,8 +7,10 @@ public partial class DeliveryBoxItem : Panel
 {
     [Export]
     ItemIcon icon;
+
     public void Init(CommerceDeliveryItem item)
     {
-        icon.Init(Cache.Items.GetItemData(item.Id).Icon, item.Count);
+        // We actually want to tell it not to render the delivery box icon here, as we already know that this item is in the delivery box
+        icon.Init(Cache.Items.GetItemData(item.Id).Icon, item.Count, false);
     }
 }

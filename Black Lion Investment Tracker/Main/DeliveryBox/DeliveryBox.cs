@@ -5,6 +5,7 @@ using Godot;
 using Gw2Sharp.WebApi.V2.Models;
 using BLIT.Extensions;
 using BLIT.Status;
+using System.Linq;
 
 namespace BLIT.UI;
 
@@ -53,6 +54,8 @@ public partial class DeliveryBox : Button
 
     bool updating;
 
+    static IReadOnlyList<(int, int)> itemsInDeliveryBox;
+
     const string StatusKey = $"{nameof(DeliveryBox)}";
 
     public override void _Ready()
@@ -92,6 +95,7 @@ public partial class DeliveryBox : Button
         {
             ClearVisuals();
             UpdateVisuals(coins, items);
+            itemsInDeliveryBox = items.Select(item => (item.Id, item.Count)).ToList();
 
             deliveryBoxPreview.Position = items.Count < 2 ? centeredPosition : offsetPosition;
             deliveryBoxPreview.Refresh(coins, items);
@@ -146,5 +150,10 @@ public partial class DeliveryBox : Button
     public void OnMouseExited()
     {
         deliveryBoxPreview.Hide();
+    }
+
+    public static bool IsInDeliveryBox(int itemId, int quantity)
+    {
+        return itemsInDeliveryBox.Contains((itemId, quantity));
     }
 }

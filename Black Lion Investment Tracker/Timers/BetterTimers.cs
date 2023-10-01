@@ -17,7 +17,7 @@ public class ThreadedTimer
     CancellationTokenSource cancelSource;
     CancellationTokenSource currentDelaySource;
 
-    public void Start(bool startNow)
+    public void Start(bool elapseNow)
     {
         cancelSource = new CancellationTokenSource();
 
@@ -33,7 +33,7 @@ public class ThreadedTimer
                     if (cancelSource.IsCancellationRequested)
                         break;
 
-                    if (firstRun && startNow) { } // Don't delay if we want it to Invoke on first run
+                    if (firstRun && elapseNow) { } // Don't delay if we want it to Invoke on first run
                     else
                     {
                         try

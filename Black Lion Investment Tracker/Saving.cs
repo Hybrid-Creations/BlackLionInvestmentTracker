@@ -78,8 +78,8 @@ public class SaveSystem
             using var writeFile = FileAccess.Open($"{pathOfFileToBackup}.{DateTime.Now.ToString().Replace('/', '_').Replace(':', '-')}.bak", FileAccess.ModeFlags.Write);
             writeFile.StoreString(readFile.GetAsText());
 
-            // We subtract one here as we just made a new backup
-            var numtoDelete = allBakFiles.Count - 1 - Settings.Data.DatabaseBackupsToKeep;
+            // We add one here as we just made a new backup
+            var numtoDelete = allBakFiles.Count + 1 - Settings.Data.DatabaseBackupsToKeep;
             var queue = new Queue<string>(allBakFiles);
 
             while (numtoDelete > 0)

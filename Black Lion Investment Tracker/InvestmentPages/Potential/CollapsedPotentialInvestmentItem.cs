@@ -16,21 +16,23 @@ public sealed partial class CollapsedPotentialInvestmentItem : CollapsedInvestme
     public override double TotalProfit => collapsedInvestment.TotalPotentialProfit;
     public override DateTimeOffset LastActive => collapsedInvestment.OldestPurchaseDate;
 
+    bool isInDeliveryBox;
+
     public override void _Ready()
     {
         subInvestmentTitles.Hide();
     }
 
-    public void Init(ItemData _item, CollapsedPotentialInvestment _collapsedInvestment, int currentSellPrice)
+    public void Init(ItemData _item, bool _isInDeliveryBox, CollapsedPotentialInvestment _collapsedInvestment, int currentSellPrice)
     {
         if (IsQueuedForDeletion())
             return;
 
         collapsedInvestment = _collapsedInvestment;
         collapsedInvestment.CurrentSellPrice = currentSellPrice;
+        isInDeliveryBox = _isInDeliveryBox;
 
-        itemProperties.GetNode<TextureRect>("Icon").Texture = _item.Icon;
-        itemProperties.GetNode<Label>("Icon/Quantity").Text = _collapsedInvestment.Quantity.ToString();
+        itemProperties.GetNode<ItemIcon>("Icon").Init(_item.Icon, _collapsedInvestment.Quantity, _isInDeliveryBox);
         itemProperties.GetNode<Label>("Name").Text = ItemName = _item.Name;
         itemProperties.GetNode<RichTextLabel>("BuyPrice").Text = _collapsedInvestment.GetBuyPriceStringFromInvestment(true, RichStringAlignment.RIGHT);
         itemProperties.GetNode<RichTextLabel>("SellPrice").Text = _collapsedInvestment.GetSellPriceStringFromInvestment(true, RichStringAlignment.RIGHT);
@@ -62,7 +64,7 @@ public sealed partial class CollapsedPotentialInvestmentItem : CollapsedInvestme
             foreach (var investment in collapsedInvestment.SubInvestments.OrderByDescending(si => si.BuyData.DatePurchased))
             {
                 var instance = subInvestmentItemScene.Instantiate<PotentialInvestmentItem>();
-                instance.Init(Cache.Items.GetItemData(investment.BuyData.ItemId), investment);
+                instance.Init(Cache.Items.GetItemData(investment.BuyData.ItemId), isInDeliveryBox, investment);
                 subInvestmentsHolder.AddChildSafe(instance);
             }
         }
