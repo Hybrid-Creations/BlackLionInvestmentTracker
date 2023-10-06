@@ -6,10 +6,12 @@
 [ext_resource type="Texture2D" uid="uid://q0n8du351q8k" path="res://Sprites/arrow_down.png" id="4_pxqxy"]
 [ext_resource type="PackedScene" uid="uid://dlbg5ektlklss" path="res://InvestmentPages/Potential/PotentialInvestmentItem.tscn" id="5_7y5pk"]
 
-[node name="CollapsedPotentialInvestmentItem" node_paths=PackedStringArray("itemProperties", "toggleTreeButton", "subInvestmentsHolder", "subInvestmentTitles") instance=ExtResource("1_jjjma")]
+[node name="CollapsedPotentialInvestmentItem" node_paths=PackedStringArray("itemProperties", "toggleTreeButton", "toggleSpacer", "TitleBorder3", "subInvestmentsHolder", "subInvestmentTitles") instance=ExtResource("1_jjjma")]
 script = ExtResource("2_yu7a8")
 itemProperties = NodePath("HBoxContainer/CollapsedItem/ItemProperties")
 toggleTreeButton = NodePath("HBoxContainer/ToggleTreeButton")
+toggleSpacer = NodePath("HBoxContainer/HiddenToggleSpacer")
+TitleBorder3 = NodePath("TitlesBorder3")
 arrowRight = ExtResource("3_hqfet")
 arrowDown = ExtResource("4_pxqxy")
 subInvestmentItemScene = ExtResource("5_7y5pk")
@@ -25,6 +27,7 @@ text = "[right]999[color=gold]g[/color] 99[color=silver]s[/color] 99[color=orang
 
 [node name="BreakEvenPrice" parent="HBoxContainer/CollapsedItem/ItemProperties" index="6"]
 visible = true
+tooltip_text = "This is an estimate, depenbding on how many are bought at a time, this can fluctuate slightly."
 
 [node name="Name" parent="SubItemTitles" index="4"]
 custom_minimum_size = Vector2(300, 0)

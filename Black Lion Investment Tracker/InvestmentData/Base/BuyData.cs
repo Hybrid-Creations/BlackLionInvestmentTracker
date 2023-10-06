@@ -7,11 +7,20 @@ namespace BLIT.Investments;
 [DataContract]
 public class BuyData
 {
-    [DataMember] public long TransactionId { get; protected set; }
-    [DataMember] public int ItemId { get; protected set; }
-    [DataMember] public int Quantity { get; internal set; }
-    [DataMember] public int IndividualBuyPrice { get; protected set; }
-    [DataMember] public DateTimeOffset DatePurchased { get; protected set; }
+    [DataMember]
+    public long TransactionId { get; protected set; }
+
+    [DataMember]
+    public int ItemId { get; protected set; }
+
+    [DataMember]
+    public int Quantity { get; internal set; }
+
+    [DataMember]
+    public int IndividualBuyPrice { get; protected set; }
+
+    [DataMember]
+    public DateTimeOffset DatePurchased { get; protected set; }
 
     public int TotalBuyPrice => IndividualBuyPrice * Quantity;
 

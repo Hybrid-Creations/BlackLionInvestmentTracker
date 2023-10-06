@@ -6,10 +6,12 @@
 [ext_resource type="Texture2D" uid="uid://q0n8du351q8k" path="res://Sprites/arrow_down.png" id="4_ojikx"]
 [ext_resource type="PackedScene" uid="uid://bqwy3ji8pn7ai" path="res://InvestmentPages/Pending/PendingInvestmentItem.tscn" id="5_jyi28"]
 
-[node name="CollapsedPendingInvestmentItem" node_paths=PackedStringArray("itemProperties", "toggleTreeButton", "subInvestmentsHolder", "subInvestmentTitles") instance=ExtResource("1_wce27")]
+[node name="CollapsedPendingInvestmentItem" node_paths=PackedStringArray("itemProperties", "toggleTreeButton", "toggleSpacer", "TitleBorder3", "subInvestmentsHolder", "subInvestmentTitles") instance=ExtResource("1_wce27")]
 script = ExtResource("2_1vsdr")
 itemProperties = NodePath("HBoxContainer/CollapsedItem/ItemProperties")
 toggleTreeButton = NodePath("HBoxContainer/ToggleTreeButton")
+toggleSpacer = NodePath("HBoxContainer/HiddenToggleSpacer")
+TitleBorder3 = NodePath("TitlesBorder3")
 arrowRight = ExtResource("3_th8jo")
 arrowDown = ExtResource("4_ojikx")
 subInvestmentItemScene = ExtResource("5_jyi28")

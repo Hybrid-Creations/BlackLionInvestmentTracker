@@ -1,30 +1,30 @@
 using System;
 using System.Linq;
-using BLIT.ConstantVariables;
+using Godot;
 
 namespace BLIT.Investments;
 
 public class CollapsedCompletedInvestment : CollapsedInvestment<CompletedInvestment>
 {
-    public bool AllSellDatasAreTheSame
+    public override bool IndividualSellPriceDifferent
     {
         get
         {
             var allSellDatas = SubInvestments.SelectMany(i => i.SellDatas);
             var firstPrice = allSellDatas.First().IndividualSellPrice;
-            return allSellDatas.All(s => s.IndividualSellPrice == firstPrice);
+            return !allSellDatas.All(s => s.IndividualSellPrice == firstPrice);
         }
     }
 
-    public int IndividualSellPrice => SubInvestments.First().SellDatas.First().IndividualSellPrice;
-    public double AverageIndividualSellPrice => SubInvestments.SelectMany(i => i.SellDatas).Average(s => s.IndividualSellPrice);
-    public int TotalSellPrice => SubInvestments.Sum(si => si.TotalSellPrice);
+    public override int IndividualSellPrice => SubInvestments.First().SellDatas.First().IndividualSellPrice;
+    public override int AverageIndividualSellPrice => Mathf.RoundToInt(SubInvestments.SelectMany(i => i.SellDatas).Average(s => s.IndividualSellPrice));
+    public override int TotalSellPrice => SubInvestments.Sum(si => si.TotalSellPrice);
+    public int TotalNetSellPrice => SubInvestments.Sum(si => si.TotalNetSellPrice);
 
-    public double IndividualProfit => (SubInvestments.First().SellDatas.First().IndividualSellPrice * Constants.MultiplyTax) - SubInvestments.First().BuyData.IndividualBuyPrice;
-    public double AverageIndividualProfit => SubInvestments.Average(i => i.AverageIndividualProfit);
+    public override int AverageIndividualProfit => Mathf.RoundToInt(SubInvestments.Average(i => i.AverageIndividualProfit));
 
     // Already has tax calculated
-    public double TotalProfit => SubInvestments.Sum(si => si.TotalProfit);
+    public override int TotalProfit => SubInvestments.Sum(si => si.TotalNetProfit);
     public DateTimeOffset OldestPurchaseDate => SubInvestments.Min(i => i.BuyData.DatePurchased);
     public DateTimeOffset NewestSellDate => SubInvestments.SelectMany(i => i.SellDatas).Max(s => s.Date);
 

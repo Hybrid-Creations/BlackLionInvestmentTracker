@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3 uid="uid://dx4oojgad8vbx"]
 
 [ext_resource type="Theme" uid="uid://dy6mo6ior0maw" path="res://Themes/MainTheme.tres" id="1_humwa"]
-[ext_resource type="PackedScene" path="res://InvestmentPages/Base/ItemIcon.tscn" id="2_cykvn"]
+[ext_resource type="PackedScene" uid="uid://xagkqsk3d03j" path="res://InvestmentPages/Base/ItemIcon.tscn" id="2_cykvn"]
 
 [node name="InvestmentItem" type="VBoxContainer"]
 anchors_preset = 10

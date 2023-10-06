@@ -30,8 +30,10 @@ public sealed partial class CollapsedPendingInvestmentItem : CollapsedInvestment
         collapsedInvestment = _collapsedInvestment;
         currentSellPrice = _currentSellPrice;
 
-        itemProperties.GetNode<TextureRect>("Icon").Texture = _item.Icon;
-        itemProperties.GetNode<Label>("Icon/Quantity").Text = _collapsedInvestment.Quantity.ToString();
+        if (_collapsedInvestment.IndividualSellPriceDifferent == false)
+            HideTreeToggle();
+
+        itemProperties.GetNode<ItemIcon>("Icon").Init(_item.Icon, _collapsedInvestment.Quantity, false);
         itemProperties.GetNode<Label>("Name").Text = ItemName = _item.Name;
         itemProperties.GetNode<RichTextLabel>("BuyPrice").Text = _collapsedInvestment.GetBuyPriceStringFromInvestment(true, RichStringAlignment.RIGHT);
         itemProperties.GetNode<RichTextLabel>("SellPrice").Text = _collapsedInvestment.GetSellPriceStringFromInvestment(true, RichStringAlignment.RIGHT);
@@ -52,6 +54,7 @@ public sealed partial class CollapsedPendingInvestmentItem : CollapsedInvestment
         {
             subInvestmentTitles.Show();
             toggleTreeButton.Icon = arrowDown;
+            TitleBorder3.Show();
 
             foreach (var investment in collapsedInvestment.SubInvestments.OrderByDescending(si => si.BuyData.DatePurchased))
             {
@@ -62,8 +65,9 @@ public sealed partial class CollapsedPendingInvestmentItem : CollapsedInvestment
         }
         else
         {
-            toggleTreeButton.Icon = arrowRight;
             subInvestmentTitles.Hide();
+            toggleTreeButton.Icon = arrowRight;
+            TitleBorder3.Hide();
             subInvestmentsHolder.ClearChildren();
         }
     }

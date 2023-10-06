@@ -1,5 +1,6 @@
 using System;
 using System.Runtime.Serialization;
+using BLIT.ConstantVariables;
 using Gw2Sharp.WebApi.V2.Models;
 
 namespace BLIT.Investments;
@@ -7,23 +8,34 @@ namespace BLIT.Investments;
 [DataContract]
 public class SellData
 {
-    [DataMember] public long TransactionId { get; protected set; }
-    [DataMember] public int ItemId { get; protected set; }
-    [DataMember] public int Quantity { get; internal set; }
-    [DataMember] public int IndividualSellPrice { get; protected set; }
-    [DataMember] internal DateTimeOffset Date { get; set; }
+    [DataMember]
+    public long TransactionId { get; protected set; }
+
+    [DataMember]
+    public int ItemId { get; protected set; }
+
+    [DataMember]
+    public int Quantity { get; internal set; }
+
+    [DataMember]
+    public int IndividualSellPrice { get; protected set; }
+
+    [DataMember]
+    internal DateTimeOffset Date { get; set; }
 
     public int TotalSellPrice => IndividualSellPrice * Quantity;
+    public int NetSellPrice => Constants.ApplySellingFees(TotalSellPrice);
 
     protected SellData() { }
 
     public SellData(CommerceTransactionHistory sellTransaction)
     {
-        if (sellTransaction is null) return;
+        if (sellTransaction is null)
+            return;
 
         TransactionId = sellTransaction.Id;
         ItemId = sellTransaction.ItemId;
-        Date = sellTransaction.Created;
+        Date = sellTransaction.Purchased;
         IndividualSellPrice = sellTransaction.Price;
         Quantity = sellTransaction.Quantity;
     }

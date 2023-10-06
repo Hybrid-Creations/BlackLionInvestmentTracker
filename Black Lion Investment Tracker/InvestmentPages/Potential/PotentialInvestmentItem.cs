@@ -29,7 +29,7 @@ public partial class PotentialInvestmentItem : InvestmentItem
         // We know we arent making profit so calculate what you would have to sell it at to break even
         else
         {
-            var idealPrice = Mathf.CeilToInt(investment.BuyData.IndividualBuyPrice * Constants.MultiplyInverseTax);
+            var idealPrice = Mathf.CeilToInt((investment.BuyData.IndividualBuyPrice + 1) * Constants.MultiplyInverseTax);
             return DataExtensions.CombineTotalAndIndividual(investment.BuyData.Quantity * idealPrice, idealPrice).ColorRichString("#ffd500").AlignRichString(RichStringAlignment.RIGHT);
         }
     }

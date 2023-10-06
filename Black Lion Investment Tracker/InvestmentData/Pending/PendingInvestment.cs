@@ -1,42 +1,39 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using BLIT.ConstantVariables;
+using Godot;
 
 namespace BLIT.Investments;
 
 public class PendingInvestment : Investment
 {
-    internal List<SellData> PostedSellDatas { get; private set; } = new();
+    public int LowestIndividualSellPrice => SellDatas.Max(s => s.IndividualSellPrice);
 
-    public int LowestIndividualSellPrice => PostedSellDatas.Max(s => s.IndividualSellPrice);
-
-    public bool AllSellDatasAreTheSame
+    public override bool IndividualSellPriceDifferent
     {
         get
         {
-            var firstPrice = PostedSellDatas.First().IndividualSellPrice;
-            return PostedSellDatas.All(s => s.IndividualSellPrice == firstPrice);
+            var firstPrice = SellDatas.First().IndividualSellPrice;
+            return !SellDatas.All(s => s.IndividualSellPrice == firstPrice);
         }
     }
 
-    public int IndividualListedSellPrice => PostedSellDatas.First().IndividualSellPrice;
-    public double AverageIndividualListedSellPrice => PostedSellDatas.Average(s => s.IndividualSellPrice);
-    public int LowestIndividualListedSellPrice => PostedSellDatas.Max(s => s.IndividualSellPrice);
-    public int TotalListedSellPrice => PostedSellDatas.Sum(s => s.TotalSellPrice);
+    public override int IndividualSellPrice => SellDatas.First().IndividualSellPrice;
+    public override int AverageIndividualSellPrice => Mathf.RoundToInt(SellDatas.Average(s => s.IndividualSellPrice));
+    public override int TotalSellPrice => SellDatas.Sum(s => s.TotalSellPrice);
 
-    public double IndividualProfit => (PostedSellDatas.First().IndividualSellPrice * Constants.MultiplyTax) - BuyData.IndividualBuyPrice;
     /// <summary>
     /// The Average Indivual Profit We Got From Selling Reduced By The 15% BLTP Tax, Minus The Individual Price We Bought The Items For.
     /// </summary>
-    public double AverageIndividualProfit => TotalProfit / PostedSellDatas.Count;
+    public override int AverageIndividualProfit => TotalNetProfit / SellDatas.Sum(s => s.Quantity);
+
     /// <summary>
     /// The Total Profit We Got From Selling Reduced By The 15% BLTP Tax, Minus The Total We Bought The Items For.
     /// </summary>
-    public double TotalProfit => (TotalListedSellPrice * Constants.MultiplyTax) - BuyData.TotalBuyPrice;
+    public override int TotalNetProfit => SellDatas.Sum(s => s.NetSellPrice) - BuyData.TotalBuyPrice;
 
-    public PendingInvestment(BuyData buyData, List<SellData> sellDatas) : base(buyData)
+    public PendingInvestment(BuyData buyData, List<SellData> sellDatas)
+        : base(buyData)
     {
-        PostedSellDatas = sellDatas;
+        SellDatas = sellDatas;
     }
 }

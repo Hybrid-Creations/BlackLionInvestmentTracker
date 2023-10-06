@@ -27,8 +27,8 @@ public partial class InvestmentsDatabase
     public List<CollapsedPotentialInvestment> CollapsedPotentialInvestments { get; private set; } = new();
 
     public double TotalInvested => CompletedInvestments.Sum(i => i.BuyData.TotalBuyPrice);
-    public double TotalReturn => CompletedInvestments.Sum(i => i.TotalSellPrice);
-    public double TotalProfit => CompletedInvestments.Sum(i => i.TotalProfit);
+    public double TotalReturn => CompletedInvestments.Sum(i => i.TotalNetSellPrice);
+    public double TotalProfit => CompletedInvestments.Sum(i => i.TotalNetProfit);
     public double ROI => TotalProfit / TotalInvested * 100;
 
     bool updating;
@@ -74,20 +74,20 @@ public partial class InvestmentsDatabase
             CollapsedPotentialInvestments.Clear();
 
             // Get all the buy and sell orders from the API
-            var buyOrders = GetBuyOrdersAsync(0, cancelToken);
-            var sellOrders = GetSellOrdersAsync(0, cancelToken);
+            var buyOrderHistory = GetBuyOrdersAsync(0, cancelToken);
+            var sellOrderHistory = GetSellOrdersAsync(0, cancelToken);
             var postedSellOrders = GetPostedSellOrdersAsync(0, cancelToken);
 
             if (cancelToken.IsCancellationRequested)
                 return;
 
-            await Task.WhenAll(buyOrders, sellOrders, postedSellOrders);
+            await Task.WhenAll(buyOrderHistory, sellOrderHistory, postedSellOrders);
 
             if (cancelToken.IsCancellationRequested)
                 return;
 
             // Create the Investment database from those buy and sell orders
-            CreateInvestmentsFromOrders(buyOrders.Result.ToList(), sellOrders.Result.ToList(), postedSellOrders.Result.ToList());
+            CreateInvestmentsFromOrders(buyOrderHistory.Result.ToList(), sellOrderHistory.Result.ToList(), postedSellOrders.Result.ToList());
 
             GenerateCollapsedCompleted();
 
@@ -284,6 +284,11 @@ public partial class InvestmentsDatabase
                         }
                     }
                     // If there are no items left to use in this sell order, skip it
+                    else if (remaining < 0)
+                    {
+                        GD.PushError("This seems like a problem.");
+                        continue;
+                    }
                     else
                         continue;
                 }
@@ -322,7 +327,7 @@ public partial class InvestmentsDatabase
             if (buyAmmountLeft > 0)
             {
                 // Get all the other partial uses of this sell order
-                var databasePartials = PendingInvestments.SelectMany(i => i.PostedSellDatas).Where(s => s.TransactionId == postedSellOrder.Id);
+                var databasePartials = PendingInvestments.SelectMany(i => i.SellDatas).Where(s => s.TransactionId == postedSellOrder.Id);
 
                 // If is in the database
                 if (databasePartials.Any())
@@ -469,9 +474,7 @@ public partial class InvestmentsDatabase
     public void Save(bool createBackup = false)
     {
         GD.Print("Saving Database");
-        var savedData = new CompletedInvestmentsData();
-        savedData.CompletedInvestments = CompletedInvestments;
-        savedData.NotInvestments = NotInvestments;
+        var savedData = new CompletedInvestmentsData { CompletedInvestments = CompletedInvestments, NotInvestments = NotInvestments };
         if (createBackup)
             BackupCurrentDatabase();
         SaveSystem.SaveToFile(databaseGodotPath, savedData);

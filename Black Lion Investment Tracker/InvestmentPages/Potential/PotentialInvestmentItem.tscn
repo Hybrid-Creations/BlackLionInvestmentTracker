@@ -12,3 +12,4 @@ custom_minimum_size = Vector2(300, 0)
 
 [node name="BreakEvenPrice" parent="ItemProperties" index="7"]
 visible = true
+tooltip_text = "This is an estimate, depenbding on how many are bought at a time, this can fluctuate slightly."

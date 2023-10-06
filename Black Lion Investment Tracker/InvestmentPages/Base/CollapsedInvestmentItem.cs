@@ -14,6 +14,12 @@ public partial class CollapsedInvestmentItem : VBoxContainer
     protected Button toggleTreeButton;
 
     [Export]
+    protected Control toggleSpacer;
+
+    [Export]
+    protected Control TitleBorder3;
+
+    [Export]
     protected Texture2D arrowRight;
 
     [Export]
@@ -34,4 +40,10 @@ public partial class CollapsedInvestmentItem : VBoxContainer
     public virtual double TotalSellPrice => throw new System.NotImplementedException();
     public virtual double TotalProfit => throw new System.NotImplementedException();
     public virtual DateTimeOffset LastActive => throw new System.NotImplementedException();
+
+    protected void HideTreeToggle()
+    {
+        toggleTreeButton.Hide();
+        toggleSpacer.Show();
+    }
 }

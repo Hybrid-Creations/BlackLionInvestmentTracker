@@ -13,6 +13,7 @@ collapsedInvestmentScene = ExtResource("3_xupfe")
 custom_minimum_size = Vector2(275, 0)
 
 [node name="SellPrice" parent="ColumnTitles" index="6"]
+tooltip_text = "The current lowest listing, minus one copper, to simulate what it will most likely be posted at."
 text = "Cur Sell Price "
 
 [node name="SortingArrow" parent="ColumnTitles/SellPrice" index="0"]

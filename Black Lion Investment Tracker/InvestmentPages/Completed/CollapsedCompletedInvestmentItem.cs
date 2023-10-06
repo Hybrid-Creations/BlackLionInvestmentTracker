@@ -16,8 +16,6 @@ public sealed partial class CollapsedCompletedInvestmentItem : CollapsedInvestme
     public override double TotalProfit => collapsedInvestment.TotalProfit;
     public override DateTimeOffset LastActive => collapsedInvestment.LastActiveDate;
 
-    bool isInDeliveryBox;
-
     public override void _Ready()
     {
         subInvestmentTitles.Hide();
@@ -29,6 +27,9 @@ public sealed partial class CollapsedCompletedInvestmentItem : CollapsedInvestme
             return;
 
         collapsedInvestment = _collapsedInvestment;
+
+        if (_collapsedInvestment.IndividualSellPriceDifferent == false)
+            HideTreeToggle();
 
         itemProperties.GetNode<ItemIcon>("Icon").Init(_item.Icon, _collapsedInvestment.Quantity, false);
         itemProperties.GetNode<Label>("Name").Text = ItemName = _item.Name;
@@ -44,6 +45,7 @@ public sealed partial class CollapsedCompletedInvestmentItem : CollapsedInvestme
         {
             subInvestmentTitles.Show();
             toggleTreeButton.Icon = arrowDown;
+            TitleBorder3.Show();
 
             foreach (var investment in collapsedInvestment.SubInvestments.OrderByDescending(si => si.LatestSellDate))
             {
@@ -54,8 +56,9 @@ public sealed partial class CollapsedCompletedInvestmentItem : CollapsedInvestme
         }
         else
         {
-            toggleTreeButton.Icon = arrowRight;
             subInvestmentTitles.Hide();
+            toggleTreeButton.Icon = arrowRight;
+            TitleBorder3.Hide();
             subInvestmentsHolder.ClearChildren();
         }
     }

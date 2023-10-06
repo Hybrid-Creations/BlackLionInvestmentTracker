@@ -4,7 +4,7 @@ using System.Linq;
 namespace BLIT.Investments;
 
 public class CollapsedInvestment<TInvestment>
-where TInvestment : Investment
+    where TInvestment : Investment
 {
     public List<TInvestment> SubInvestments { get; protected set; }
 
@@ -18,4 +18,12 @@ where TInvestment : Investment
     {
         SubInvestments = subInvestments.ToList();
     }
+
+    public virtual bool IndividualSellPriceDifferent => throw new System.NotImplementedException();
+    public virtual int IndividualSellPrice => throw new System.NotImplementedException();
+    public virtual int AverageIndividualSellPrice => throw new System.NotImplementedException();
+    public virtual int TotalSellPrice => throw new System.NotImplementedException();
+
+    public virtual int AverageIndividualProfit => throw new System.NotImplementedException();
+    public virtual int TotalProfit => throw new System.NotImplementedException();
 }
