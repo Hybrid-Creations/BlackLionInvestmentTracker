@@ -41,7 +41,7 @@ public partial class CompletedInvestmentsPage : InvestmentsPage
 
     public void ListInvestmentDatas(List<CollapsedCompletedInvestment> investmentDatas, string baseStatusMessage)
     {
-        ThreadsHelper.CallOnMainThread(() =>
+        ThreadsHelper.CallOnMainThread(async () =>
         {
             ClearTotals();
             ClearList();
@@ -75,7 +75,14 @@ public partial class CompletedInvestmentsPage : InvestmentsPage
                     ProbablyRealException(e);
                 }
                 index++;
+
+                if (index > 50)
+                {
+                    index = 0;
+                    await ToSignal(GetTree(), SceneTree.SignalName.ProcessFrame);
+                }
             }
+
             Direction = SortingDirection.Descending;
             ResetAllSortingArrows();
             lastActiveSortingArrow.Show();
