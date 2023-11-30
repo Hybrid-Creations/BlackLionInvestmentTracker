@@ -13,7 +13,7 @@ public class CollapsedPotentialInvestment : CollapsedInvestment<PotentialInvestm
         set
         {
             SubInvestments.ForEach(s => s.CurrentSellPrice = value);
-            currentSellPrice = value;
+            currentSellPrice = value - 1;
         }
     }
 

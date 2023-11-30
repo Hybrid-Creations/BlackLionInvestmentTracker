@@ -4,10 +4,15 @@ namespace BLIT.Investments;
 
 public class PotentialInvestment : Investment
 {
-    internal int CurrentSellPrice { get; set; }
+    int _currentSellPrice;
+    internal int CurrentSellPrice
+    {
+        get => _currentSellPrice;
+        set => _currentSellPrice = value - 1;
+    }
 
-    public int IndividualPotentialSellPrice => CurrentSellPrice - 1; // Adjusted to be one copper less than the most recent posting
-    public int TotalPotentialSellPrice => (CurrentSellPrice - 1) * BuyData.Quantity; // Adjusted to be one copper less than the most recent posting
+    public int IndividualPotentialSellPrice => CurrentSellPrice; // Adjusted to be one copper less than the most recent posting
+    public int TotalPotentialSellPrice => CurrentSellPrice * BuyData.Quantity; // Adjusted to be one copper less than the most recent posting
 
     /// <summary>
     /// The Indivual Potential Profit We Could Sell For Reduced By The 15% BLTP Tax, Minus The Individual Price We Bought The Items For.
