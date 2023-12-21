@@ -9,3 +9,5 @@ A small project for tracking investments made with the Black Lion Trading Post i
 - Newtonsoft JSON https://github.com/JamesNK/Newtonsoft.Json
 - Cagliostro font from google fonts https://fonts.google.com/specimen/Cagliostro
 - Some icons taken from https://game-icons.net/
+- Github Action: export project using https://github.com/firebelley/godot-export
+- Github Action: release creation using https://github.com/ncipollo/release-action
