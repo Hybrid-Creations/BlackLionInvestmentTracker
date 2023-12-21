@@ -63,9 +63,9 @@ public partial class Settings : Panel
 
     public class SettingsData
     {
-        int DatabaseIntervalMin = 30;
-        int DeliveryBoxIntervalMin = 15;
-        int DatabaseBackupsToKeepMin = 1;
+        readonly int DatabaseIntervalMin = 30;
+        readonly int DeliveryBoxIntervalMin = 15;
+        readonly int DatabaseBackupsToKeepMin = 1;
 
         private int databaseIntervalBackingField;
         private int deliveryBoxIntervalBackingField;

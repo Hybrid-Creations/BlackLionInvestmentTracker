@@ -3,9 +3,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using Godot;
 using Gw2Sharp.WebApi.V2.Models;
-using BLIT.Extensions;
 using BLIT.Status;
 using System.Linq;
+using BLIT.Tools;
 
 namespace BLIT.UI;
 

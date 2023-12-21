@@ -1,3 +1,4 @@
+using BLIT.Tools;
 using Godot;
 
 namespace BLIT;
@@ -21,7 +22,6 @@ public partial class APIStatusIndicator : Panel
         ThreadsHelper.CallOnMainThread(() =>
         {
             Instance.statusLabel.Text = $"[center][right]{status} => [color=cyan][url=https://status.gw2efficiency.com/]Check End Points[/url][/color] <= This App Uses /v2/commerce/*";
-            ;
             Instance.Show();
         });
     }
