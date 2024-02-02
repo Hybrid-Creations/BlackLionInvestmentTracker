@@ -58,9 +58,7 @@ public partial class Settings : Panel
 
     void ContinueToMainScene()
     {
-        Callable.From(() =>
-        GetTree().ChangeSceneToPacked(mainScene)
-        ).CallDeferred();
+        Callable.From(() => GetTree().ChangeSceneToPacked(mainScene)).CallDeferred();
     }
 
     public class SettingsData

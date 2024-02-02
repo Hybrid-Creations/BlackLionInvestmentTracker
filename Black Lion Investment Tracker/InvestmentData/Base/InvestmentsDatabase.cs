@@ -74,9 +74,9 @@ public partial class InvestmentsDatabase
             CollapsedPotentialInvestments.Clear();
 
             // Get all the buy and sell orders from the API
-            var buyOrderHistory = GetBuyOrdersAsync(0, cancelToken);
-            var sellOrderHistory = GetSellOrdersAsync(0, cancelToken);
-            var postedSellOrders = GetPostedSellOrdersAsync(0, cancelToken);
+            var buyOrderHistory = GetBuyOrdersAsync(cancelToken);
+            var sellOrderHistory = GetSellOrdersAsync(cancelToken);
+            var postedSellOrders = GetPostedSellOrdersAsync(cancelToken);
 
             if (cancelToken.IsCancellationRequested)
                 return;
@@ -101,7 +101,7 @@ public partial class InvestmentsDatabase
         }
     }
 
-    private static async Task<IEnumerable<CommerceTransactionHistory>> GetBuyOrdersAsync(int pageIndex, CancellationToken cancelToken)
+    private static async Task<IEnumerable<CommerceTransactionHistory>> GetBuyOrdersAsync(CancellationToken cancelToken)
     {
         AppStatusManager.ShowStatus(nameof(GetBuyOrdersAsync), "Downloading buy orders from GW2 server...");
 
@@ -132,7 +132,7 @@ public partial class InvestmentsDatabase
         return history;
     }
 
-    private static async Task<IEnumerable<CommerceTransactionHistory>> GetSellOrdersAsync(int pageIndex, CancellationToken cancelToken)
+    private static async Task<IEnumerable<CommerceTransactionHistory>> GetSellOrdersAsync(CancellationToken cancelToken)
     {
         AppStatusManager.ShowStatus(nameof(GetSellOrdersAsync), "Downloading sell orders from GW2 server...");
 
@@ -163,7 +163,7 @@ public partial class InvestmentsDatabase
         return history;
     }
 
-    private static async Task<IEnumerable<CommerceTransactionCurrent>> GetPostedSellOrdersAsync(int pageIndex, CancellationToken cancelToken)
+    private static async Task<IEnumerable<CommerceTransactionCurrent>> GetPostedSellOrdersAsync(CancellationToken cancelToken)
     {
         AppStatusManager.ShowStatus(nameof(GetPostedSellOrdersAsync), "Downloading posted sell orders from GW2 server...");
 
@@ -481,10 +481,7 @@ public partial class InvestmentsDatabase
     }
 
     // ---------- Backup
-    void BackupCurrentDatabase()
-    {
-        GD.Print("Backup Success; " + SaveSystem.CreateBackupIfNeeded(databaseGodotPath, TimeSpan.FromDays(1)));
-    }
+    private static void BackupCurrentDatabase() => GD.Print("Backup Success; " + SaveSystem.CreateBackupIfNeeded(databaseGodotPath, TimeSpan.FromDays(1)));
 
     // ---------- Loading
     public void Load()
@@ -497,8 +494,5 @@ public partial class InvestmentsDatabase
         GD.Print($"Loaded Investment Database => investments: {CompletedInvestments.Count}, not investments: {NotInvestments.Count}");
     }
 
-    public static void RestoreMostRecentBackup()
-    {
-        GD.Print("Restoring Backup Success: " + SaveSystem.RestoreMostRecentBackup(DatabaseFileName));
-    }
+    public static void RestoreMostRecentBackup() => GD.Print("Restoring Backup Success: " + SaveSystem.RestoreMostRecentBackup(DatabaseFileName));
 }
