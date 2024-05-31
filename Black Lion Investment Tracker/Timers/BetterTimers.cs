@@ -8,14 +8,21 @@ namespace BLIT.Timers;
 
 public class ThreadedTimer
 {
-    public TimeSpan Interval { get; set; }
-    public Func<Task> Elapsed { get; set; }
-    public bool Repeat { get; set; } = false;
+    public TimeSpan Interval { get; private set; }
+    public Func<Task> Elapsed { get; private set; }
+    public bool Repeat { get; private set; } = false;
 
     TimeSpan offset = TimeSpan.Zero;
 
     CancellationTokenSource cancelSource;
     CancellationTokenSource currentDelaySource;
+
+    public ThreadedTimer(TimeSpan interval, bool repeat, Func<Task> elapsed)
+    {
+        Interval = interval;
+        Repeat = repeat;
+        Elapsed = elapsed;
+    }
 
     public void Start(bool elapseNow)
     {
@@ -49,7 +56,7 @@ public class ThreadedTimer
                             if (e is not TaskCanceledException)
                             {
                                 cancelSource.Cancel(); // Safely fail out the timer
-                                GD.PushError($"ts:{Interval - offset} => {e}"); // But show the error
+                                GD.PushError($"Timer Delay Error: {Interval - offset} => {e}"); // But show the error
                             }
                         }
                     }
@@ -66,7 +73,7 @@ public class ThreadedTimer
                     }
                     catch (Exception e)
                     {
-                        GD.PushError(e);
+                        GD.PushError($"Timer Execution Error: {e}");
                     }
 
                     offset = stopwatch.Elapsed; // This makes it so the tiemr always runs every X interval, as it takes away the time it took to run the code

@@ -14,7 +14,8 @@ public static class ThreadsHelper
 
     public static void CallOnMainThread(Action action)
     {
-        if (action is null) return;
+        if (action is null)
+            return;
 
         if (mainThreadId == System.Environment.CurrentManagedThreadId)
             action.Invoke();

@@ -54,7 +54,7 @@ public partial class DeliveryBox : Button
 
     bool updating;
 
-    static IReadOnlyList<(int, int)> itemsInDeliveryBox;
+    static IReadOnlyList<(int, int)> itemsInDeliveryBox = new List<(int, int)>().AsReadOnly();
 
     const string StatusKey = $"{nameof(DeliveryBox)}";
 
@@ -79,6 +79,7 @@ public partial class DeliveryBox : Button
         catch (System.Exception e)
         {
             GD.PushError(e.Message);
+            Callable.From(ClearVisuals).CallDeferred();
             AppStatusManager.ClearStatus(StatusKey);
             APIStatusIndicator.ShowStatus("Failed to get Delivery Box");
             updating = false;
@@ -105,7 +106,7 @@ public partial class DeliveryBox : Button
         updating = false;
     }
 
-    void ClearVisuals()
+    private void ClearVisuals()
     {
         Icon = deliveryBoxEmpty;
         coinsIcon.Hide();
@@ -142,18 +143,9 @@ public partial class DeliveryBox : Button
         }
     }
 
-    public void OnMouseEntered()
-    {
-        deliveryBoxPreview.Show();
-    }
+    public void OnMouseEntered() => deliveryBoxPreview.Show();
 
-    public void OnMouseExited()
-    {
-        deliveryBoxPreview.Hide();
-    }
+    public void OnMouseExited() => deliveryBoxPreview.Hide();
 
-    public static bool IsInDeliveryBox(int itemId, int quantity)
-    {
-        return itemsInDeliveryBox.Contains((itemId, quantity));
-    }
+    public static bool IsInDeliveryBox(int itemId, int quantity) => itemsInDeliveryBox.Contains((itemId, quantity));
 }

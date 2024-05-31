@@ -57,39 +57,48 @@ public partial class Main : Node
 
     private void RefreshDatabaseOnInterval()
     {
-        refreshDatabaseTimer = new ThreadedTimer { Interval = TimeSpan.FromSeconds(Settings.Data.DatabaseInterval), Repeat = true };
-        refreshDatabaseTimer.Elapsed += async () =>
-        {
-            if (refreshCancelSource.IsCancellationRequested)
+        refreshDatabaseTimer = new ThreadedTimer(
+            TimeSpan.FromSeconds(Settings.Data.DatabaseInterval),
+            true,
+            async () =>
             {
-                refreshDatabaseTimer.Stop();
-                return;
+                if (refreshCancelSource.IsCancellationRequested)
+                {
+                    refreshDatabaseTimer.Stop();
+                    return;
+                }
+
+                await Database.RefreshDataAsync(refreshCancelSource.Token);
+
+                GD.Print("Listing Completed Investments");
+                CompletedInvestments.ListInvestmentDatas(Database.CollapsedCompletedInvestments, "Listing Completed Investments... ");
+                GD.Print("Listing Pending Investments");
+                PendingInvestments.ListInvestmentDatas(Database.CollapsedPendingInvestments, "Listing Pending Investments... ");
+                GD.Print("Listing Potential Investments");
+                PotentialInvestments.ListInvestmentDatas(Database.CollapsedPotentialInvestments, "Listing Potential Investments... ");
+
+                GD.Print("Databse & UI Update Done");
             }
-
-            await Database.RefreshDataAsync(refreshCancelSource.Token);
-
-            GD.Print("Listing Completed Investments");
-            CompletedInvestments.ListInvestmentDatas(Database.CollapsedCompletedInvestments, "Listing Completed Investments... ");
-            GD.Print("Listing Pending Investments");
-            PendingInvestments.ListInvestmentDatas(Database.CollapsedPendingInvestments, "Listing Pending Investments... ");
-            GD.Print("Listing Potential Investments");
-            PotentialInvestments.ListInvestmentDatas(Database.CollapsedPotentialInvestments, "Listing Potential Investments... ");
-
-            GD.Print("Databse & UI Update Done");
-        };
+        );
         refreshDatabaseTimer.Start(true);
     }
 
     private void RefreshDeliveryBoxOnInverval()
     {
-        refreshDeliveryBoxTimer = new ThreadedTimer { Interval = TimeSpan.FromSeconds(Settings.Data.DeliveryBoxInterval), Repeat = true };
-        refreshDeliveryBoxTimer.Elapsed += async () =>
-        {
-            if (refreshCancelSource.IsCancellationRequested)
-                return;
+        refreshDeliveryBoxTimer = new ThreadedTimer(
+            TimeSpan.FromSeconds(Settings.Data.DeliveryBoxInterval),
+            true,
+            async () =>
+            {
+                if (refreshCancelSource.IsCancellationRequested)
+                {
+                    refreshDeliveryBoxTimer.Stop();
+                    return;
+                }
 
-            await DeliveryBox.RefreshAsync(refreshCancelSource.Token);
-        };
+                await DeliveryBox.RefreshAsync(refreshCancelSource.Token);
+            }
+        );
         refreshDeliveryBoxTimer.Start(true);
     }
 
