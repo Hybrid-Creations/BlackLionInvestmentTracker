@@ -29,22 +29,29 @@ public partial class AppStatusManager : VBoxContainer
             ThreadsHelper.CallOnMainThread(() =>
             {
                 GD.Print(status);
-                var instance = Instance.appStatusScene.Instantiate<AppStatusEntry>();
-                instance.SetPendingStatus(status.AlignRichString(RichStringAlignment.RIGHT));
-                Instance.AddChildSafe(instance);
-                statusMessages[key] = instance;
+                var entryInstance = Instance?.appStatusScene.Instantiate<AppStatusEntry>();
+                entryInstance.SetPendingStatus(status.AlignRichString(RichStringAlignment.RIGHT));
+                Instance.AddChildSafe(entryInstance);
+                statusMessages[key] = entryInstance;
             });
         }
     }
 
     public static void ClearStatus(string key)
     {
-        if (statusMessages.TryGetValue(key, out var statusEntry))
-        {
-            if (statusMessages.TryRemove(key, out var _))
-                statusEntry.QueueFreeSafe();
-            else
-                GD.PrintErr($"Failed to remove status entry");
-        }
+        Callable
+            .From(() =>
+            {
+                if (statusMessages.TryGetValue(key, out var statusEntry))
+                {
+                    if (statusMessages.TryRemove(key, out var _))
+                        statusEntry.QueueFreeSafe();
+                    else
+                        GD.PrintErr($"Failed to remove status entry");
+                }
+                else
+                    GD.PushWarning($"Status was not in dictionary {key}");
+            })
+            .CallDeferred(); // This guarantees that we don't miss removing an entry that was added durring this frame
     }
 }
